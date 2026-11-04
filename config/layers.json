@@ -1,0 +1,336 @@
+{
+  "imageCorners": "data/web/rasters.json",
+  "groups": [
+    {
+      "id": "boundaries",
+      "label": { "id": "Batas wilayah", "en": "Boundaries" }
+    },
+    {
+      "id": "observed",
+      "label": { "id": "Teramati", "en": "Observed" }
+    },
+    {
+      "id": "modelled",
+      "label": { "id": "Estimasi model", "en": "Modelled estimates" }
+    },
+    {
+      "id": "reference",
+      "label": { "id": "Referensi", "en": "Reference" }
+    },
+    {
+      "id": "hazard",
+      "label": { "id": "Bahaya termodelkan (InaRISK)", "en": "Modelled hazard (InaRISK)" },
+      "exclusive": true
+    }
+  ],
+  "datasets": [
+    {
+      "id": "boundaries",
+      "group": "boundaries",
+      "map": true,
+      "renderer": "boundaries",
+      "label": { "id": "Kecamatan", "en": "Kecamatan" },
+      "plannedSource": { "id": "BIG, Batas Wilayah Kecamatan skala 1:10.000", "en": "BIG, Batas Wilayah Kecamatan, 1:10,000 scale" },
+      "file": "data/web/kecamatan.geojson",
+      "source": "Badan Informasi Geospasial (BIG)",
+      "date": "2026-06-12",
+      "visible": true,
+      "publish": false,
+      "attribution": "Batas kecamatan: <a href=\"https://tanahair.indonesia.go.id\" target=\"_blank\">Badan Informasi Geospasial</a> 2026",
+      "legend": {
+        "type": "line",
+        "color": "#2d3a45"
+      }
+    },
+    {
+      "id": "bps-population",
+      "group": "reference",
+      "map": false,
+      "label": { "id": "Penduduk (BPS)", "en": "Population (BPS)" },
+      "plannedSource": { "id": "BPS (publikasi dan tahun belum dikonfirmasi)", "en": "BPS (publication and year to be confirmed)" },
+      "file": null,
+      "source": null,
+      "date": null
+    },
+    {
+      "id": "flood-observed",
+      "group": "observed",
+      "map": true,
+      "renderer": "fill",
+      "label": { "id": "Genangan banjir teramati (Sentinel-1)", "en": "Observed flood extent (Sentinel-1)" },
+      "plannedSource": { "id": "Sentinel-1 GRD, diolah oleh Satgas Tanggap Bencana BRIN, Pusat Riset Geoinformatika, dan UN-SPIDER", "en": "Sentinel-1 GRD, processed by the BRIN Task Force for Disaster Response, the Research Center for Geoinformatics and UN-SPIDER" },
+      "file": "data/web/flood_observed.geojson",
+      "stats": "data/web/flood_by_kecamatan.json",
+      "source": "Sentinel-1 GRD; Satgas BRIN, PR Geoinformatika, UN-SPIDER",
+      "sourceShort": "Sentinel-1; BRIN, UN-SPIDER",
+      "method": { "id": "Deteksi perubahan sebelum/sesudah banjir mengikuti Recommended Practice UN-SPIDER (Google Earth Engine). Air permanen, lereng >5% dan kelompok piksel kecil disaring oleh metode tersebut. Parameter yang dipakai belum dikonfirmasi.", "en": "Before/after change detection following the UN-SPIDER Recommended Practice (Google Earth Engine). That method removes permanent water, slopes over 5% and small pixel clusters. The parameters used are not yet confirmed." },
+      "methodUrl": "https://un-spider.org/advisory-support/recommended-practices/recommended-practice-google-earth-engine-flood-mapping/step-by-step",
+      "date": null,
+      "visible": true,
+      "publish": false,
+      "attribution": "Genangan teramati: Sentinel-1 GRD (Copernicus), diolah oleh BRIN dan UN-SPIDER",
+      "legend": {
+        "type": "fill",
+        "color": "#2166ac"
+      }
+    },
+    {
+      "id": "worldpop",
+      "group": "modelled",
+      "map": true,
+      "renderer": "image",
+      "image": "worldpop_2025",
+      "label": { "id": "Estimasi penduduk 2025 (WorldPop)", "en": "Estimated population 2025 (WorldPop)" },
+      "plannedSource": { "id": "WorldPop R2025A v1, 3 detik busur", "en": "WorldPop R2025A v1, 3 arc-second" },
+      "file": "data/web/worldpop_2025.png",
+      "stats": "data/web/population_by_kecamatan.json",
+      "source": "WorldPop R2025A v1, constrained, 100 m (2017 dan 2025)",
+      "method": { "id": "Estimasi model, bukan sensus. Jumlah per kecamatan adalah jumlah nilai sel; sel di perbatasan dibagi menurut porsi luasnya. Penduduk di area genangan dihitung dengan cara yang sama dan menganggap penduduk tersebar merata dalam sel 100 m. Ini bukan jumlah penduduk terdampak.", "en": "A model estimate, not a census. Kecamatan totals are sums of cell values; cells on a boundary are split by their share of area. Population in the flood extent is calculated the same way and assumes people are spread evenly within each 100 m cell. It is not a count of affected people." },
+      "methodUrl": "https://www.worldpop.org/methods/populations/",
+      "methodLinkText": { "id": "Metode WorldPop", "en": "WorldPop methods" },
+      "date": "2025",
+      "visible": false,
+      "publish": false,
+      "attribution": "Penduduk: <a href=\"https://www.worldpop.org\" target=\"_blank\">WorldPop</a> R2025A, CC BY 4.0",
+      "legend": {
+        "items": [
+          {
+            "color": "#dadaeb",
+            "label": { "id": "< 5 jiwa per sel 100 m", "en": "< 5 people per 100 m cell" }
+          },
+          {
+            "color": "#bcbddc",
+            "label": { "id": "5–25", "en": "5–25" }
+          },
+          {
+            "color": "#9e9ac8",
+            "label": { "id": "25–50", "en": "25–50" }
+          },
+          {
+            "color": "#756bb1",
+            "label": { "id": "50–100", "en": "50–100" }
+          },
+          {
+            "color": "#54278f",
+            "label": { "id": "≥ 100", "en": "≥ 100" }
+          }
+        ]
+      }
+    },
+    {
+      "id": "reported-impact",
+      "group": "observed",
+      "map": false,
+      "label": { "id": "Dampak dilaporkan", "en": "Reported impact" },
+      "plannedSource": { "id": "BPBD Kabupaten Aceh Tamiang", "en": "BPBD Kabupaten Aceh Tamiang" },
+      "file": "data/web/reported_by_kecamatan.json",
+      "source": "BPBD Kabupaten Aceh Tamiang, PUSDATIN Data Bencana Siklon Tropis Senyar",
+      "sourceShort": "BPBD Aceh Tamiang",
+      "date": "2026-03-19",
+      "stats": "data/web/reported_by_kecamatan.json",
+      "method": { "id": "Angka agregat per kecamatan diambil dari situs BPBD (tampilan \"Semua Kecamatan\") pada 3 November 2026. Jumlah 12 kecamatan sama dengan total kabupaten di situs. Tanda \"-\" di situs dan fasilitas yang tidak tercantum ditampilkan sebagai belum ada data.", "en": "Aggregate figures per kecamatan were read from the BPBD site (\"Semua Kecamatan\" view) on 3 November 2026. The 12 kecamatan add up to the kabupaten totals on the site. A \"-\" on the site, and facility types not listed, are shown as no data." },
+      "methodUrl": "https://cekdatabencana.acehtamiangkab.go.id/",
+      "methodLinkText": { "id": "Situs BPBD", "en": "BPBD site" },
+      "publish": true,
+      "attribution": "Dampak dilaporkan: BPBD Kabupaten Aceh Tamiang"
+    },
+    {
+      "id": "worship-osm",
+      "group": "reference",
+      "map": true,
+      "renderer": "points",
+      "label": { "id": "Tempat ibadah (OSM, belum lengkap)", "en": "Places of worship (OSM, incomplete)" },
+      "file": "data/web/worship_osm.geojson",
+      "source": "OpenStreetMap (amenity = place_of_worship), ekspor titik POI Indonesia",
+      "sourceShort": "OpenStreetMap",
+      "date": null,
+      "method": {
+        "id": "Hanya 14 titik di seluruh kabupaten (9 tanpa nama), sedangkan BPBD melaporkan 724 sarana ibadah rusak. Lapisan ini hanya menunjukkan lokasi yang sudah dipetakan di OpenStreetMap dan tidak dipakai sebagai jumlah.",
+        "en": "Only 14 points in the whole kabupaten (9 without a name), while BPBD reports 724 damaged places of worship. This layer only shows locations already mapped in OpenStreetMap and is not used as a total."
+      },
+      "methodUrl": "https://www.openstreetmap.org/copyright",
+      "methodLinkText": { "id": "Lisensi OpenStreetMap", "en": "OpenStreetMap licence" },
+      "visible": false,
+      "publish": false,
+      "attribution": "Tempat ibadah: © <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">kontributor OpenStreetMap</a>, ODbL",
+      "legend": { "type": "circle", "color": "#1b7837" }
+    },
+    {
+      "id": "lulc",
+      "group": "reference",
+      "map": true,
+      "renderer": "image",
+      "image": "lulc_2025",
+      "label": { "id": "Tutupan lahan 2025 (ESRI)", "en": "Land cover 2025 (ESRI)" },
+      "plannedSource": { "id": "ESRI Land Cover 10 m, Karra dkk. (2021)", "en": "ESRI Land Cover 10 m, Karra et al. (2021)" },
+      "file": "data/web/lulc_2025.png",
+      "stats": "data/web/lulc_by_kecamatan.json",
+      "source": "ESRI Land Cover 10 m (Sentinel-2; Impact Observatory, Microsoft, ESRI), 2017 dan 2025",
+      "method": { "id": "Klasifikasi tahunan dari citra Sentinel-2 10 m. Luas per kecamatan dan di area genangan dihitung dari sel yang titik tengahnya berada di dalam batas. Peta 2025 mencakup seluruh tahun 2025 sehingga sebagian bisa sudah dipengaruhi banjir. Versi peta belum dikonfirmasi.", "en": "An annual classification of 10 m Sentinel-2 imagery. Areas per kecamatan and in the flood extent count the cells whose centre lies inside. The 2025 map covers all of 2025, so part of it may already reflect the flood. The map version is not yet confirmed." },
+      "methodUrl": "https://livingatlas.arcgis.com/landcover/",
+      "methodLinkText": { "id": "ESRI Land Cover", "en": "ESRI Land Cover" },
+      "date": "2025",
+      "visible": false,
+      "publish": false,
+      "attribution": "Tutupan lahan: ESRI, Impact Observatory, Microsoft, CC BY 4.0",
+      "legend": {
+        "items": [
+          {
+            "value": 1,
+            "color": "#419bdf",
+            "label": { "id": "Air", "en": "Water" }
+          },
+          {
+            "value": 2,
+            "color": "#397d49",
+            "label": { "id": "Pepohonan", "en": "Trees" }
+          },
+          {
+            "value": 4,
+            "color": "#7a87c6",
+            "label": { "id": "Vegetasi tergenang", "en": "Flooded vegetation" }
+          },
+          {
+            "value": 5,
+            "color": "#e49635",
+            "label": { "id": "Tanaman pertanian", "en": "Crops" }
+          },
+          {
+            "value": 7,
+            "color": "#c4281b",
+            "label": { "id": "Area terbangun", "en": "Built area" }
+          },
+          {
+            "value": 8,
+            "color": "#a59b8f",
+            "label": { "id": "Lahan terbuka", "en": "Bare ground" }
+          },
+          {
+            "value": 10,
+            "color": "#616161",
+            "label": { "id": "Awan", "en": "Clouds" }
+          },
+          {
+            "value": 11,
+            "color": "#e3e2c3",
+            "label": { "id": "Padang rumput dan semak", "en": "Rangeland" }
+          }
+        ]
+      }
+    },
+    {
+      "id": "hazard-banjir",
+      "group": "hazard",
+      "map": true,
+      "renderer": "classes",
+      "label": { "id": "Banjir", "en": "Flood" },
+      "file": "data/web/hazard_banjir.geojson",
+      "stats": "data/web/hazard_by_kecamatan.json",
+      "statsPath": "hazards.banjir",
+      "source": "BNPB InaRISK, indeks bahaya banjir (INDEKS_BAHAYA_BANJIR1_30)",
+      "date": null,
+      "visible": false,
+      "publish": false,
+      "attribution": "Indeks bahaya: InaRISK BNPB",
+      "legend": {
+        "field": "kelas_id",
+        "items": "hazardClasses"
+      }
+    },
+    {
+      "id": "hazard-banjir-bandang",
+      "group": "hazard",
+      "map": true,
+      "renderer": "classes",
+      "label": { "id": "Banjir bandang", "en": "Flash flood" },
+      "file": "data/web/hazard_banjir-bandang.geojson",
+      "stats": "data/web/hazard_by_kecamatan.json",
+      "statsPath": "hazards.banjir-bandang",
+      "source": "BNPB InaRISK, indeks bahaya banjir bandang (INDEKS_BAHAYA_BANJIR_BANDANG_30)",
+      "date": null,
+      "visible": false,
+      "publish": false,
+      "attribution": "Indeks bahaya: InaRISK BNPB",
+      "legend": {
+        "field": "kelas_id",
+        "items": "hazardClasses"
+      }
+    },
+    {
+      "id": "hazard-cuaca-ekstrem",
+      "group": "hazard",
+      "map": true,
+      "renderer": "classes",
+      "label": { "id": "Cuaca ekstrem", "en": "Extreme weather" },
+      "file": "data/web/hazard_cuaca-ekstrem.geojson",
+      "stats": "data/web/hazard_by_kecamatan.json",
+      "statsPath": "hazards.cuaca-ekstrem",
+      "source": "BNPB InaRISK, indeks bahaya cuaca ekstrem (INDEKS_BAHAYA_CUACA_EKSTREM_30)",
+      "date": null,
+      "visible": false,
+      "publish": false,
+      "attribution": "Indeks bahaya: InaRISK BNPB",
+      "legend": {
+        "field": "kelas_id",
+        "items": "hazardClasses"
+      }
+    },
+    {
+      "id": "hazard-kekeringan",
+      "group": "hazard",
+      "map": true,
+      "renderer": "classes",
+      "label": { "id": "Kekeringan", "en": "Drought" },
+      "file": "data/web/hazard_kekeringan.geojson",
+      "stats": "data/web/hazard_by_kecamatan.json",
+      "statsPath": "hazards.kekeringan",
+      "source": "BNPB InaRISK, indeks bahaya kekeringan (INDEKS_BAHAYA_KEKERINGAN1_30)",
+      "date": null,
+      "visible": false,
+      "publish": false,
+      "attribution": "Indeks bahaya: InaRISK BNPB",
+      "legend": {
+        "field": "kelas_id",
+        "items": "hazardClasses"
+      }
+    },
+    {
+      "id": "hazard-tanah-longsor",
+      "group": "hazard",
+      "map": true,
+      "renderer": "classes",
+      "label": { "id": "Tanah longsor", "en": "Landslide" },
+      "file": "data/web/hazard_tanah-longsor.geojson",
+      "stats": "data/web/hazard_by_kecamatan.json",
+      "statsPath": "hazards.tanah-longsor",
+      "source": "BNPB InaRISK, indeks bahaya tanah longsor (INDEKS_BAHAYA_TANAHLONGSOR_30)",
+      "date": null,
+      "visible": false,
+      "publish": false,
+      "attribution": "Indeks bahaya: InaRISK BNPB",
+      "legend": {
+        "field": "kelas_id",
+        "items": "hazardClasses"
+      }
+    }
+  ],
+  "legendItems": {
+    "hazardClasses": [
+      {
+        "value": 1,
+        "color": "#e3b23c",
+        "label": { "id": "Rendah", "en": "Low" }
+      },
+      {
+        "value": 2,
+        "color": "#d2652a",
+        "label": { "id": "Sedang", "en": "Medium" }
+      },
+      {
+        "value": 3,
+        "color": "#9b1c31",
+        "label": { "id": "Tinggi", "en": "High" }
+      }
+    ]
+  }
+}

@@ -1,0 +1,403 @@
+{
+  "population": [],
+  "impact": [
+    {
+      "id": "deaths",
+      "dataset": "reported-impact",
+      "field": "deaths",
+      "label": { "id": "Korban jiwa", "en": "Casualties" }
+    },
+    {
+      "id": "injured",
+      "dataset": "reported-impact",
+      "field": "injured",
+      "label": { "id": "Luka-luka", "en": "Injured" }
+    },
+    {
+      "id": "displaced",
+      "dataset": "reported-impact",
+      "field": "displaced",
+      "label": { "id": "Mengungsi", "en": "Displaced" }
+    },
+    {
+      "id": "affected",
+      "dataset": "reported-impact",
+      "field": "affected",
+      "label": { "id": "Terdampak", "en": "Affected" }
+    }
+  ],
+  "infrastructure": [
+    {
+      "id": "education",
+      "label": { "id": "Fasilitas pendidikan", "en": "Education facilities" },
+      "damagedDataset": "reported-impact",
+      "damagedField": "education_damaged",
+      "totalDataset": null,
+      "totalField": null,
+      "unit": { "id": "unit", "en": "units" },
+      "digits": 0
+    },
+    {
+      "id": "health",
+      "label": { "id": "Fasilitas kesehatan", "en": "Health facilities" },
+      "damagedDataset": "reported-impact",
+      "damagedField": "health_damaged",
+      "totalDataset": null,
+      "totalField": null,
+      "unit": { "id": "unit", "en": "units" },
+      "digits": 0
+    },
+    {
+      "id": "worship",
+      "label": { "id": "Sarana ibadah", "en": "Places of worship" },
+      "damagedDataset": "reported-impact",
+      "damagedField": "worship_damaged",
+      "totalDataset": null,
+      "totalField": null,
+      "unit": { "id": "unit", "en": "units" },
+      "digits": 0
+    },
+    {
+      "id": "market",
+      "label": { "id": "Pasar", "en": "Markets" },
+      "damagedDataset": "reported-impact",
+      "damagedField": "market_damaged",
+      "totalDataset": null,
+      "totalField": null,
+      "unit": { "id": "unit", "en": "units" },
+      "digits": 0
+    },
+    {
+      "id": "office",
+      "label": { "id": "Kantor pemerintah", "en": "Government offices" },
+      "damagedDataset": "reported-impact",
+      "damagedField": "office_damaged",
+      "totalDataset": null,
+      "totalField": null,
+      "unit": { "id": "unit", "en": "units" },
+      "digits": 0
+    },
+    {
+      "id": "shophouse",
+      "label": { "id": "Ruko", "en": "Shop-houses" },
+      "damagedDataset": "reported-impact",
+      "damagedField": "shophouse_damaged",
+      "totalDataset": null,
+      "totalField": null,
+      "unit": { "id": "unit", "en": "units" },
+      "digits": 0
+    },
+    {
+      "id": "bridges",
+      "label": { "id": "Jembatan", "en": "Bridges" },
+      "damagedDataset": "reported-impact",
+      "damagedField": "bridges",
+      "totalDataset": null,
+      "totalField": null,
+      "unit": { "id": "unit", "en": "units" },
+      "digits": 0
+    },
+    {
+      "id": "roads",
+      "label": { "id": "Jalan", "en": "Roads" },
+      "damagedDataset": "reported-impact",
+      "damagedField": "road_km",
+      "totalDataset": null,
+      "totalField": null,
+      "unit": { "id": "km", "en": "km" },
+      "digits": 1
+    }
+  ],
+  "chartOptions": [
+    {
+      "id": "affected-people",
+      "kind": "kecamatan",
+      "dataset": "reported-impact",
+      "field": "affected",
+      "digits": 0,
+      "unit": { "id": "jiwa", "en": "people" },
+      "label": { "id": "Penduduk terdampak per kecamatan", "en": "Affected people by kecamatan" },
+      "note": { "id": "Dilaporkan BPBD Aceh Tamiang", "en": "Reported by BPBD Aceh Tamiang" }
+    },
+    {
+      "id": "displaced",
+      "kind": "kecamatan",
+      "dataset": "reported-impact",
+      "field": "displaced",
+      "digits": 0,
+      "unit": { "id": "jiwa", "en": "people" },
+      "label": { "id": "Pengungsi per kecamatan", "en": "Displaced people by kecamatan" },
+      "note": { "id": "Dilaporkan BPBD Aceh Tamiang", "en": "Reported by BPBD Aceh Tamiang" }
+    },
+    {
+      "id": "houses",
+      "kind": "stacked",
+      "dataset": "reported-impact",
+      "series": [
+        {
+          "field": "houses_light",
+          "color": "#e3b23c",
+          "label": { "id": "Ringan", "en": "Light" }
+        },
+        {
+          "field": "houses_moderate",
+          "color": "#d2652a",
+          "label": { "id": "Sedang", "en": "Moderate" }
+        },
+        {
+          "field": "houses_heavy",
+          "color": "#9b1c31",
+          "label": { "id": "Berat", "en": "Heavy" }
+        }
+      ],
+      "digits": 0,
+      "unit": { "id": "unit", "en": "units" },
+      "label": { "id": "Rumah rusak per kecamatan", "en": "Damaged houses by kecamatan" },
+      "note": { "id": "Menurut tingkat kerusakan, dilaporkan BPBD", "en": "By damage level, reported by BPBD" }
+    },
+    {
+      "id": "farmland",
+      "kind": "kecamatan",
+      "dataset": "reported-impact",
+      "field": "farmland_ha",
+      "digits": 0,
+      "unit": { "id": "ha", "en": "ha" },
+      "label": { "id": "Lahan pertanian terdampak per kecamatan", "en": "Affected farmland by kecamatan" },
+      "note": { "id": "Dilaporkan BPBD Aceh Tamiang", "en": "Reported by BPBD Aceh Tamiang" }
+    },
+    {
+      "id": "roads",
+      "kind": "kecamatan",
+      "dataset": "reported-impact",
+      "field": "road_km",
+      "digits": 1,
+      "unit": { "id": "km", "en": "km" },
+      "label": { "id": "Jalan rusak per kecamatan", "en": "Damaged roads by kecamatan" },
+      "note": { "id": "Dilaporkan BPBD Aceh Tamiang", "en": "Reported by BPBD Aceh Tamiang" }
+    },
+    {
+      "id": "population",
+      "dataset": "bps-population",
+      "label": { "id": "Penduduk (BPS) per kecamatan", "en": "Population (BPS) by kecamatan" }
+    },
+    {
+      "id": "flooded-area",
+      "dataset": "flood-observed",
+      "field": "flood_km2",
+      "digits": 2,
+      "unit": { "id": "km²", "en": "km²" },
+      "label": { "id": "Luas tergenang per kecamatan (km²)", "en": "Flooded area by kecamatan (km²)" },
+      "note": { "id": "Genangan teramati (Sentinel-1)", "en": "Observed flood extent (Sentinel-1)" },
+      "kind": "kecamatan"
+    },
+    {
+      "id": "flooded-pct",
+      "dataset": "flood-observed",
+      "field": "flood_pct",
+      "digits": 1,
+      "unit": { "id": "% luas kecamatan", "en": "% of kecamatan area" },
+      "label": { "id": "% luas tergenang per kecamatan", "en": "% area flooded by kecamatan" },
+      "note": { "id": "Luas genangan teramati ÷ luas kecamatan (BIG)", "en": "Observed flood extent area ÷ kecamatan area (BIG)" },
+      "kind": "kecamatan"
+    },
+    {
+      "id": "hazard-banjir",
+      "kind": "hazard",
+      "dataset": "hazard-banjir",
+      "field": "classes_km2",
+      "digits": 1,
+      "unit": { "id": "km²", "en": "km²" },
+      "label": { "id": "Bahaya banjir per kecamatan (InaRISK)", "en": "Flood hazard by kecamatan (InaRISK)" },
+      "note": { "id": "Luas per kelas indeks bahaya. Area tanpa kelas tidak ditampilkan.", "en": "Area per hazard index class. Area with no class is not shown." }
+    },
+    {
+      "id": "hazard-banjir-bandang",
+      "kind": "hazard",
+      "dataset": "hazard-banjir-bandang",
+      "field": "classes_km2",
+      "digits": 1,
+      "unit": { "id": "km²", "en": "km²" },
+      "label": { "id": "Bahaya banjir bandang per kecamatan (InaRISK)", "en": "Flash flood hazard by kecamatan (InaRISK)" },
+      "note": { "id": "Luas per kelas indeks bahaya. Area tanpa kelas tidak ditampilkan.", "en": "Area per hazard index class. Area with no class is not shown." }
+    },
+    {
+      "id": "hazard-cuaca-ekstrem",
+      "kind": "hazard",
+      "dataset": "hazard-cuaca-ekstrem",
+      "field": "classes_km2",
+      "digits": 1,
+      "unit": { "id": "km²", "en": "km²" },
+      "label": { "id": "Bahaya cuaca ekstrem per kecamatan (InaRISK)", "en": "Extreme weather hazard by kecamatan (InaRISK)" },
+      "note": { "id": "Luas per kelas indeks bahaya. Area tanpa kelas tidak ditampilkan.", "en": "Area per hazard index class. Area with no class is not shown." }
+    },
+    {
+      "id": "hazard-kekeringan",
+      "kind": "hazard",
+      "dataset": "hazard-kekeringan",
+      "field": "classes_km2",
+      "digits": 1,
+      "unit": { "id": "km²", "en": "km²" },
+      "label": { "id": "Bahaya kekeringan per kecamatan (InaRISK)", "en": "Drought hazard by kecamatan (InaRISK)" },
+      "note": { "id": "Luas per kelas indeks bahaya. Area tanpa kelas tidak ditampilkan.", "en": "Area per hazard index class. Area with no class is not shown." }
+    },
+    {
+      "id": "hazard-tanah-longsor",
+      "kind": "hazard",
+      "dataset": "hazard-tanah-longsor",
+      "field": "classes_km2",
+      "digits": 1,
+      "unit": { "id": "km²", "en": "km²" },
+      "label": { "id": "Bahaya tanah longsor per kecamatan (InaRISK)", "en": "Landslide hazard by kecamatan (InaRISK)" },
+      "note": { "id": "Luas per kelas indeks bahaya. Area tanpa kelas tidak ditampilkan.", "en": "Area per hazard index class. Area with no class is not shown." }
+    }
+  ],
+  "tableOptions": [
+    {
+      "id": "affected",
+      "dataset": "reported-impact",
+      "field": "affected",
+      "digits": 0,
+      "unit": { "id": "jiwa", "en": "people" },
+      "label": { "id": "Penduduk terdampak", "en": "Affected people" }
+    },
+    {
+      "id": "displaced",
+      "dataset": "reported-impact",
+      "field": "displaced",
+      "digits": 0,
+      "unit": { "id": "jiwa", "en": "people" },
+      "label": { "id": "Pengungsi", "en": "Displaced people" }
+    },
+    {
+      "id": "shelters",
+      "dataset": "reported-impact",
+      "field": "shelters",
+      "digits": 0,
+      "unit": { "id": "titik", "en": "sites" },
+      "label": { "id": "Titik pengungsian", "en": "Shelter sites" }
+    },
+    {
+      "id": "deaths",
+      "dataset": "reported-impact",
+      "field": "deaths",
+      "digits": 0,
+      "unit": { "id": "jiwa", "en": "people" },
+      "label": { "id": "Korban jiwa", "en": "Casualties" }
+    },
+    {
+      "id": "injured",
+      "dataset": "reported-impact",
+      "field": "injured",
+      "digits": 0,
+      "unit": { "id": "jiwa", "en": "people" },
+      "label": { "id": "Luka-luka", "en": "Injured" }
+    },
+    {
+      "id": "houses",
+      "dataset": "reported-impact",
+      "field": "houses_total",
+      "digits": 0,
+      "unit": { "id": "unit", "en": "units" },
+      "label": { "id": "Rumah rusak", "en": "Damaged houses" }
+    },
+    {
+      "id": "houses-heavy",
+      "dataset": "reported-impact",
+      "field": "houses_heavy",
+      "digits": 0,
+      "unit": { "id": "unit", "en": "units" },
+      "label": { "id": "Rumah rusak berat", "en": "Heavily damaged houses" }
+    },
+    {
+      "id": "education",
+      "dataset": "reported-impact",
+      "field": "education_damaged",
+      "digits": 0,
+      "unit": { "id": "unit", "en": "units" },
+      "label": { "id": "Fasilitas pendidikan rusak", "en": "Damaged education facilities" }
+    },
+    {
+      "id": "health",
+      "dataset": "reported-impact",
+      "field": "health_damaged",
+      "digits": 0,
+      "unit": { "id": "unit", "en": "units" },
+      "label": { "id": "Fasilitas kesehatan rusak", "en": "Damaged health facilities" }
+    },
+    {
+      "id": "worship",
+      "dataset": "reported-impact",
+      "field": "worship_damaged",
+      "digits": 0,
+      "unit": { "id": "unit", "en": "units" },
+      "label": { "id": "Sarana ibadah rusak", "en": "Damaged places of worship" }
+    },
+    {
+      "id": "roads",
+      "dataset": "reported-impact",
+      "field": "road_km",
+      "digits": 1,
+      "unit": { "id": "km", "en": "km" },
+      "label": { "id": "Jalan rusak", "en": "Damaged roads" }
+    },
+    {
+      "id": "bridges",
+      "dataset": "reported-impact",
+      "field": "bridges",
+      "digits": 0,
+      "unit": { "id": "unit", "en": "units" },
+      "label": { "id": "Jembatan rusak", "en": "Damaged bridges" }
+    },
+    {
+      "id": "farmland",
+      "dataset": "reported-impact",
+      "field": "farmland_ha",
+      "digits": 0,
+      "unit": { "id": "ha", "en": "ha" },
+      "label": { "id": "Lahan pertanian terdampak", "en": "Affected farmland" }
+    },
+    {
+      "id": "flooded-area",
+      "dataset": "flood-observed",
+      "field": "flood_km2",
+      "digits": 2,
+      "unit": { "id": "km²", "en": "km²" },
+      "label": { "id": "Luas tergenang (Sentinel-1)", "en": "Flooded area (Sentinel-1)" }
+    },
+    {
+      "id": "flooded-pct",
+      "dataset": "flood-observed",
+      "field": "flood_pct",
+      "digits": 1,
+      "unit": { "id": "%", "en": "%" },
+      "label": { "id": "% luas tergenang (Sentinel-1)", "en": "% area flooded (Sentinel-1)" }
+    },
+    {
+      "id": "population",
+      "dataset": "bps-population",
+      "label": { "id": "Penduduk (BPS)", "en": "Population (BPS)" }
+    },
+    {
+      "id": "age-groups",
+      "dataset": "bps-population",
+      "label": { "id": "Penduduk menurut kelompok usia (BPS)", "en": "Population by age group (BPS)" }
+    },
+    {
+      "id": "households",
+      "dataset": "bps-population",
+      "label": { "id": "Jumlah kepala keluarga (BPS)", "en": "Number of households (BPS)" }
+    }
+  ],
+  "percentages": [
+    {
+      "id": "pct-area-flooded",
+      "label": { "id": "% luas tergenang", "en": "% area flooded" },
+      "dataset": "flood-observed",
+      "field": "flood_pct",
+      "numeratorField": "flood_km2",
+      "denominatorField": "area_km2",
+      "numerator": { "id": "Luas genangan teramati (Sentinel-1)", "en": "Observed flood extent area (Sentinel-1)" },
+      "denominator": { "id": "Luas kecamatan (BIG)", "en": "Kecamatan area (BIG)" }
+    }
+  ]
+}

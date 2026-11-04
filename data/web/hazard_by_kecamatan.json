@@ -1,0 +1,635 @@
+{
+  "source": "BNPB InaRISK hazard index shapefiles, clipped to BIG kecamatan boundaries by scripts/build_hazards.py",
+  "classes": {
+    "1": "Rendah",
+    "2": "Sedang",
+    "3": "Tinggi"
+  },
+  "hazards": {
+    "banjir": {
+      "file": "INDEKS_BAHAYA_BANJIR1_30_draw.shp",
+      "kecamatan": {
+        "11.16.01": {
+          "name": "Manyak Payed",
+          "area_km2": 135.6,
+          "classes_km2": {
+            "1": 11.24,
+            "2": 93.01,
+            "3": 18.53
+          },
+          "unrated_km2": 12.82
+        },
+        "11.16.02": {
+          "name": "Bendahara",
+          "area_km2": 131.0,
+          "classes_km2": {
+            "1": 11.65,
+            "2": 66.0,
+            "3": 51.85
+          },
+          "unrated_km2": 1.5
+        },
+        "11.16.03": {
+          "name": "Karang Baru",
+          "area_km2": 127.22,
+          "classes_km2": {
+            "1": 30.09,
+            "2": 31.97,
+            "3": 12.52
+          },
+          "unrated_km2": 52.64
+        },
+        "11.16.04": {
+          "name": "Seruway",
+          "area_km2": 165.61,
+          "classes_km2": {
+            "1": 12.82,
+            "2": 76.99,
+            "3": 47.82
+          },
+          "unrated_km2": 27.98
+        },
+        "11.16.05": {
+          "name": "Kota Kualasinpang",
+          "area_km2": 2.57,
+          "classes_km2": {
+            "1": 1.36,
+            "2": 0.43,
+            "3": 0.11
+          },
+          "unrated_km2": 0.67
+        },
+        "11.16.06": {
+          "name": "Kejuruan Muda",
+          "area_km2": 179.68,
+          "classes_km2": {
+            "1": 21.12,
+            "2": 23.89,
+            "3": 16.88
+          },
+          "unrated_km2": 117.79
+        },
+        "11.16.07": {
+          "name": "Tamiang Hulu",
+          "area_km2": 407.28,
+          "classes_km2": {
+            "1": 18.55,
+            "2": 11.66,
+            "3": 1.54
+          },
+          "unrated_km2": 375.53
+        },
+        "11.16.08": {
+          "name": "Rantau",
+          "area_km2": 76.42,
+          "classes_km2": {
+            "1": 18.56,
+            "2": 12.98,
+            "3": 10.07
+          },
+          "unrated_km2": 34.81
+        },
+        "11.16.09": {
+          "name": "Banda Mulia",
+          "area_km2": 62.18,
+          "classes_km2": {
+            "1": 0.67,
+            "2": 30.33,
+            "3": 31.18
+          },
+          "unrated_km2": 0.0
+        },
+        "11.16.10": {
+          "name": "Bandar Pusaka",
+          "area_km2": 211.01,
+          "classes_km2": {
+            "1": 28.28,
+            "2": 20.46,
+            "3": 8.97
+          },
+          "unrated_km2": 153.3
+        },
+        "11.16.11": {
+          "name": "Tenggulun",
+          "area_km2": 512.4,
+          "classes_km2": {
+            "1": 21.04,
+            "2": 25.45,
+            "3": 7.81
+          },
+          "unrated_km2": 458.1
+        },
+        "11.16.12": {
+          "name": "Sekerak",
+          "area_km2": 175.8,
+          "classes_km2": {
+            "1": 24.91,
+            "2": 19.14,
+            "3": 6.55
+          },
+          "unrated_km2": 125.2
+        }
+      }
+    },
+    "banjir-bandang": {
+      "file": "INDEKS_BAHAYA_BANJIR_BANDANG_30_draw.shp",
+      "kecamatan": {
+        "11.16.01": {
+          "name": "Manyak Payed",
+          "area_km2": 135.6,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "unrated_km2": 135.6
+        },
+        "11.16.02": {
+          "name": "Bendahara",
+          "area_km2": 131.0,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "unrated_km2": 131.0
+        },
+        "11.16.03": {
+          "name": "Karang Baru",
+          "area_km2": 127.22,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "unrated_km2": 127.22
+        },
+        "11.16.04": {
+          "name": "Seruway",
+          "area_km2": 165.61,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "unrated_km2": 165.61
+        },
+        "11.16.05": {
+          "name": "Kota Kualasinpang",
+          "area_km2": 2.57,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "unrated_km2": 2.57
+        },
+        "11.16.06": {
+          "name": "Kejuruan Muda",
+          "area_km2": 179.68,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "unrated_km2": 179.68
+        },
+        "11.16.07": {
+          "name": "Tamiang Hulu",
+          "area_km2": 407.28,
+          "classes_km2": {
+            "1": 3.09,
+            "2": 3.04,
+            "3": 15.37
+          },
+          "unrated_km2": 385.78
+        },
+        "11.16.08": {
+          "name": "Rantau",
+          "area_km2": 76.42,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "unrated_km2": 76.42
+        },
+        "11.16.09": {
+          "name": "Banda Mulia",
+          "area_km2": 62.18,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "unrated_km2": 62.18
+        },
+        "11.16.10": {
+          "name": "Bandar Pusaka",
+          "area_km2": 211.01,
+          "classes_km2": {
+            "1": 1.37,
+            "2": 1.5,
+            "3": 6.76
+          },
+          "unrated_km2": 201.38
+        },
+        "11.16.11": {
+          "name": "Tenggulun",
+          "area_km2": 512.4,
+          "classes_km2": {
+            "1": 4.47,
+            "2": 4.25,
+            "3": 15.33
+          },
+          "unrated_km2": 488.35
+        },
+        "11.16.12": {
+          "name": "Sekerak",
+          "area_km2": 175.8,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "unrated_km2": 175.8
+        }
+      }
+    },
+    "cuaca-ekstrem": {
+      "file": "INDEKS_BAHAYA_CUACA_EKSTREM_30_draw.shp",
+      "kecamatan": {
+        "11.16.01": {
+          "name": "Manyak Payed",
+          "area_km2": 135.6,
+          "classes_km2": {
+            "1": 0.01,
+            "2": 37.27,
+            "3": 98.32
+          },
+          "unrated_km2": 0.0
+        },
+        "11.16.02": {
+          "name": "Bendahara",
+          "area_km2": 131.0,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 65.71,
+            "3": 65.28
+          },
+          "unrated_km2": 0.01
+        },
+        "11.16.03": {
+          "name": "Karang Baru",
+          "area_km2": 127.22,
+          "classes_km2": {
+            "1": 0.5,
+            "2": 100.87,
+            "3": 25.86
+          },
+          "unrated_km2": 0
+        },
+        "11.16.04": {
+          "name": "Seruway",
+          "area_km2": 165.61,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 65.8,
+            "3": 99.72
+          },
+          "unrated_km2": 0.09
+        },
+        "11.16.05": {
+          "name": "Kota Kualasinpang",
+          "area_km2": 2.57,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 0.14,
+            "3": 2.44
+          },
+          "unrated_km2": 0
+        },
+        "11.16.06": {
+          "name": "Kejuruan Muda",
+          "area_km2": 179.68,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 154.85,
+            "3": 24.82
+          },
+          "unrated_km2": 0.01
+        },
+        "11.16.07": {
+          "name": "Tamiang Hulu",
+          "area_km2": 407.28,
+          "classes_km2": {
+            "1": 131.77,
+            "2": 253.79,
+            "3": 21.71
+          },
+          "unrated_km2": 0.01
+        },
+        "11.16.08": {
+          "name": "Rantau",
+          "area_km2": 76.42,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 61.65,
+            "3": 14.77
+          },
+          "unrated_km2": 0.0
+        },
+        "11.16.09": {
+          "name": "Banda Mulia",
+          "area_km2": 62.18,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 4.92,
+            "3": 57.26
+          },
+          "unrated_km2": 0.0
+        },
+        "11.16.10": {
+          "name": "Bandar Pusaka",
+          "area_km2": 211.01,
+          "classes_km2": {
+            "1": 19.56,
+            "2": 163.49,
+            "3": 27.96
+          },
+          "unrated_km2": 0
+        },
+        "11.16.11": {
+          "name": "Tenggulun",
+          "area_km2": 512.4,
+          "classes_km2": {
+            "1": 189.47,
+            "2": 274.57,
+            "3": 48.35
+          },
+          "unrated_km2": 0.01
+        },
+        "11.16.12": {
+          "name": "Sekerak",
+          "area_km2": 175.8,
+          "classes_km2": {
+            "1": 6.55,
+            "2": 158.66,
+            "3": 10.59
+          },
+          "unrated_km2": 0.0
+        }
+      }
+    },
+    "kekeringan": {
+      "file": "INDEKS_BAHAYA_KEKERINGAN1_30_draw.shp",
+      "kecamatan": {
+        "11.16.01": {
+          "name": "Manyak Payed",
+          "area_km2": 135.6,
+          "classes_km2": {
+            "1": 11.48,
+            "2": 124.12,
+            "3": 0.0
+          },
+          "unrated_km2": 0.0
+        },
+        "11.16.02": {
+          "name": "Bendahara",
+          "area_km2": 131.0,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 130.99,
+            "3": 0.0
+          },
+          "unrated_km2": 0.01
+        },
+        "11.16.03": {
+          "name": "Karang Baru",
+          "area_km2": 127.22,
+          "classes_km2": {
+            "1": 75.92,
+            "2": 51.3,
+            "3": 0.0
+          },
+          "unrated_km2": 0.0
+        },
+        "11.16.04": {
+          "name": "Seruway",
+          "area_km2": 165.61,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 165.54,
+            "3": 0.0
+          },
+          "unrated_km2": 0.07
+        },
+        "11.16.05": {
+          "name": "Kota Kualasinpang",
+          "area_km2": 2.57,
+          "classes_km2": {
+            "1": 2.48,
+            "2": 0.1,
+            "3": 0.0
+          },
+          "unrated_km2": 0
+        },
+        "11.16.06": {
+          "name": "Kejuruan Muda",
+          "area_km2": 179.68,
+          "classes_km2": {
+            "1": 168.22,
+            "2": 11.45,
+            "3": 0.0
+          },
+          "unrated_km2": 0.01
+        },
+        "11.16.07": {
+          "name": "Tamiang Hulu",
+          "area_km2": 407.28,
+          "classes_km2": {
+            "1": 407.28,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "unrated_km2": 0
+        },
+        "11.16.08": {
+          "name": "Rantau",
+          "area_km2": 76.42,
+          "classes_km2": {
+            "1": 1.73,
+            "2": 74.69,
+            "3": 0.0
+          },
+          "unrated_km2": 0.0
+        },
+        "11.16.09": {
+          "name": "Banda Mulia",
+          "area_km2": 62.18,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 62.18,
+            "3": 0.0
+          },
+          "unrated_km2": 0.0
+        },
+        "11.16.10": {
+          "name": "Bandar Pusaka",
+          "area_km2": 211.01,
+          "classes_km2": {
+            "1": 211.01,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "unrated_km2": 0
+        },
+        "11.16.11": {
+          "name": "Tenggulun",
+          "area_km2": 512.4,
+          "classes_km2": {
+            "1": 501.76,
+            "2": 10.64,
+            "3": 0.0
+          },
+          "unrated_km2": 0
+        },
+        "11.16.12": {
+          "name": "Sekerak",
+          "area_km2": 175.8,
+          "classes_km2": {
+            "1": 175.8,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "unrated_km2": 0.0
+        }
+      }
+    },
+    "tanah-longsor": {
+      "file": "INDEKS_BAHAYA_TANAHLONGSOR_30_draw.shp",
+      "kecamatan": {
+        "11.16.01": {
+          "name": "Manyak Payed",
+          "area_km2": 135.6,
+          "classes_km2": {
+            "1": 0.72,
+            "2": 2.17,
+            "3": 0.59
+          },
+          "unrated_km2": 132.12
+        },
+        "11.16.02": {
+          "name": "Bendahara",
+          "area_km2": 131.0,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "unrated_km2": 131.0
+        },
+        "11.16.03": {
+          "name": "Karang Baru",
+          "area_km2": 127.22,
+          "classes_km2": {
+            "1": 3.73,
+            "2": 8.22,
+            "3": 3.3
+          },
+          "unrated_km2": 111.97
+        },
+        "11.16.04": {
+          "name": "Seruway",
+          "area_km2": 165.61,
+          "classes_km2": {
+            "1": 0.56,
+            "2": 0.18,
+            "3": 0.0
+          },
+          "unrated_km2": 164.87
+        },
+        "11.16.05": {
+          "name": "Kota Kualasinpang",
+          "area_km2": 2.57,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "unrated_km2": 2.57
+        },
+        "11.16.06": {
+          "name": "Kejuruan Muda",
+          "area_km2": 179.68,
+          "classes_km2": {
+            "1": 6.23,
+            "2": 11.94,
+            "3": 0.81
+          },
+          "unrated_km2": 160.7
+        },
+        "11.16.07": {
+          "name": "Tamiang Hulu",
+          "area_km2": 407.28,
+          "classes_km2": {
+            "1": 9.1,
+            "2": 49.47,
+            "3": 205.84
+          },
+          "unrated_km2": 142.87
+        },
+        "11.16.08": {
+          "name": "Rantau",
+          "area_km2": 76.42,
+          "classes_km2": {
+            "1": 3.75,
+            "2": 2.05,
+            "3": 0.0
+          },
+          "unrated_km2": 70.62
+        },
+        "11.16.09": {
+          "name": "Banda Mulia",
+          "area_km2": 62.18,
+          "classes_km2": {
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "unrated_km2": 62.18
+        },
+        "11.16.10": {
+          "name": "Bandar Pusaka",
+          "area_km2": 211.01,
+          "classes_km2": {
+            "1": 9.06,
+            "2": 29.78,
+            "3": 44.3
+          },
+          "unrated_km2": 127.87
+        },
+        "11.16.11": {
+          "name": "Tenggulun",
+          "area_km2": 512.4,
+          "classes_km2": {
+            "1": 8.75,
+            "2": 33.18,
+            "3": 245.72
+          },
+          "unrated_km2": 224.75
+        },
+        "11.16.12": {
+          "name": "Sekerak",
+          "area_km2": 175.8,
+          "classes_km2": {
+            "1": 11.41,
+            "2": 41.48,
+            "3": 29.06
+          },
+          "unrated_km2": 93.85
+        }
+      }
+    }
+  }
+}

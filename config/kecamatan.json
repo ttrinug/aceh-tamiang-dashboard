@@ -1,0 +1,108 @@
+{
+  "source": "BIG Batas Wilayah Kecamatan 1:10.000 (BATAS_KECAMATAN_AR), built by scripts/build_boundaries.py",
+  "default": "11.16.04",
+  "bounds": [
+    97.7282,
+    3.8888,
+    98.2874,
+    4.5232
+  ],
+  "kecamatan": [
+    {
+      "id": "11.16.09",
+      "name": "Banda Mulia",
+      "label": [
+        98.13807,
+        4.44947
+      ]
+    },
+    {
+      "id": "11.16.10",
+      "name": "Bandar Pusaka",
+      "label": [
+        97.79301,
+        4.27798
+      ]
+    },
+    {
+      "id": "11.16.02",
+      "name": "Bendahara",
+      "label": [
+        98.1667,
+        4.39588
+      ]
+    },
+    {
+      "id": "11.16.03",
+      "name": "Karang Baru",
+      "label": [
+        98.03934,
+        4.34179
+      ]
+    },
+    {
+      "id": "11.16.06",
+      "name": "Kejuruan Muda",
+      "label": [
+        98.02577,
+        4.20659
+      ]
+    },
+    {
+      "id": "11.16.05",
+      "name": "Kota Kualasinpang",
+      "label": [
+        98.06197,
+        4.28489
+      ]
+    },
+    {
+      "id": "11.16.01",
+      "name": "Manyak Payed",
+      "label": [
+        98.07402,
+        4.43985
+      ]
+    },
+    {
+      "id": "11.16.08",
+      "name": "Rantau",
+      "label": [
+        98.11158,
+        4.28777
+      ]
+    },
+    {
+      "id": "11.16.12",
+      "name": "Sekerak",
+      "label": [
+        97.87839,
+        4.34615
+      ]
+    },
+    {
+      "id": "11.16.04",
+      "name": "Seruway",
+      "label": [
+        98.2301,
+        4.33744
+      ]
+    },
+    {
+      "id": "11.16.07",
+      "name": "Tamiang Hulu",
+      "label": [
+        97.84106,
+        4.15863
+      ]
+    },
+    {
+      "id": "11.16.11",
+      "name": "Tenggulun",
+      "label": [
+        97.94024,
+        4.0057
+      ]
+    }
+  ]
+}

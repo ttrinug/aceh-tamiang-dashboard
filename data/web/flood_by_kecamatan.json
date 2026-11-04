@@ -1,0 +1,82 @@
+{
+  "source": "Banjir_NoHutanAir.shp (Sentinel-1), clipped to BIG kecamatan boundaries by scripts/build_flood.py",
+  "kabupaten": {
+    "flood_km2": 115.65,
+    "area_km2": 2186.77,
+    "flood_pct": 5.3
+  },
+  "kecamatan": {
+    "11.16.01": {
+      "name": "Manyak Payed",
+      "flood_km2": 23.13,
+      "area_km2": 135.6,
+      "flood_pct": 17.1
+    },
+    "11.16.02": {
+      "name": "Bendahara",
+      "flood_km2": 18.6,
+      "area_km2": 131.0,
+      "flood_pct": 14.2
+    },
+    "11.16.03": {
+      "name": "Karang Baru",
+      "flood_km2": 15.68,
+      "area_km2": 127.22,
+      "flood_pct": 12.3
+    },
+    "11.16.04": {
+      "name": "Seruway",
+      "flood_km2": 8.5,
+      "area_km2": 165.61,
+      "flood_pct": 5.1
+    },
+    "11.16.05": {
+      "name": "Kota Kualasinpang",
+      "flood_km2": 0.26,
+      "area_km2": 2.57,
+      "flood_pct": 10.1
+    },
+    "11.16.06": {
+      "name": "Kejuruan Muda",
+      "flood_km2": 8.91,
+      "area_km2": 179.68,
+      "flood_pct": 5.0
+    },
+    "11.16.07": {
+      "name": "Tamiang Hulu",
+      "flood_km2": 2.29,
+      "area_km2": 407.28,
+      "flood_pct": 0.6
+    },
+    "11.16.08": {
+      "name": "Rantau",
+      "flood_km2": 5.46,
+      "area_km2": 76.42,
+      "flood_pct": 7.1
+    },
+    "11.16.09": {
+      "name": "Banda Mulia",
+      "flood_km2": 16.51,
+      "area_km2": 62.18,
+      "flood_pct": 26.5
+    },
+    "11.16.10": {
+      "name": "Bandar Pusaka",
+      "flood_km2": 5.61,
+      "area_km2": 211.01,
+      "flood_pct": 2.7
+    },
+    "11.16.11": {
+      "name": "Tenggulun",
+      "flood_km2": 3.68,
+      "area_km2": 512.4,
+      "flood_pct": 0.7
+    },
+    "11.16.12": {
+      "name": "Sekerak",
+      "flood_km2": 7.02,
+      "area_km2": 175.8,
+      "flood_pct": 4.0
+    }
+  }
+}

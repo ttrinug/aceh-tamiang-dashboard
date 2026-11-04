@@ -1,0 +1,101 @@
+{
+  "source": "WorldPop R2025A v1 constrained 100 m (POP_2017.tif, POP_2025.tif), summed per BIG kecamatan by scripts/build_rasters.py",
+  "kecamatan": {
+    "11.16.01": {
+      "name": "Manyak Payed",
+      "pop_2017": 34783,
+      "pop_2025": 37207,
+      "change_pct": 7.0,
+      "pop_flood_2025": 1722,
+      "flood_share_pct_2025": 4.6
+    },
+    "11.16.02": {
+      "name": "Bendahara",
+      "pop_2017": 24032,
+      "pop_2025": 25692,
+      "change_pct": 6.9,
+      "pop_flood_2025": 1373,
+      "flood_share_pct_2025": 5.3
+    },
+    "11.16.03": {
+      "name": "Karang Baru",
+      "pop_2017": 50127,
+      "pop_2025": 53724,
+      "change_pct": 7.2,
+      "pop_flood_2025": 3943,
+      "flood_share_pct_2025": 7.3
+    },
+    "11.16.04": {
+      "name": "Seruway",
+      "pop_2017": 26598,
+      "pop_2025": 28442,
+      "change_pct": 6.9,
+      "pop_flood_2025": 384,
+      "flood_share_pct_2025": 1.4
+    },
+    "11.16.05": {
+      "name": "Kota Kualasinpang",
+      "pop_2017": 15253,
+      "pop_2025": 16397,
+      "change_pct": 7.5,
+      "pop_flood_2025": 1270,
+      "flood_share_pct_2025": 7.7
+    },
+    "11.16.06": {
+      "name": "Kejuruan Muda",
+      "pop_2017": 34526,
+      "pop_2025": 36902,
+      "change_pct": 6.9,
+      "pop_flood_2025": 1861,
+      "flood_share_pct_2025": 5.0
+    },
+    "11.16.07": {
+      "name": "Tamiang Hulu",
+      "pop_2017": 16639,
+      "pop_2025": 17798,
+      "change_pct": 7.0,
+      "pop_flood_2025": 19,
+      "flood_share_pct_2025": 0.1
+    },
+    "11.16.08": {
+      "name": "Rantau",
+      "pop_2017": 44806,
+      "pop_2025": 47891,
+      "change_pct": 6.9,
+      "pop_flood_2025": 2242,
+      "flood_share_pct_2025": 4.7
+    },
+    "11.16.09": {
+      "name": "Banda Mulia",
+      "pop_2017": 9985,
+      "pop_2025": 10689,
+      "change_pct": 7.0,
+      "pop_flood_2025": 1147,
+      "flood_share_pct_2025": 10.7
+    },
+    "11.16.10": {
+      "name": "Bandar Pusaka",
+      "pop_2017": 12741,
+      "pop_2025": 13653,
+      "change_pct": 7.2,
+      "pop_flood_2025": 202,
+      "flood_share_pct_2025": 1.5
+    },
+    "11.16.11": {
+      "name": "Tenggulun",
+      "pop_2017": 15016,
+      "pop_2025": 16010,
+      "change_pct": 6.6,
+      "pop_flood_2025": 214,
+      "flood_share_pct_2025": 1.3
+    },
+    "11.16.12": {
+      "name": "Sekerak",
+      "pop_2017": 5634,
+      "pop_2025": 6012,
+      "change_pct": 6.7,
+      "pop_flood_2025": 242,
+      "flood_share_pct_2025": 4.0
+    }
+  }
+}

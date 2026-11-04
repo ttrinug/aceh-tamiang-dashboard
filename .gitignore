@@ -1,0 +1,11 @@
+# Source data stays on this computer: large files, and the owner's originals
+data/raw/
+for claude/
+.venv/
+.claude/
+__pycache__/
+# Old config versions written by the admin page
+config/backup/
+
+# data/web/ is committed: on 2026-11-04 the owner chose to publish all processed data
+# for colleague review (see docs/DATA_LOG.md).

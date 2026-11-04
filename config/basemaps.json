@@ -1,0 +1,29 @@
+{
+  "default": "street",
+  "basemaps": [
+    {
+      "id": "street",
+      "label": { "id": "Jalan", "en": "Street" },
+      "type": "style",
+      "style": "https://tiles.openfreemap.org/styles/positron",
+      "attribution": "<a href=\"https://openfreemap.org\" target=\"_blank\">OpenFreeMap</a> <a href=\"https://www.openmaptiles.org/\" target=\"_blank\">&copy; OpenMapTiles</a> Data from <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">OpenStreetMap</a>"
+    },
+    {
+      "id": "imagery",
+      "label": { "id": "Citra satelit", "en": "Imagery" },
+      "type": "raster",
+      "tiles": [
+        "https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2024_3857/default/GoogleMapsCompatible/{z}/{y}/{x}.jpg"
+      ],
+      "tileSize": 256,
+      "maxzoom": 14,
+      "glyphs": "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
+      "year": 2024,
+      "caption": {
+        "id": "Citra tahun 2024, sebelum banjir. Bukan citra saat banjir.",
+        "en": "2024 imagery, before the flood. Not imagery of the flood."
+      },
+      "attribution": "<a href=\"https://cloudless.eox.at\" target=\"_blank\">EOxCloudless 2024</a> by <a href=\"https://eox.at\" target=\"_blank\">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel data 2024), <a href=\"https://creativecommons.org/licenses/by-nc-sa/4.0/\" target=\"_blank\">CC BY-NC-SA 4.0</a>"
+    }
+  ]
+}

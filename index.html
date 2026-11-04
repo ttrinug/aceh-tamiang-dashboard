@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dasbor Bencana Aceh Tamiang</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@6.15.0/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <h1><span data-i18n="title"></span><span class="title-kecamatan" id="title-kecamatan"></span></h1>
+    </div>
+    <div class="header-controls">
+      <label class="kecamatan-select">
+        <span data-i18n="kecamatan"></span>
+        <select id="kecamatan-select"></select>
+      </label>
+      <div class="lang-switch" role="group" data-i18n-label="language">
+        <button type="button" data-lang="id">ID</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+      <div class="menu">
+        <button type="button" id="menu-button" class="icon-button" aria-expanded="false" aria-controls="menu-list" data-i18n-label="menu">☰</button>
+        <ul id="menu-list" class="menu-list" hidden>
+          <li><button type="button" id="about-open" data-i18n="about"></button></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard">
+    <div class="center">
+
+      <section class="panel impact" aria-labelledby="impact-heading">
+        <h2 id="impact-heading" data-i18n="impactHeading"></h2>
+        <div id="impact-cards" class="card-grid impact-grid"></div>
+        <p class="note" id="impact-note"></p>
+      </section>
+
+      <section class="panel map-panel" data-i18n-label="map.label">
+        <div id="map"></div>
+      </section>
+
+      <section class="percentages" aria-labelledby="pct-heading">
+        <h2 id="pct-heading" class="visually-hidden" data-i18n="percentagesHeading"></h2>
+        <div class="card-grid pct-grid">
+          <section class="card legend-card" aria-labelledby="legend-title">
+            <h3 id="legend-title" class="card-label" data-i18n="legend.title"></h3>
+            <div id="legend-body"></div>
+          </section>
+          <div id="pct-cards" class="pct-cards"></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel chart chart-affected">
+      <label class="visually-hidden" for="chart-select" data-i18n="charts.select"></label>
+      <select id="chart-select" class="chart-select"></select>
+      <p class="note" id="chart-note"></p>
+      <p class="empty" id="chart-body"></p>
+      <div class="chart-canvas" id="chart-canvas-wrap" hidden>
+        <canvas id="chart-canvas" role="img"></canvas>
+      </div>
+    </section>
+
+    <section class="panel infra-panel" aria-labelledby="infra-title">
+      <h2 id="infra-title"></h2>
+      <div class="list-head infra-row" aria-hidden="true">
+        <span data-i18n="infrastructure.type"></span>
+        <span data-i18n="infrastructure.total"></span>
+        <span data-i18n="infrastructure.damaged"></span>
+      </div>
+      <ul id="infra-rows" class="list-rows"></ul>
+      <p class="note" id="infra-note"></p>
+    </section>
+
+    <section class="panel chart chart-flooded">
+      <h2 data-i18n="charts.floodedArea"></h2>
+      <p class="empty" data-i18n="noData"></p>
+    </section>
+
+    <section class="panel table-panel" aria-labelledby="table-title">
+      <h2 id="table-title" data-i18n="table.title"></h2>
+      <label class="visually-hidden" for="table-select" data-i18n="table.select"></label>
+      <select id="table-select" class="chart-select"></select>
+      <div class="list-head" aria-hidden="true">
+        <span data-i18n="kecamatan"></span>
+        <span id="table-column"></span>
+      </div>
+      <ul id="table-rows" class="list-rows"></ul>
+      <p class="note" id="table-note"></p>
+    </section>
+  </main>
+
+  <dialog id="about-dialog" aria-labelledby="about-title">
+    <div class="dialog-head">
+      <h2 id="about-title" data-i18n="about"></h2>
+      <button type="button" id="about-close" data-i18n="close"></button>
+    </div>
+    <div id="about-content"></div>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
+  <script type="module" src="assets/js/app.js"></script>
+</body>
+</html>

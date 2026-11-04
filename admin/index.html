@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard admin (local)</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <header class="top">
+    <div>
+      <h1>Dashboard admin</h1>
+      <p class="muted">Runs on this computer only. Changes are saved to <code>config/</code> (old versions go to <code>config/backup/</code>). Nothing is published.</p>
+    </div>
+    <a class="button" href="/" target="_blank">Open dashboard</a>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button type="button" role="tab" data-tab="datasets" aria-selected="true">Map datasets</button>
+    <button type="button" role="tab" data-tab="tables" aria-selected="false">Kecamatan tables</button>
+    <button type="button" role="tab" data-tab="text" aria-selected="false">Text</button>
+  </nav>
+
+  <p id="message" class="message" role="status" hidden></p>
+
+  <!-- Map datasets -->
+  <section id="tab-datasets" class="tab">
+    <h2>Datasets in the dashboard</h2>
+    <table class="list">
+      <thead><tr><th>Name</th><th>Group</th><th>Data</th><th>Publish</th><th></th></tr></thead>
+      <tbody id="dataset-rows"></tbody>
+    </table>
+
+    <h2>Add a map dataset from a file</h2>
+    <ol class="steps">
+      <li>
+        <h3>1. Choose a file from "for claude"</h3>
+        <p class="muted">Shapefile (.shp with its .dbf, .shx, .prj), GeoPackage, GeoJSON or GeoTIFF.</p>
+        <div class="row">
+          <select id="map-file"></select>
+          <button type="button" id="map-inspect">Inspect</button>
+        </div>
+        <pre id="map-info" class="info" hidden></pre>
+      </li>
+      <li id="map-type-step" hidden>
+        <h3>2. What kind of data is it?</h3>
+        <select id="map-type">
+          <option value="classes">Polygons with classes (e.g. hazard index Rendah/Sedang/Tinggi)</option>
+          <option value="extent">Polygons as one area (e.g. observed flood extent)</option>
+          <option value="raster-sum">Raster of counts (e.g. population per cell)</option>
+          <option value="raster-classes">Raster of classes (e.g. land cover)</option>
+        </select>
+        <div id="map-type-options"></div>
+      </li>
+      <li id="map-meta-step" hidden>
+        <h3>3. Describe it</h3>
+        <div id="map-meta"></div>
+        <button type="button" id="map-process" class="primary">Process</button>
+      </li>
+      <li id="map-result-step" hidden>
+        <h3>4. Check the result</h3>
+        <pre id="map-log" class="info"></pre>
+        <div id="map-summary"></div>
+        <button type="button" id="map-save" class="primary" hidden>Add to dashboard</button>
+      </li>
+    </ol>
+  </section>
+
+  <!-- Kecamatan tables -->
+  <section id="tab-tables" class="tab" hidden>
+    <h2>Add numbers per kecamatan from a spreadsheet</h2>
+    <ol class="steps">
+      <li>
+        <h3>1. Fill in the template</h3>
+        <p><a href="/templates/Template_Data_Kecamatan.xlsx" download>Download Template_Data_Kecamatan.xlsx</a>. One row per kecamatan; leave a cell empty when there is no data (it shows as "—", never as zero). Describe every column in the "Kolom" sheet. Save the filled file in "for claude".</p>
+      </li>
+      <li>
+        <h3>2. Choose the filled file and check it</h3>
+        <div class="row">
+          <select id="table-file"></select>
+          <button type="button" id="table-inspect">Check</button>
+        </div>
+        <div id="table-check"></div>
+      </li>
+      <li id="table-meta-step" hidden>
+        <h3>3. Describe it and choose where it appears</h3>
+        <div id="table-meta"></div>
+        <div id="table-columns"></div>
+        <button type="button" id="table-save" class="primary">Process and add to dashboard</button>
+        <pre id="table-log" class="info" hidden></pre>
+      </li>
+    </ol>
+  </section>
+
+  <!-- Text -->
+  <section id="tab-text" class="tab" hidden>
+    <h2>Dashboard text</h2>
+    <p class="muted">Every label and sentence on the dashboard, in Indonesian and English. Dataset names, sources and methods are edited under Map datasets.</p>
+    <div id="text-fields"></div>
+    <h3>Limitations (shown in "Tentang data")</h3>
+    <div id="text-limitations"></div>
+    <p class="row">
+      <button type="button" id="text-add-limitation">Add a limitation</button>
+      <button type="button" id="text-save" class="primary">Save text</button>
+    </p>
+  </section>
+
+  <dialog id="edit-dialog">
+    <form method="dialog">
+      <h2 id="edit-title"></h2>
+      <div id="edit-fields"></div>
+      <p class="row">
+        <button value="cancel">Cancel</button>
+        <button value="save" class="primary" id="edit-save">Save</button>
+      </p>
+    </form>
+  </dialog>
+
+  <script type="module" src="admin.js"></script>
+</body>
+</html>

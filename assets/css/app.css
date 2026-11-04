@@ -1,0 +1,601 @@
+:root {
+  --page: #f3f5f7;
+  --surface: #ffffff;
+  --text: #1f2933;
+  --muted: #52606d;
+  --border: #d3d9df;
+  --focus: #0b5cad;
+  --selected-bg: #e6f0fa;
+  --gap: 8px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--page);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+}
+
+h1, h2, h3, h4, p { margin: 0; }
+
+button, select {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Header */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand h1 { font-size: 18px; }
+.title-kecamatan { font-weight: 400; }
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kecamatan-select {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+}
+
+.kecamatan-select select {
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  min-width: 160px;
+}
+
+.lang-switch {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.lang-switch button {
+  border: 0;
+  padding: 5px 10px;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.lang-switch button[aria-pressed="true"] {
+  background: var(--text);
+  color: var(--surface);
+  font-weight: 600;
+}
+
+.menu { position: relative; }
+
+.icon-button {
+  width: 34px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.menu-list {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 10;
+  min-width: 180px;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.12);
+}
+
+.menu-list button {
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu-list button:hover { background: var(--selected-bg); }
+
+/* Dashboard grid (desktop): charts left, map centre, list right */
+.dashboard {
+  display: grid;
+  gap: var(--gap);
+  padding: var(--gap);
+  flex: 1;
+  min-height: 0;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2.4fr) minmax(220px, 0.9fr);
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    "chartA chartA center list"
+    "chartB chartC center list";
+}
+
+.center { grid-area: center; }
+.chart-affected { grid-area: chartA; }
+.infra-panel { grid-area: chartB; }
+.chart-flooded { grid-area: chartC; }
+.table-panel { grid-area: list; }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  min-height: 0;
+}
+
+.panel h2 {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.note {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.empty {
+  color: var(--muted);
+  font-style: italic;
+  padding: 12px 0;
+}
+
+.chart {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Beats .chart .empty, which sets display: flex. */
+.chart [hidden] { display: none !important; }
+
+/* Chart.js needs a sized, relatively positioned parent. */
+.chart-canvas {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  margin-top: 4px;
+}
+
+/* Parameter dropdown that titles the top-left chart panel */
+.chart-select {
+  align-self: flex-start;
+  max-width: 100%;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 2px 4px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: inherit;
+}
+
+.chart .empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Centre column */
+.center {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  min-height: 0;
+}
+
+.card-grid {
+  display: grid;
+  gap: var(--gap);
+}
+
+.impact {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+}
+
+.impact-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pct-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.card-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.card-value {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 2px 0 4px;
+}
+
+.card-value.no-data {
+  font-size: 13px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.card-meta {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.map-panel {
+  flex: 1;
+  min-height: 260px;
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+#map {
+  position: absolute;
+  inset: 0;
+}
+
+/* Kecamatan data panel: parameter dropdown over a kecamatan/value table */
+.table-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.list-head,
+.list-rows .row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 4px;
+}
+
+.list-head {
+  font-size: 11px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 4px;
+}
+
+.list-rows {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list-rows .row {
+  font-size: 13px;
+  width: 100%;
+  padding: 6px 4px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* The value column is right-aligned and stays on one line. */
+.list-head span:not(:first-child),
+.list-rows .row span:not(:first-child) { text-align: right; }
+.list-rows .row span:not(:first-child) { white-space: nowrap; }
+
+.list-rows .row[aria-pressed="true"] {
+  background: var(--selected-bg);
+  font-weight: 600;
+}
+
+/* Infrastructure panel: facility types for the selected kecamatan, total and damaged */
+.infra-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.list-head.infra-row,
+#infra-rows li {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 4px;
+}
+
+#infra-rows li {
+  padding: 5px 4px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+#infra-rows li span:not(:first-child) {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Legend panel: entries for the map layers that are switched on */
+.legend-card {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.pct-cards { display: contents; }
+
+.legend-entry + .legend-entry { margin-top: 6px; }
+
+.legend-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 11px;
+}
+
+.legend-items li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.swatch { flex: none; }
+
+.swatch-line {
+  width: 18px;
+  border-top: 3px solid;
+}
+
+.swatch-fill {
+  width: 14px;
+  height: 10px;
+  border: 1px solid;
+}
+
+.swatch-circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1.5px #ffffff, 0 0 0 2.5px var(--border);
+}
+
+/* Map controls */
+.maplibregl-ctrl-top-left {
+  bottom: 60px;
+  display: flex;
+  flex-direction: column;
+}
+
+.layer-control {
+  min-height: 0;
+  max-width: 240px;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.layer-control summary {
+  padding: 6px 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.layer-control-body {
+  padding: 0 8px 8px;
+}
+
+.layer-control fieldset {
+  border: 0;
+  margin: 0 0 6px;
+  padding: 0;
+}
+
+.layer-control legend {
+  font-weight: 600;
+  padding: 4px 0;
+}
+
+.layer-control .option {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.layer-control .option input { margin-top: 2px; }
+
+.layer-control .option:has(input:checked) {
+  background: var(--selected-bg);
+  font-weight: 600;
+}
+
+.layer-control .option.disabled {
+  cursor: not-allowed;
+  color: var(--muted);
+}
+
+.layer-control .status {
+  display: block;
+  font-size: 11px;
+  font-style: italic;
+}
+
+.layer-control .group-label {
+  margin: 4px 0 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+
+.imagery-note {
+  max-width: min(220px, 50vw);
+  text-align: right;
+  padding: 4px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.maplibregl-ctrl-attrib { font-size: 11px; }
+
+/* About dialog */
+dialog {
+  width: min(680px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+}
+
+dialog::backdrop { background: rgb(0 0 0 / 0.35); }
+
+.dialog-head {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.dialog-head button {
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+#about-content { padding: 4px 16px 16px; }
+#about-content h3 { font-size: 15px; margin: 14px 0 6px; }
+#about-content h4 { font-size: 13px; }
+#about-content p { color: var(--muted); font-size: 13px; }
+
+.about-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.about-bullets { margin: 0; padding-left: 20px; }
+.about-bullets li { margin-bottom: 4px; }
+
+/* Phone and narrow screens: one column, page scrolls */
+@media (max-width: 1099px) {
+  body { height: auto; }
+
+  .dashboard {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-template-areas: "center" "chartA" "chartB" "chartC" "list";
+  }
+
+  .chart { min-height: 140px; }
+  .chart-canvas { flex: none; height: 320px; }
+  .map-panel { flex: none; height: 65vh; }
+  .list-rows { max-height: 60vh; }
+}
+
+@media (max-width: 700px) {
+  .app-header {
+    flex-wrap: wrap;
+    padding: 8px 16px;
+  }
+
+  .header-controls {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .kecamatan-select { flex: 1; }
+  .kecamatan-select select { flex: 1; min-width: 0; }
+
+  .dashboard { padding: var(--gap) 16px; }
+
+  .impact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pct-grid { grid-template-columns: minmax(0, 1fr); }
+
+  .maplibregl-ctrl-bottom-right { left: 0; }
+  .maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib {
+    margin: 0;
+    width: 100%;
+  }
+  .maplibregl-ctrl-bottom-left { bottom: var(--attribution-height, 40px); }
+}

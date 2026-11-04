@@ -1,0 +1,70 @@
+{
+  "title": { "id": "Dasbor Bencana Aceh Tamiang", "en": "Aceh Tamiang Disaster Dashboard" },
+  "kecamatan": { "id": "Kecamatan", "en": "Kecamatan" },
+  "language": { "id": "Bahasa", "en": "Language" },
+  "menu": { "id": "Menu", "en": "Menu" },
+  "about": { "id": "Tentang data", "en": "About the data" },
+  "close": { "id": "Tutup", "en": "Close" },
+  "noData": { "id": "Belum ada data", "en": "No data yet" },
+  "source": { "id": "Sumber", "en": "Source" },
+  "date": { "id": "Tanggal", "en": "Date" },
+  "unconfirmed": { "id": "belum dikonfirmasi", "en": "not yet confirmed" },
+  "numerator": { "id": "Pembilang", "en": "Numerator" },
+  "denominator": { "id": "Penyebut", "en": "Denominator" },
+  "impactHeading": { "id": "Dampak dilaporkan", "en": "Reported impact" },
+  "charts": {
+    "select": { "id": "Pilih grafik", "en": "Choose chart" },
+    "floodedArea": { "id": "Luas tergenang per kecamatan", "en": "Flooded area by kecamatan" }
+  },
+  "percentagesHeading": { "id": "Persentase", "en": "Percentages" },
+  "map": {
+    "label": { "id": "Peta", "en": "Map" },
+    "layers": { "id": "Layers", "en": "Layers" },
+    "basemap": { "id": "Peta dasar", "en": "Basemap" },
+    "dataLayers": { "id": "Lapisan data", "en": "Data layers" },
+    "none": { "id": "Tidak ada", "en": "None" }
+  },
+  "aboutDialog": {
+    "datasets": { "id": "Data", "en": "Data" },
+    "plannedSource": { "id": "Sumber yang direncanakan", "en": "Planned source" },
+    "status": { "id": "Status", "en": "Status" },
+    "method": { "id": "Metode", "en": "Method" },
+    "methodLink": { "id": "Panduan UN-SPIDER", "en": "UN-SPIDER guide" },
+    "localOnly": { "id": "Hanya lokal, belum disetujui untuk dipublikasikan", "en": "Local only, not yet cleared for publishing" },
+    "basemaps": { "id": "Peta dasar", "en": "Basemaps" },
+    "limitations": { "id": "Keterbatasan", "en": "Limitations" }
+  },
+  "limitations": [
+    { "id": "Ini prototipe. Belum ada data penduduk BPS yang dimuat.", "en": "This is a prototype. No BPS population data has been loaded yet." },
+    { "id": "Unit analisis adalah kecamatan. Belum ada data tingkat kelurahan.", "en": "The unit of analysis is the kecamatan. There is no kelurahan-level data yet." },
+    { "id": "Dampak dilaporkan diambil dari situs BPBD Aceh Tamiang (pembaruan 19 Maret 2026). Angka dapat berubah. Data korban hilang tidak tersedia di situs tersebut.", "en": "Reported impact is taken from the BPBD Aceh Tamiang site (updated 19 March 2026). Figures may change. Missing persons are not reported on that site." },
+    { "id": "Nama dan batas kecamatan mengikuti data BIG (12 Juni 2026), termasuk ejaan \"Kota Kualasinpang\". Belum dicocokkan dengan BPS.", "en": "Kecamatan names and boundaries follow BIG data (12 June 2026), including the spelling \"Kota Kualasinpang\". Not yet checked against BPS." },
+    { "id": "Garis batas disederhanakan untuk web dan dapat bergeser hingga sekitar 19 m dari data asli. Luas dihitung dari data asli.", "en": "Boundary lines are simplified for the web and may shift up to about 19 m from the source. Areas are calculated from the source geometry." },
+    { "id": "Genangan banjir adalah genangan teramati dari citra radar Sentinel-1, bukan model, dipetakan dengan metode deteksi perubahan UN-SPIDER. Tanggal citra dan parameter yang dipakai belum dikonfirmasi.", "en": "The flood layer is observed flood extent from Sentinel-1 radar imagery, not a model, mapped with the UN-SPIDER change detection method. The image dates and parameters used are not yet confirmed." },
+    { "id": "Radar (SAR) dapat melewatkan air di bawah vegetasi dan di antara bangunan, dan tanggal citra mungkin tidak bertepatan dengan puncak banjir. Lapisan ini tidak menunjukkan kedalaman banjir.", "en": "Radar (SAR) can miss water under vegetation and between buildings, and the image dates may miss the flood peak. This layer does not show flood depth." },
+    { "id": "Tambak, area pasang surut, dan badan air permanen belum diperiksa atau disaring secara terpisah.", "en": "Fish ponds (tambak), tidal areas and permanent water bodies have not been checked or masked separately." },
+    { "id": "Estimasi penduduk WorldPop adalah hasil model, bukan sensus. \"Penduduk di area genangan\" adalah estimasi penduduk yang tinggal di area tergenang teramati, bukan jumlah penduduk terdampak.", "en": "WorldPop population figures are model estimates, not a census. \"Population in the flood extent\" estimates people living where flooding was observed; it is not a count of affected people." },
+    { "id": "Tutupan lahan ESRI 2025 mencakup seluruh tahun 2025, sehingga sebagian bisa sudah dipengaruhi banjir. Kelas \"Air\" di dalam genangan dapat berupa tambak atau sungai.", "en": "The ESRI 2025 land cover covers all of 2025, so part of it may already reflect the flood. \"Water\" inside the flood extent may be fish ponds or rivers." },
+    { "id": "Indeks bahaya InaRISK adalah bahaya termodelkan, bukan kejadian banjir yang teramati. Tahun dan versi data belum dikonfirmasi. Area tanpa kelas berarti tidak ada kelas di data sumber, bukan bahaya nol.", "en": "InaRISK hazard indices are modelled hazard, not observed events. Their year and version are not yet confirmed. Area with no class means the source has no class there, not zero hazard." },
+    { "id": "Lapisan bahaya disederhanakan untuk web dan dapat bergeser hingga sekitar 30 m. Luas dihitung dari data asli.", "en": "Hazard layers are simplified for the web and may shift up to about 30 m. Areas are calculated from the source geometry." },
+    { "id": "Lapisan tempat ibadah dari OpenStreetMap sangat belum lengkap (14 titik, sedangkan BPBD melaporkan 724 sarana ibadah rusak). Lapisan ini hanya menunjukkan lokasi yang sudah dipetakan dan tidak dipakai sebagai jumlah.", "en": "The OpenStreetMap places-of-worship layer is far from complete (14 points, while BPBD reports 724 damaged places of worship). It only shows locations already mapped and is not used as a total." },
+    { "id": "Citra satelit adalah mosaik tahun 2024, sebelum banjir. Ini bukan citra saat banjir. Resolusinya sekitar 10 m, sehingga bangunan tidak terlihat.", "en": "The satellite imagery is a 2024 mosaic from before the flood. It is not imagery of the flood. At about 10 m resolution, buildings are not visible." },
+    { "id": "Citra EOxCloudless berlisensi CC BY-NC-SA 4.0 (hanya untuk penggunaan nonkomersial).", "en": "EOxCloudless imagery is licensed CC BY-NC-SA 4.0 (non-commercial use only)." }
+  ],
+  "table": {
+    "title": { "id": "Data Kecamatan", "en": "Kecamatan data" },
+    "select": { "id": "Pilih data kecamatan", "en": "Choose kecamatan data" },
+    "missingKey": { "id": "— = belum ada data", "en": "— = no data yet" }
+  },
+  "legend": {
+    "title": { "id": "Legenda", "en": "Legend" },
+    "empty": { "id": "Tidak ada lapisan aktif", "en": "No active layers" }
+  },
+  "infrastructure": {
+    "title": { "id": "Infrastruktur di Kecamatan", "en": "Infrastructure in Kecamatan" },
+    "type": { "id": "Jenis", "en": "Type" },
+    "total": { "id": "Jumlah", "en": "Total" },
+    "damaged": { "id": "Rusak", "en": "Damaged" },
+    "note": { "id": "Jumlah: belum ada data titik fasilitas. — = belum ada data.", "en": "Total: no facility point data yet. — = no data yet." }
+  }
+}

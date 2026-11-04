@@ -1,0 +1,8 @@
+{
+  "language": "id",
+  "map": {
+    "minZoom": 6,
+    "maxZoom": 18,
+    "note": "The starting view is the kabupaten extent in config/kecamatan.json (bounds)."
+  }
+}
