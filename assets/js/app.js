@@ -167,7 +167,16 @@ function renderLegend() {
     const entry = el('div', 'legend-entry');
     const title = el('p', 'legend-title', dataset.group === 'hazard' ? `${pick(group.label)}: ${pick(dataset.label)}` : pick(dataset.label));
     if (!dataset.legend.items) {
-      title.prepend(swatch(dataset.legend.type, dataset.legend.color));
+      if (dataset.legend.type === 'icon') {
+        // The same icon as on the map; the layer name beside it carries the meaning.
+        const icon = el('img', 'legend-icon');
+        icon.src = `assets/icons/${dataset.legend.icon}.svg`;
+        icon.alt = '';
+        icon.setAttribute('aria-hidden', 'true');
+        title.prepend(icon);
+      } else {
+        title.prepend(swatch(dataset.legend.type, dataset.legend.color));
+      }
       entry.append(title);
       return entry;
     }

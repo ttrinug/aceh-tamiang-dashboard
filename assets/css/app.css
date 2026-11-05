@@ -413,6 +413,26 @@ button, select {
   border: 1px solid;
 }
 
+.legend-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+/* Popup for icon layers on the map */
+.map-popup { font-size: 12px; }
+.map-popup-title { font-weight: 600; margin-bottom: 4px; }
+.map-popup dl {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 2px 8px;
+  margin: 0 0 6px;
+}
+.map-popup dt { color: var(--muted); }
+.map-popup dd { margin: 0; }
+.map-popup dd.no-data { font-style: italic; color: var(--muted); }
+.map-popup-source { color: var(--muted); font-size: 11px; }
+
 .swatch-circle {
   width: 10px;
   height: 10px;

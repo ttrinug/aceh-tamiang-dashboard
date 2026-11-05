@@ -10,6 +10,10 @@
       "label": { "id": "Teramati", "en": "Observed" }
     },
     {
+      "id": "reported-infra",
+      "label": { "id": "Infrastruktur PU dilaporkan", "en": "Reported PU infrastructure" }
+    },
+    {
       "id": "modelled",
       "label": { "id": "Estimasi model", "en": "Modelled estimates" }
     },
@@ -135,6 +139,135 @@
       "attribution": "Dampak dilaporkan: BPBD Kabupaten Aceh Tamiang"
     },
     {
+      "id": "sitaba-jalan",
+      "group": "reported-infra",
+      "map": true,
+      "renderer": "icons",
+      "label": { "id": "Jalan terdampak (SITABA)", "en": "Affected roads (SITABA)" },
+      "file": "data/web/sitaba_jalan.geojson",
+      "source": "Kementerian PU, SITABA, Portal Penanganan Bencana Sumatera",
+      "sourceShort": "SITABA PU",
+      "date": "2026-11-05",
+      "method": { "id": "Hanya 18 dari 344 baris jalan Aceh Tamiang yang memiliki titik lokasi. Setiap titik adalah satu lokasi laporan, bukan ruas jalan atau panjang kerusakan. Tidak semua jalan terdampak terputus; lihat status fungsionalnya. Data diambil dari layanan SITABA pada 5 November 2026.", "en": "Only 18 of the 344 Aceh Tamiang road rows have a location point. Each point is one reported location, not a road section or damaged length. Not every affected road is cut off; see its functional status. Data was taken from the SITABA service on 5 November 2026." },
+      "methodUrl": "https://sitaba.pu.go.id/bencana-sumatera",
+      "methodLinkText": { "id": "Dashboard SITABA", "en": "SITABA dashboard" },
+      "visible": false,
+      "publish": true,
+      "attribution": "Infrastruktur PU: <a href=\"https://sitaba.pu.go.id/bencana-sumatera\" target=\"_blank\">SITABA, Kementerian PU</a>",
+      "legend": {
+        "type": "icon",
+        "icon": "sitaba-jalan"
+      },
+      "popupFields": [
+        {
+          "field": "nama",
+          "label": { "id": "Nama", "en": "Name" }
+        },
+        {
+          "field": "kecamatan",
+          "label": { "id": "Kecamatan", "en": "Kecamatan" }
+        },
+        {
+          "field": "status_jalan",
+          "label": { "id": "Status jalan", "en": "Road status" }
+        },
+        {
+          "field": "status_fungsional",
+          "label": { "id": "Status fungsional", "en": "Functional status" }
+        },
+        {
+          "field": "status_penanganan",
+          "label": { "id": "Status penanganan", "en": "Response status" }
+        }
+      ]
+    },
+    {
+      "id": "sitaba-jembatan",
+      "group": "reported-infra",
+      "map": true,
+      "renderer": "icons",
+      "label": { "id": "Jembatan terdampak (SITABA)", "en": "Affected bridges (SITABA)" },
+      "file": "data/web/sitaba_jembatan.geojson",
+      "source": "Kementerian PU, SITABA, Portal Penanganan Bencana Sumatera",
+      "sourceShort": "SITABA PU",
+      "date": "2026-11-05",
+      "method": { "id": "Hanya 1 dari 16 baris jembatan Aceh Tamiang yang memiliki titik lokasi. Peta ini tidak menunjukkan sebaran jembatan terdampak. Data diambil dari layanan SITABA pada 5 November 2026.", "en": "Only 1 of the 16 Aceh Tamiang bridge rows has a location point. This map does not show the distribution of affected bridges. Data was taken from the SITABA service on 5 November 2026." },
+      "methodUrl": "https://sitaba.pu.go.id/bencana-sumatera",
+      "methodLinkText": { "id": "Dashboard SITABA", "en": "SITABA dashboard" },
+      "visible": false,
+      "publish": true,
+      "attribution": "Infrastruktur PU: <a href=\"https://sitaba.pu.go.id/bencana-sumatera\" target=\"_blank\">SITABA, Kementerian PU</a>",
+      "legend": {
+        "type": "icon",
+        "icon": "sitaba-jembatan"
+      },
+      "popupFields": [
+        {
+          "field": "nama",
+          "label": { "id": "Nama", "en": "Name" }
+        },
+        {
+          "field": "kecamatan",
+          "label": { "id": "Kecamatan", "en": "Kecamatan" }
+        },
+        {
+          "field": "nama_ruas_jalan",
+          "label": { "id": "Ruas jalan", "en": "Road" }
+        },
+        {
+          "field": "status_akses",
+          "label": { "id": "Status akses", "en": "Access status" }
+        },
+        {
+          "field": "status_penanganan",
+          "label": { "id": "Status penanganan", "en": "Response status" }
+        }
+      ]
+    },
+    {
+      "id": "sitaba-ck",
+      "group": "reported-infra",
+      "map": true,
+      "renderer": "icons",
+      "label": { "id": "Air minum, sanitasi dan bangunan (SITABA)", "en": "Water, sanitation and buildings (SITABA)" },
+      "file": "data/web/sitaba_ck.geojson",
+      "source": "Kementerian PU, SITABA, Portal Penanganan Bencana Sumatera",
+      "sourceShort": "SITABA PU",
+      "date": "2026-11-05",
+      "method": { "id": "19 dari 23 baris Cipta Karya Aceh Tamiang dipetakan. Empat baris tidak ditampilkan karena label kabupaten dan lokasi titiknya tidak sesuai atau tidak memiliki titik. Data diambil dari layanan SITABA pada 5 November 2026.", "en": "19 of the 23 Aceh Tamiang Cipta Karya rows are mapped. Four rows are not shown because their kabupaten label and point location disagree, or they have no point. Data was taken from the SITABA service on 5 November 2026." },
+      "methodUrl": "https://sitaba.pu.go.id/bencana-sumatera",
+      "methodLinkText": { "id": "Dashboard SITABA", "en": "SITABA dashboard" },
+      "visible": false,
+      "publish": true,
+      "attribution": "Infrastruktur PU: <a href=\"https://sitaba.pu.go.id/bencana-sumatera\" target=\"_blank\">SITABA, Kementerian PU</a>",
+      "legend": {
+        "type": "icon",
+        "icon": "sitaba-ck"
+      },
+      "popupFields": [
+        {
+          "field": "nama",
+          "label": { "id": "Nama", "en": "Name" }
+        },
+        {
+          "field": "kecamatan",
+          "label": { "id": "Kecamatan", "en": "Kecamatan" }
+        },
+        {
+          "field": "sektor",
+          "label": { "id": "Sektor", "en": "Sector" }
+        },
+        {
+          "field": "jenis_infrastruktur",
+          "label": { "id": "Jenis", "en": "Type" }
+        },
+        {
+          "field": "status_penanganan",
+          "label": { "id": "Status penanganan", "en": "Response status" }
+        }
+      ]
+    },
+    {
       "id": "worship-osm",
       "group": "reference",
       "map": true,
@@ -144,16 +277,16 @@
       "source": "OpenStreetMap (amenity = place_of_worship), ekspor titik POI Indonesia",
       "sourceShort": "OpenStreetMap",
       "date": null,
-      "method": {
-        "id": "Hanya 14 titik di seluruh kabupaten (9 tanpa nama), sedangkan BPBD melaporkan 724 sarana ibadah rusak. Lapisan ini hanya menunjukkan lokasi yang sudah dipetakan di OpenStreetMap dan tidak dipakai sebagai jumlah.",
-        "en": "Only 14 points in the whole kabupaten (9 without a name), while BPBD reports 724 damaged places of worship. This layer only shows locations already mapped in OpenStreetMap and is not used as a total."
-      },
+      "method": { "id": "Hanya 14 titik di seluruh kabupaten (9 tanpa nama), sedangkan BPBD melaporkan 724 sarana ibadah rusak. Lapisan ini hanya menunjukkan lokasi yang sudah dipetakan di OpenStreetMap dan tidak dipakai sebagai jumlah.", "en": "Only 14 points in the whole kabupaten (9 without a name), while BPBD reports 724 damaged places of worship. This layer only shows locations already mapped in OpenStreetMap and is not used as a total." },
       "methodUrl": "https://www.openstreetmap.org/copyright",
       "methodLinkText": { "id": "Lisensi OpenStreetMap", "en": "OpenStreetMap licence" },
       "visible": false,
       "publish": false,
       "attribution": "Tempat ibadah: © <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">kontributor OpenStreetMap</a>, ODbL",
-      "legend": { "type": "circle", "color": "#1b7837" }
+      "legend": {
+        "type": "circle",
+        "color": "#1b7837"
+      }
     },
     {
       "id": "lulc",

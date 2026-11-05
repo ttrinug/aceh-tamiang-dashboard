@@ -138,6 +138,51 @@ At the owner's request, the 14 places of worship are shown as a map layer, "Temp
 - **Schools and health facilities:** 19 schools and 2 health facilities (1 clinic, 1 hospital) in the kabupaten.
 - **Why it is not in the dashboard:** BPBD alone reports 724 damaged places of worship, 543 damaged education facilities and 192 damaged health facilities. So this extract covers only a small fraction of the facilities, and using it as "Total" would show fewer facilities than were damaged. One likely reason is that OSM often maps mosques and schools as building outlines rather than points, and this export has points only.
 
+## SITABA PU infrastructure points (2026-11-05)
+
+- **Source:** Kementerian PU, SITABA, Portal Penanganan Bencana Sumatera (https://sitaba.pu.go.id/bencana-sumatera). A snapshot of its feature services, taken by the owner on 2026-11-05 at 09:31 WIB (02:31 UTC):
+  - Jalan: `https://sigi.pu.go.id/serverpu/rest/services/Hosted/02_Jalan_Terdampak/FeatureServer/0`
+  - Jembatan: `https://sigi.pu.go.id/serverpu/rest/services/02_Jembatan_Terdampak/FeatureServer/0`
+  - Cipta Karya: `https://sigi.pu.go.id/serverpu/rest/services/03_Detail_Infra_CK_Terdampak/FeatureServer/0`
+- **Copies used:** `data/raw/sitaba_20261105/` (not committed), with `manifest.json`. SHA-256:
+  - `02_Jalan_Terdampak.geojson` `5ce46ab49af1a3bb2f499256ee6aee48fa24a402883d7152f88199483930376f`
+  - `02_Jembatan_Terdampak.geojson` `8e5a1c7362ee0f3e02e175f5808fbcceb2c2ff69e77ff31b3daad6b98dd421c2`
+  - `03_Detail_Infra_CK_Terdampak.geojson` `49f21949236d1ac8b76366891bbfad3c22398317e4183c8542d9d29a8779ea09`
+  - `manifest.json` `37a2a803570c21395acd64ae506edab6c8c7e421320d3bad03ce47ed01ea4cad`
+- **Selection** (`scripts/build_sitaba.py`):
+  1. Rows whose key field is non-blank after trimming, the SITABA dashboard's own filter: `status_jalan` (Jalan), `status` (Jembatan), `sektor` (Cipta Karya).
+  2. Rows whose trimmed `kabupaten` is "Aceh Tamiang", case-insensitive. These give the totals.
+  3. For the map, only rows with server geometry that fall within the unsimplified BIG kecamatan boundaries. The coordinate attribute fields are not used, and no location was geocoded, matched or repaired.
+  - `code` and `kecamatan` come from the spatial join, not from the source `kecamatan` field.
+  - Text is trimmed (the source has values such as `"Selesai "`), and blank values are kept as null.
+- **Output fields:**
+  - Jalan: `oid`, `nama` (`nama_ruas`), `status_jalan`, `status_fungsional`, `status_penanganan`, `code`, `kecamatan`. The Jalan layer has no `oid` field, so `oid` is its `objectid`.
+  - Jembatan: `oid`, `nama` (`nama_jembatan`), `nama_ruas_jalan`, `status_akses`, `status_penanganan`, `code`, `kecamatan`.
+  - Cipta Karya: `oid`, `nama` (`nama_infrastruktur`), `sektor`, `jenis_infrastruktur`, `status_penanganan`, `code`, `kecamatan`.
+  - Photo links, contractor names and worker counts are left out.
+- **Counts:**
+
+  | Layer | Aceh Tamiang rows | With geometry | Mapped |
+  |---|---|---|---|
+  | Jalan | 344 | 18 | 18 |
+  | Jembatan | 16 | 1 | 1 |
+  | Cipta Karya | 23 | 22 | 19 |
+
+- **Excluded rows** (reported, not corrected):
+  - oid 14848, Sanimas Desa Alue Sentang: labelled Aceh Tamiang, point outside the kabupaten (98.0629, 4.4920).
+  - oid 15482, IBM PISEW KECAMATAN KLUET UTARA: labelled Aceh Tamiang, point outside (97.3233, 3.1038). Kluet Utara does not appear to be in Aceh Tamiang.
+  - oid 15659, Sanitasi LPK Ponpes Ma'had Tahfidz Al-Qur'an Darul Huda Kutacane: labelled Aceh Tamiang, point outside (97.8497, 3.4482).
+  - oid 15658, Sanitasi LPK Dayah Sabilul Ulum Diniyah Islamiyah: labelled Aceh Tenggara, point inside Aceh Tamiang (98.0629, 4.4104). Excluded by step 2.
+  - Rows 15658 and 15659 are adjacent and may have swapped labels. This is unconfirmed, so both are left off the map.
+  - One more Cipta Karya row labelled Aceh Tamiang has no point.
+- **Source kecamatan differs from the point location** (kept on the map; the dashboard uses the location): Cipta Karya oid 14648 SPAM IKK Rantau (source "RANTAU", point in Karang Baru), oid 14651 SPAM IKK Kuala Simpang (source "KUALA SIMPANG", point in Kota Kualasinpang, the same place under BIG's spelling), and oid 14847 Sanimas Desa Ie Bintah (source "MANYAK PAYED", point in Karang Baru).
+- **Spot check:** 3 Jalan, 1 Jembatan and 3 Cipta Karya points were compared with the source: names and values match, and coordinates differ only by the 5-decimal rounding (at most 0.000005°).
+- **Not added:** Sungai has 1 Aceh Tamiang row with no geometry, and the other water-resources layers have none, so there is no water-resources layer.
+- **Outputs:** `data/web/sitaba_jalan.geojson`, `sitaba_jembatan.geojson`, `sitaba_ck.geojson` and `sitaba_summary.json` (totals, mapped counts, snapshot time, excluded rows).
+- **In the dashboard:** three icon layers under "Infrastruktur PU dilaporkan", off by default, each with a popup. SITABA counts are kept separate from the BPBD figures in the Infrastructure panel and are never added to them.
+- **Licence and reuse terms not confirmed; Pusdatin PU not yet contacted.**
+- **Publishing:** the owner approved publishing these three layers on 2026-11-05, knowing the reuse terms are not confirmed.
+
 ## Admin page
 
 From 3 November 2026 datasets can also be added through the local admin page (`scripts/admin-server.mjs`, `scripts/admin_tool.py`). It copies each source to `data/raw/<dataset id>/`, clips it to the BIG kecamatan, and writes `data/web/<id>.geojson` or `<id>.png` and `<id>_by_kecamatan.json`. Each dataset added that way should get an entry in this log with its source, date, licence and the checks done.

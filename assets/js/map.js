@@ -107,6 +107,21 @@ function pointLayers(dataset) {
   }];
 }
 
+// Reported locations shown with an icon (SITABA infrastructure). The icon image is added
+// to the map under the name in dataset.legend.icon; see loadIcons().
+function iconLayers(dataset) {
+  return [{
+    id: `${dataset.id}-icons`,
+    type: 'symbol',
+    source: dataset.id,
+    layout: {
+      'icon-image': dataset.legend.icon,
+      'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.7, 14, 1],
+      'icon-allow-overlap': true
+    }
+  }];
+}
+
 // Map layers per renderer, in drawing order (first is drawn lowest).
 // Each dataset in config/layers.json names its renderer.
 const RENDERERS = {
@@ -114,8 +129,35 @@ const RENDERERS = {
   classes: classLayers,
   fill: fillLayers,
   boundaries: boundaryLayers,
-  points: pointLayers
+  points: pointLayers,
+  icons: iconLayers
 };
+
+// Decodes one icon image per icon dataset before the map is created, so the images can be
+// added to the style on every style.load (a basemap switch clears them).
+async function loadIcons(datasets) {
+  return Promise.all(datasets.filter((d) => d.renderer === 'icons').map(async (dataset) => {
+    const image = new Image();
+    image.src = `assets/icons/${dataset.legend.icon}.svg`;
+    await image.decode();
+    return { id: dataset.legend.icon, image };
+  }));
+}
+
+// Popup content for one icon feature, built from DOM nodes (never HTML strings) because the
+// values come from an outside source. Blank values show as "No data yet".
+function popupContent(dataset, properties, { t, pick }) {
+  const body = el('div', 'map-popup');
+  body.append(el('p', 'map-popup-title', pick(dataset.label)));
+  const list = el('dl');
+  for (const field of dataset.popupFields) {
+    const value = properties[field.field];
+    const blank = value === undefined || value === null || value === '';
+    list.append(el('dt', null, pick(field.label)), el('dd', blank ? 'no-data' : null, blank ? t('noData') : String(value)));
+  }
+  body.append(list, el('p', 'map-popup-source', `${t('source')}: ${dataset.sourceShort ?? dataset.source} · ${t('date')}: ${dataset.date ?? t('unconfirmed')}`));
+  return body;
+}
 const layersFor = (dataset, selectedId) => RENDERERS[dataset.renderer](dataset, selectedId);
 
 // Compact, collapsible control holding the basemap switch and the data layer list.
@@ -262,6 +304,8 @@ export async function createMap({ container, app, basemapConfig, layers, kecamat
   };
   const visible = new Set(layers.datasets.filter((d) => d.file && d.visible).map((d) => d.id));
   const reportVisible = () => onVisibleChange(mapped.map((m) => m.dataset).filter((d) => visible.has(d.id)).reverse());
+  const icons = await loadIcons(mapped.map((m) => m.dataset));
+  const iconDatasets = mapped.map((m) => m.dataset).filter((d) => d.renderer === 'icons');
 
   const map = new maplibregl.Map({
     container,
@@ -275,6 +319,9 @@ export async function createMap({ container, app, basemapConfig, layers, kecamat
 
   // Data layers are part of the style, so they are added again after every basemap switch.
   map.on('style.load', () => {
+    for (const { id, image } of icons) {
+      if (!map.hasImage(id)) map.addImage(id, image, { pixelRatio: 2 });
+    }
     map.addSource(`${boundaries.id}-labels`, { type: 'geojson', data: labelData });
     for (const { dataset, data } of mapped) {
       // Image sources take no attribution, so their credit is added in setAttribution().
@@ -287,11 +334,28 @@ export async function createMap({ container, app, basemapConfig, layers, kecamat
     }
   });
 
+  // A click on an icon opens its popup and must not also select (and zoom to) the kecamatan below it.
+  const visibleIconLayers = () => iconDatasets.filter((d) => visible.has(d.id)).map((d) => `${d.id}-icons`);
   map.on('click', 'kecamatan-fill', (event) => {
+    const iconLayerIds = visibleIconLayers();
+    if (iconLayerIds.length && map.queryRenderedFeatures(event.point, { layers: iconLayerIds }).length) return;
     if (visible.has(boundaries.id)) onKecamatanClick(event.features[0].properties.code);
   });
   map.on('mouseenter', 'kecamatan-fill', () => { map.getCanvas().style.cursor = 'pointer'; });
   map.on('mouseleave', 'kecamatan-fill', () => { map.getCanvas().style.cursor = ''; });
+
+  for (const dataset of iconDatasets) {
+    const layerId = `${dataset.id}-icons`;
+    map.on('click', layerId, (event) => {
+      const feature = event.features[0];
+      new maplibregl.Popup({ maxWidth: '280px' })
+        .setLngLat(feature.geometry.coordinates)
+        .setDOMContent(popupContent(dataset, feature.properties, i18n))
+        .addTo(map);
+    });
+    map.on('mouseenter', layerId, () => { map.getCanvas().style.cursor = 'pointer'; });
+    map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; });
+  }
 
   // Attribution comes from config, so a replacement basemap keeps its credit.
   // compact: false keeps the full text visible at every screen width.

@@ -49,7 +49,8 @@
     { "id": "Lapisan bahaya disederhanakan untuk web dan dapat bergeser hingga sekitar 30 m. Luas dihitung dari data asli.", "en": "Hazard layers are simplified for the web and may shift up to about 30 m. Areas are calculated from the source geometry." },
     { "id": "Lapisan tempat ibadah dari OpenStreetMap sangat belum lengkap (14 titik, sedangkan BPBD melaporkan 724 sarana ibadah rusak). Lapisan ini hanya menunjukkan lokasi yang sudah dipetakan dan tidak dipakai sebagai jumlah.", "en": "The OpenStreetMap places-of-worship layer is far from complete (14 points, while BPBD reports 724 damaged places of worship). It only shows locations already mapped and is not used as a total." },
     { "id": "Citra satelit adalah mosaik tahun 2024, sebelum banjir. Ini bukan citra saat banjir. Resolusinya sekitar 10 m, sehingga bangunan tidak terlihat.", "en": "The satellite imagery is a 2024 mosaic from before the flood. It is not imagery of the flood. At about 10 m resolution, buildings are not visible." },
-    { "id": "Citra EOxCloudless berlisensi CC BY-NC-SA 4.0 (hanya untuk penggunaan nonkomersial).", "en": "EOxCloudless imagery is licensed CC BY-NC-SA 4.0 (non-commercial use only)." }
+    { "id": "Citra EOxCloudless berlisensi CC BY-NC-SA 4.0 (hanya untuk penggunaan nonkomersial).", "en": "EOxCloudless imagery is licensed CC BY-NC-SA 4.0 (non-commercial use only)." },
+    { "id": "Lapisan SITABA hanya menampilkan baris yang memiliki titik lokasi: 18 dari 344 jalan, 1 dari 16 jembatan dan 19 dari 23 infrastruktur Cipta Karya di Aceh Tamiang. Angka ini tidak digabung dengan angka BPBD.", "en": "The SITABA layers show only rows that have a location point: 18 of 344 roads, 1 of 16 bridges and 19 of 23 Cipta Karya assets in Aceh Tamiang. These figures are not combined with the BPBD figures." }
   ],
   "table": {
     "title": { "id": "Data Kecamatan", "en": "Kecamatan data" },

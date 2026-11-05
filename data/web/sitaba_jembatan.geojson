@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "sitaba_jembatan",
+"xy_coordinate_resolution": 1e-05,
+"features": [
+{ "type": "Feature", "properties": { "oid": 17455, "nama": "Jembatan Gantung Baling Karang", "nama_ruas_jalan": "Baling Karang", "status_akses": "Terputus", "status_penanganan": "Belum ditangani", "code": "11.16.10", "kecamatan": "Bandar Pusaka" }, "geometry": { "type": "Point", "coordinates": [ 97.7757, 4.34177 ] } }
+]
+}

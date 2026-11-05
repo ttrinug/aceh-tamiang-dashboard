@@ -1,0 +1,75 @@
+{
+  "source": "Kementerian PU, SITABA, Portal Penanganan Bencana Sumatera (https://sitaba.pu.go.id/bencana-sumatera)",
+  "snapshot": "2026-11-05T09:31:37+07:00",
+  "selection": "key field non-blank; kabupaten = Aceh Tamiang; mapped only with server geometry within the BIG kecamatan",
+  "layers": {
+    "jalan": {
+      "source_file": "02_Jalan_Terdampak.geojson",
+      "id_field": "objectid",
+      "aceh_tamiang_rows": 344,
+      "with_geometry": 18,
+      "mapped": 18,
+      "without_geometry": 326,
+      "excluded": []
+    },
+    "jembatan": {
+      "source_file": "02_Jembatan_Terdampak.geojson",
+      "id_field": "oid",
+      "aceh_tamiang_rows": 16,
+      "with_geometry": 1,
+      "mapped": 1,
+      "without_geometry": 15,
+      "excluded": []
+    },
+    "ck": {
+      "source_file": "03_Detail_Infra_CK_Terdampak.geojson",
+      "id_field": "oid",
+      "aceh_tamiang_rows": 23,
+      "with_geometry": 22,
+      "mapped": 19,
+      "without_geometry": 1,
+      "excluded": [
+        {
+          "oid": 14848,
+          "name": "Sanimas Desa Alue Sentang",
+          "kabupaten": "Aceh Tamiang",
+          "point": [
+            98.0629,
+            4.492
+          ],
+          "issue": "labelled Aceh Tamiang, point outside the BIG kecamatan boundaries"
+        },
+        {
+          "oid": 15482,
+          "name": "IBM PISEW KECAMATAN KLUET UTARA",
+          "kabupaten": "Aceh Tamiang",
+          "point": [
+            97.3233,
+            3.1038
+          ],
+          "issue": "labelled Aceh Tamiang, point outside the BIG kecamatan boundaries"
+        },
+        {
+          "oid": 15659,
+          "name": "Sanitasi LPK Ponpes Ma'had Tahfidz Al-Qur'an Darul Huda Kutacane",
+          "kabupaten": "Aceh Tamiang",
+          "point": [
+            97.8497,
+            3.4482
+          ],
+          "issue": "labelled Aceh Tamiang, point outside the BIG kecamatan boundaries"
+        },
+        {
+          "oid": 15658,
+          "name": "Sanitasi LPK Dayah Sabilul Ulum Diniyah Islamiyah",
+          "kabupaten": "Aceh Tenggara",
+          "point": [
+            98.0629,
+            4.4104
+          ],
+          "issue": "point inside Aceh Tamiang, labelled with another kabupaten"
+        }
+      ]
+    }
+  }
+}
