@@ -14,6 +14,10 @@
       "label": { "id": "Infrastruktur PU dilaporkan", "en": "Reported PU infrastructure" }
     },
     {
+      "id": "survey",
+      "label": { "id": "Survei lapangan", "en": "Field survey" }
+    },
+    {
       "id": "modelled",
       "label": { "id": "Estimasi model", "en": "Modelled estimates" }
     },
@@ -266,6 +270,26 @@
           "label": { "id": "Status penanganan", "en": "Response status" }
         }
       ]
+    },
+    {
+      "id": "brin-survey",
+      "group": "survey",
+      "map": true,
+      "renderer": "icons",
+      "detailView": true,
+      "label": { "id": "BRIN Survey", "en": "BRIN Survey" },
+      "file": "data/web/brin_survey.geojson",
+      "source": "Survei lapangan BRIN",
+      "sourceShort": "BRIN",
+      "date": "—",
+      "method": { "id": "Titik, foto, narasumber dan temuan dicatat di lapangan. Tanggal tercatat pada setiap titik. Hanya titik yang sudah ditinjau yang diterbitkan; nama narasumber tidak dipublikasikan, hanya perannya.", "en": "Points, photos, informants and findings are recorded in the field. The date is recorded on each point. Only reviewed points are published; informant names are not published, only their roles." },
+      "visible": true,
+      "publish": true,
+      "attribution": "Survei lapangan: BRIN",
+      "legend": {
+        "type": "icon",
+        "icon": "brin-survey"
+      }
     },
     {
       "id": "worship-osm",

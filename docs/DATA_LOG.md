@@ -183,6 +183,14 @@ At the owner's request, the 14 places of worship are shown as a map layer, "Temp
 - **Licence and reuse terms not confirmed; Pusdatin PU not yet contacted.**
 - **Publishing:** the owner approved publishing these three layers on 2026-11-05, knowing the reuse terms are not confirmed.
 
+## BRIN Survey (field points)
+
+- **Source:** field points recorded by the BRIN team in the dashboard's BRIN Survey panel. No points are published yet.
+- **Storage:** new points stay in the browser of the device used (IndexedDB) until exported to a JSON file. The site has no server, and nothing is sent anywhere.
+- **Photos:** resized to at most 1600 px and re-encoded on the device, which removes camera metadata, including any location stored in the photo.
+- **Publishing:** `scripts/build_survey.py` reads export files from `for claude/survey/`, copies them to `data/raw/survey/` (neither is committed), and writes `data/web/brin_survey.geojson` and `data/web/brin_survey/*.jpg`. Where files hold the same point, the latest edit is used. Points outside the BIG kecamatan are left out and listed.
+- **Narasumber:** names appear only on the device and in the export file. Public output has the role of informants whose consent box is ticked, and never a name. Findings are published as written, so they must be read for names before pushing.
+
 ## Admin page
 
 From 3 November 2026 datasets can also be added through the local admin page (`scripts/admin-server.mjs`, `scripts/admin_tool.py`). It copies each source to `data/raw/<dataset id>/`, clips it to the BIG kecamatan, and writes `data/web/<id>.geojson` or `<id>.png` and `<id>_by_kecamatan.json`. Each dataset added that way should get an entry in this log with its source, date, licence and the checks done.

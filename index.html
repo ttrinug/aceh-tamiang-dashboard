@@ -76,9 +76,18 @@
       <p class="note" id="infra-note"></p>
     </section>
 
-    <section class="panel chart chart-flooded">
-      <h2 data-i18n="charts.floodedArea"></h2>
-      <p class="empty" data-i18n="noData"></p>
+    <section class="panel survey-panel" aria-labelledby="survey-title">
+      <h2 id="survey-title" data-i18n="survey.title"></h2>
+      <div class="survey-tools">
+        <button type="button" id="survey-add" class="survey-primary" data-i18n="survey.add"></button>
+        <button type="button" id="survey-export" data-i18n="survey.export"></button>
+        <label class="survey-import">
+          <span data-i18n="survey.import"></span>
+          <input type="file" id="survey-import" accept=".json,application/json" class="visually-hidden">
+        </label>
+      </div>
+      <ul id="survey-rows" class="survey-list"></ul>
+      <p class="note" id="survey-note" role="status"></p>
     </section>
 
     <section class="panel table-panel" aria-labelledby="table-title">
@@ -90,9 +99,15 @@
         <span id="table-column"></span>
       </div>
       <ul id="table-rows" class="list-rows"></ul>
+      <div class="table-total">
+        <span data-i18n="table.total"></span>
+        <span id="table-total-value"></span>
+      </div>
       <p class="note" id="table-note"></p>
     </section>
   </main>
+
+  <dialog id="survey-dialog"></dialog>
 
   <dialog id="about-dialog" aria-labelledby="about-title">
     <div class="dialog-head">

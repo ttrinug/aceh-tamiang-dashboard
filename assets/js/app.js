@@ -1,10 +1,12 @@
 import { createMap } from './map.js';
 import { el } from './dom.js';
 import { drawBarChart, clearChart } from './charts.js';
+import { createSurvey } from './survey.js';
 
 const state = { lang: 'id', kecamatan: null, chart: null, table: null, visibleLayers: [] };
 let config;
 let mapView;
+let survey;
 
 async function loadJson(path) {
   const response = await fetch(path);
@@ -143,9 +145,21 @@ function renderTablePanel() {
     return item;
   }));
 
+  // Rates cannot be added up, so a percentage or per-unit column uses the kabupaten figure
+  // from the source when there is one. Missing values are left out of a sum, and the note says so.
+  const known = rows.filter((row) => row.value !== null);
+  const isRate = /[%/]/.test(option.unit?.id ?? '');
+  const total = isRate
+    ? config.stats[option.dataset]?.kabupaten?.[option.field] ?? null
+    : known.length ? known.reduce((sum, row) => sum + row.value, 0) : null;
+  document.getElementById('table-total-value').textContent = total === null ? '—' : formatNumber(total, option.digits);
+
   const dataset = datasetById(option.dataset);
   const source = dataset.file ? ` · ${t('source')}: ${dataset.source} · ${t('date')}: ${dateText(dataset)}` : '';
-  document.getElementById('table-note').textContent = `${t('table.missingKey')}${source}`;
+  const partial = !isRate && known.length && known.length < rows.length
+    ? ` ${t('table.partialTotal').replace('{n}', known.length).replace('{all}', rows.length)}`
+    : '';
+  document.getElementById('table-note').textContent = `${t('table.missingKey')}${partial}${source}`;
 }
 
 // The legend panel beside the percentage card: one entry per active map layer, topmost first.
@@ -314,6 +328,9 @@ function render() {
   renderInfrastructure();
   document.getElementById('pct-cards').replaceChildren(...cards.percentages.map(percentageCard));
 
+  document.getElementById('survey-note').textContent = t('survey.note');
+  survey?.render();
+
   renderTitle();
   renderTablePanel();
   renderLegend();
@@ -416,8 +433,19 @@ async function init() {
     onVisibleChange: (datasets) => {
       state.visibleLayers = datasets;
       renderLegend();
-    }
+    },
+    onFeatureDetail: (dataset, properties) => survey.showDetail(properties.id)
   });
+
+  const surveyDataset = datasetById('brin-survey');
+  survey = createSurvey({
+    dataset: surveyDataset,
+    boundariesFile: datasetById('boundaries').file,
+    i18n,
+    onDataChange: (data) => mapView.setDatasetData(surveyDataset.id, data),
+    setStatus: (text) => { document.getElementById('survey-note').textContent = text; }
+  });
+  await survey.init();
 }
 
 init().catch((error) => {

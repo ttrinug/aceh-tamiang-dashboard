@@ -13,8 +13,7 @@
   "denominator": { "id": "Penyebut", "en": "Denominator" },
   "impactHeading": { "id": "Dampak dilaporkan", "en": "Reported impact" },
   "charts": {
-    "select": { "id": "Pilih grafik", "en": "Choose chart" },
-    "floodedArea": { "id": "Luas tergenang per kecamatan", "en": "Flooded area by kecamatan" }
+    "select": { "id": "Pilih grafik", "en": "Choose chart" }
   },
   "percentagesHeading": { "id": "Persentase", "en": "Percentages" },
   "map": {
@@ -50,12 +49,15 @@
     { "id": "Lapisan tempat ibadah dari OpenStreetMap sangat belum lengkap (14 titik, sedangkan BPBD melaporkan 724 sarana ibadah rusak). Lapisan ini hanya menunjukkan lokasi yang sudah dipetakan dan tidak dipakai sebagai jumlah.", "en": "The OpenStreetMap places-of-worship layer is far from complete (14 points, while BPBD reports 724 damaged places of worship). It only shows locations already mapped and is not used as a total." },
     { "id": "Citra satelit adalah mosaik tahun 2024, sebelum banjir. Ini bukan citra saat banjir. Resolusinya sekitar 10 m, sehingga bangunan tidak terlihat.", "en": "The satellite imagery is a 2024 mosaic from before the flood. It is not imagery of the flood. At about 10 m resolution, buildings are not visible." },
     { "id": "Citra EOxCloudless berlisensi CC BY-NC-SA 4.0 (hanya untuk penggunaan nonkomersial).", "en": "EOxCloudless imagery is licensed CC BY-NC-SA 4.0 (non-commercial use only)." },
-    { "id": "Lapisan SITABA hanya menampilkan baris yang memiliki titik lokasi: 18 dari 344 jalan, 1 dari 16 jembatan dan 19 dari 23 infrastruktur Cipta Karya di Aceh Tamiang. Angka ini tidak digabung dengan angka BPBD.", "en": "The SITABA layers show only rows that have a location point: 18 of 344 roads, 1 of 16 bridges and 19 of 23 Cipta Karya assets in Aceh Tamiang. These figures are not combined with the BPBD figures." }
+    { "id": "Lapisan SITABA hanya menampilkan baris yang memiliki titik lokasi: 18 dari 344 jalan, 1 dari 16 jembatan dan 19 dari 23 infrastruktur Cipta Karya di Aceh Tamiang. Angka ini tidak digabung dengan angka BPBD.", "en": "The SITABA layers show only rows that have a location point: 18 of 344 roads, 1 of 16 bridges and 19 of 23 Cipta Karya assets in Aceh Tamiang. These figures are not combined with the BPBD figures." },
+    { "id": "Titik BRIN Survey yang baru hanya tersimpan di peramban perangkat yang dipakai sampai diekspor. Menghapus data peramban akan menghapus titik yang belum diekspor.", "en": "New BRIN Survey points are stored only in the browser of the device used until they are exported. Clearing browser data deletes points that have not been exported." }
   ],
   "table": {
     "title": { "id": "Data Kecamatan", "en": "Kecamatan data" },
     "select": { "id": "Pilih data kecamatan", "en": "Choose kecamatan data" },
-    "missingKey": { "id": "— = belum ada data", "en": "— = no data yet" }
+    "missingKey": { "id": "— = belum ada data", "en": "— = no data yet" },
+    "total": { "id": "Total", "en": "Total" },
+    "partialTotal": { "id": "Total dari {n} dari {all} kecamatan yang ada datanya.", "en": "Total of the {n} of {all} kecamatan with data." }
   },
   "legend": {
     "title": { "id": "Legenda", "en": "Legend" },
@@ -67,5 +69,53 @@
     "total": { "id": "Jumlah", "en": "Total" },
     "damaged": { "id": "Rusak", "en": "Damaged" },
     "note": { "id": "Jumlah: belum ada data titik fasilitas. — = belum ada data.", "en": "Total: no facility point data yet. — = no data yet." }
+  },
+  "survey": {
+    "title": { "id": "Hasil BRIN Survey", "en": "BRIN Survey results" },
+    "add": { "id": "Tambah titik", "en": "Add point" },
+    "export": { "id": "Ekspor", "en": "Export" },
+    "import": { "id": "Impor", "en": "Import" },
+    "empty": { "id": "Belum ada titik survei.", "en": "No survey points yet." },
+    "note": { "id": "Titik baru tersimpan hanya di perangkat ini. Ekspor secara berkala.", "en": "New points are saved only on this device. Export them regularly." },
+    "local": { "id": "Di perangkat ini", "en": "On this device" },
+    "published": { "id": "Terbit", "en": "Published" },
+    "status": { "id": "Status", "en": "Status" },
+    "noPlace": { "id": "Tanpa nama lokasi", "en": "Unnamed location" },
+    "outside": { "id": "Di luar Aceh Tamiang", "en": "Outside Aceh Tamiang" },
+    "formTitle": { "id": "Titik survei baru", "en": "New survey point" },
+    "editTitle": { "id": "Ubah titik survei", "en": "Edit survey point" },
+    "location": { "id": "Lokasi", "en": "Location" },
+    "useGps": { "id": "Gunakan GPS", "en": "Use GPS" },
+    "gpsWaiting": { "id": "Mencari lokasi GPS…", "en": "Finding GPS location…" },
+    "gpsFailed": { "id": "GPS tidak tersedia. Isi koordinat secara manual.", "en": "GPS is not available. Enter the coordinates by hand." },
+    "accuracy": { "id": "Akurasi GPS", "en": "GPS accuracy" },
+    "latitude": { "id": "Lintang", "en": "Latitude" },
+    "longitude": { "id": "Bujur", "en": "Longitude" },
+    "coordinates": { "id": "Koordinat", "en": "Coordinates" },
+    "place": { "id": "Nama lokasi", "en": "Place name" },
+    "date": { "id": "Tanggal survei", "en": "Survey date" },
+    "photos": { "id": "Foto", "en": "Photos" },
+    "addPhotos": { "id": "Ambil atau pilih foto", "en": "Take or choose photos" },
+    "noPhotos": { "id": "Tidak ada foto.", "en": "No photos." },
+    "photoFailed": { "id": "Foto tidak dapat dibaca", "en": "Could not read the photo" },
+    "informants": { "id": "Narasumber", "en": "Informants" },
+    "informantName": { "id": "Nama (tidak dipublikasikan)", "en": "Name (not published)" },
+    "role": { "id": "Peran (mis. Kepala Desa, Warga)", "en": "Role (e.g. village head, resident)" },
+    "consent": { "id": "Bersedia perannya dicantumkan", "en": "Agreed to their role being shown" },
+    "addInformant": { "id": "Tambah narasumber", "en": "Add informant" },
+    "namesPrivate": { "id": "Nama hanya tersimpan di perangkat ini dan di file ekspor. Yang diterbitkan hanya peran.", "en": "Names stay on this device and in the export file. Only roles are published." },
+    "findings": { "id": "Temuan", "en": "Findings" },
+    "findingsHint": { "id": "Catatan penelitian. Jangan menulis nama narasumber di sini.", "en": "Research notes. Do not write informant names here." },
+    "findingsRequired": { "id": "Isi temuan terlebih dahulu.", "en": "Please enter the findings." },
+    "invalidLocation": { "id": "Isi lintang dan bujur yang valid.", "en": "Enter a valid latitude and longitude." },
+    "save": { "id": "Simpan", "en": "Save" },
+    "saveFailed": { "id": "Gagal menyimpan. Penyimpanan perangkat mungkin penuh.", "en": "Could not save. The device storage may be full." },
+    "edit": { "id": "Ubah", "en": "Edit" },
+    "delete": { "id": "Hapus", "en": "Delete" },
+    "remove": { "id": "Hapus", "en": "Remove" },
+    "deleteConfirm": { "id": "Hapus titik ini dari perangkat? Tindakan ini tidak dapat dibatalkan.", "en": "Delete this point from this device? This cannot be undone." },
+    "exported": { "id": "File ekspor sudah diunduh. File ini memuat nama narasumber, jadi jangan dibagikan secara terbuka.", "en": "The export file has been downloaded. It contains informant names, so do not share it openly." },
+    "imported": { "id": "{n} titik diimpor.", "en": "{n} points imported." },
+    "importFailed": { "id": "File tidak dapat diimpor. Gunakan file ekspor BRIN Survey.", "en": "The file could not be imported. Use a BRIN Survey export file." }
   }
 }

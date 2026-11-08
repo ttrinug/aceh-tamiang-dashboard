@@ -159,7 +159,7 @@ button, select {
 .center { grid-area: center; }
 .chart-affected { grid-area: chartA; }
 .infra-panel { grid-area: chartB; }
-.chart-flooded { grid-area: chartC; }
+.survey-panel { grid-area: chartC; }
 .table-panel { grid-area: list; }
 
 .panel {
@@ -339,6 +339,22 @@ button, select {
 .list-rows .row[aria-pressed="true"] {
   background: var(--selected-bg);
   font-weight: 600;
+}
+
+/* Total row, pinned under the scrolling list of kecamatan */
+.table-total {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 4px;
+  padding: 6px 4px;
+  border-top: 2px solid var(--text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.table-total span:last-child {
+  text-align: right;
+  white-space: nowrap;
 }
 
 /* Infrastructure panel: facility types for the selected kecamatan, total and damaged */
@@ -575,6 +591,230 @@ dialog::backdrop { background: rgb(0 0 0 / 0.35); }
 
 .about-bullets { margin: 0; padding-left: 20px; }
 .about-bullets li { margin-bottom: 4px; }
+
+/* BRIN Survey toolbox, form and gallery */
+.survey-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.survey-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.survey-tools button,
+.survey-import,
+.survey-gps,
+.survey-actions button,
+.survey-informant > button,
+.survey-informants + button,
+.survey-save {
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.survey-tools button:disabled { opacity: 0.5; cursor: not-allowed; }
+.survey-import:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+.survey-tools .survey-primary,
+.survey-save {
+  border-color: var(--focus);
+  background: var(--focus);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.survey-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.survey-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 6px;
+  width: 100%;
+  padding: 6px 4px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.survey-row-place { font-size: 13px; font-weight: 600; }
+.survey-row-meta { grid-row: 2; font-size: 11px; color: var(--muted); }
+
+.survey-badge {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 11px;
+}
+
+.survey-badge.local { background: var(--selected-bg); }
+
+.survey-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 16px 16px;
+}
+
+.survey-dialog-body h3 { font-size: 14px; }
+
+.survey-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.survey-label { font-size: 12px; font-weight: 600; color: var(--muted); }
+
+.survey-field input:not([type="file"]),
+.survey-field textarea {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font: inherit;
+}
+
+.survey-gps-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.survey-coords {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.survey-previews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.survey-preview { position: relative; }
+
+.survey-preview img {
+  display: block;
+  width: 84px;
+  height: 84px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.survey-preview button {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.65);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.survey-informants {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.survey-informant {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 8px;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.survey-consent {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.survey-informant > button { justify-self: end; }
+.survey-informants + button { align-self: flex-start; }
+.survey-save { align-self: flex-start; }
+.survey-error { color: #9b1c31; font-weight: 600; }
+
+.survey-gallery-main {
+  display: block;
+  width: 100%;
+  max-height: 52dvh;
+  object-fit: contain;
+  border-radius: 4px;
+  background: #000000;
+}
+
+.survey-gallery-strip {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  overflow-x: auto;
+}
+
+.survey-gallery-strip button {
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.survey-gallery-strip img {
+  display: block;
+  width: 72px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 3px;
+}
+
+.survey-facts { margin: 0; }
+
+.survey-fact {
+  display: grid;
+  grid-template-columns: minmax(90px, 140px) minmax(0, 1fr);
+  gap: 8px;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.survey-fact dt { color: var(--muted); font-size: 13px; }
+.survey-fact dd { margin: 0; }
+.survey-people { margin: 0; padding-left: 18px; }
+.survey-findings { white-space: pre-wrap; }
+
+.survey-actions {
+  display: flex;
+  gap: 8px;
+}
 
 /* Phone and narrow screens: one column, page scrolls */
 @media (max-width: 1099px) {

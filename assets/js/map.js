@@ -274,7 +274,8 @@ class ImageryNote {
 }
 
 // onVisibleChange(datasets) receives the visible datasets, topmost first, whenever they change.
-export async function createMap({ container, app, basemapConfig, layers, kecamatan, i18n, onKecamatanClick, onVisibleChange }) {
+// onFeatureDetail(dataset, properties) handles clicks on icon layers marked detailView, instead of a popup.
+export async function createMap({ container, app, basemapConfig, layers, kecamatan, i18n, onKecamatanClick, onVisibleChange, onFeatureDetail }) {
   const basemaps = basemapConfig.basemaps;
   let current = basemaps.find((b) => b.id === basemapConfig.default);
   let selectedId = kecamatan.default;
@@ -348,6 +349,10 @@ export async function createMap({ container, app, basemapConfig, layers, kecamat
     const layerId = `${dataset.id}-icons`;
     map.on('click', layerId, (event) => {
       const feature = event.features[0];
+      if (dataset.detailView) {
+        onFeatureDetail(dataset, feature.properties);
+        return;
+      }
       new maplibregl.Popup({ maxWidth: '280px' })
         .setLngLat(feature.geometry.coordinates)
         .setDOMContent(popupContent(dataset, feature.properties, i18n))
@@ -412,6 +417,12 @@ export async function createMap({ container, app, basemapConfig, layers, kecamat
   }).observe(attributionArea);
 
   return {
+    // Replaces a dataset's features; they are kept for later basemap switches too.
+    setDatasetData(id, data) {
+      mapped.find((m) => m.dataset.id === id).data = data;
+      map.getSource(id)?.setData(data);
+    },
+
     // Called when the interface language changes.
     refreshText() {
       layerControl.render();
