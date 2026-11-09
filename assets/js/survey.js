@@ -48,6 +48,32 @@ async function photoToDataUrl(file) {
   return canvas.toDataURL('image/jpeg', 0.8);
 }
 
+// Two records are the same point when the survey time and the contributor are both filled in
+// and identical. scripts/build_survey.py applies the same rule to export files.
+const duplicateKey = (entry) => (entry.surveyedAt && entry.contributor ? `${entry.surveyedAt}|${entry.contributor}` : null);
+
+const appendOnce = (text, addition) => {
+  if (!addition || text.includes(addition)) return text;
+  return text ? `${text}\n\n${addition}` : addition;
+};
+
+// Combines a duplicate into the more recently edited record. Findings, photos and informants
+// from both are kept. A second location is written into the findings so a reviewer can see it.
+// An informant counts as consenting only if both records say so.
+function mergeEntries(newer, older) {
+  const informants = newer.informants.map((person) => ({ ...person }));
+  for (const person of older.informants) {
+    const same = informants.find((p) => p.name === person.name && p.role === person.role);
+    if (same) same.consent = Boolean(same.consent && person.consent);
+    else informants.push(person);
+  }
+  let findings = appendOnce(newer.findings, older.findings);
+  if (older.lat !== newer.lat || older.lon !== newer.lon) {
+    findings = appendOnce(findings, `Lokasi lain yang digabung: ${older.lat}, ${older.lon}${older.place ? ` (${older.place})` : ''}`);
+  }
+  return { ...newer, place: newer.place || older.place, findings, informants, photos: [...new Set([...newer.photos, ...older.photos])] };
+}
+
 // A local date and time in the form a datetime-local input expects.
 function localDateTime(date = new Date()) {
   const offset = date.getTimezoneOffset() * 60000;
@@ -64,45 +90,85 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
   const formatDate = (value) => (value ? new Date(value).toLocaleString(locale(), { dateStyle: 'medium', timeStyle: 'short' }) : '—');
   const kecamatanAt = (lon, lat) => boundaries.find((f) => featureContains(f, [lon, lat]))?.properties.name ?? null;
 
+  // A local copy of a published point stays on the device, because only it holds the informant
+  // names, but leaves the Local list. If it was edited after publishing it is listed again.
+  const isPublished = (entry) => published.some((p) => {
+    const same = p.id === entry.id || (duplicateKey(p) && duplicateKey(p) === duplicateKey(entry));
+    return same && String(entry.updatedAt) <= String(p.updatedAt ?? '');
+  });
+  const waiting = () => local.filter((e) => !isPublished(e));
+
   function toGeoJson() {
     const point = (id, lon, lat) => ({ type: 'Feature', properties: { id }, geometry: { type: 'Point', coordinates: [lon, lat] } });
     return {
       type: 'FeatureCollection',
-      features: [...published.map((e) => point(e.id, e.lon, e.lat)), ...local.map((e) => point(e.id, e.lon, e.lat))]
+      features: [...published.map((e) => point(e.id, e.lon, e.lat)), ...waiting().map((e) => point(e.id, e.lon, e.lat))]
     };
   }
 
-  function renderList() {
-    const rows = [...local.map((e) => ({ entry: e, isLocal: true })), ...published.map((e) => ({ entry: e, isLocal: false }))]
-      .sort((a, b) => String(b.entry.surveyedAt).localeCompare(String(a.entry.surveyedAt)));
-    const list = document.getElementById('survey-rows');
-    if (!rows.length) {
-      list.replaceChildren(el('li', 'empty', t('survey.empty')));
-    } else {
-      list.replaceChildren(...rows.map(({ entry, isLocal }) => {
-        const button = el('button', 'survey-row');
-        button.type = 'button';
-        button.append(
-          el('span', 'survey-row-place', entry.place || t('survey.noPlace')),
-          el('span', 'survey-row-meta', `${entry.kecamatan ?? t('survey.outside')} · ${formatDate(entry.surveyedAt)}`),
-          el('span', isLocal ? 'survey-badge local' : 'survey-badge', isLocal ? t('survey.local') : t('survey.published'))
-        );
-        button.addEventListener('click', () => showDetail(entry.id));
-        const goTo = el('button', 'survey-goto', t('survey.goTo'));
-        goTo.type = 'button';
-        goTo.addEventListener('click', () => onGoTo(entry.lon, entry.lat));
-        const item = el('li', 'survey-item');
-        item.append(button, goTo);
-        return item;
-      }));
+  function fillList(name, entries, emptyKey) {
+    const list = document.getElementById(`survey-rows-${name}`);
+    document.getElementById(`survey-count-${name}`).textContent = entries.length;
+    if (!entries.length) {
+      list.replaceChildren(el('li', 'empty', t(emptyKey)));
+      return;
     }
-    document.getElementById('survey-export').disabled = !local.length;
+    const newestFirst = [...entries].sort((a, b) => String(b.surveyedAt).localeCompare(String(a.surveyedAt)));
+    list.replaceChildren(...newestFirst.map((entry) => {
+      const button = el('button', 'survey-row');
+      button.type = 'button';
+      button.append(
+        el('span', 'survey-row-place', entry.place || t('survey.noPlace')),
+        el('span', 'survey-row-meta', `${entry.kecamatan ?? t('survey.outside')} · ${formatDate(entry.surveyedAt)}`)
+      );
+      button.addEventListener('click', () => showEntry(entry));
+      const goTo = el('button', 'survey-goto', t('survey.goTo'));
+      goTo.type = 'button';
+      goTo.addEventListener('click', () => onGoTo(entry.lon, entry.lat));
+      const item = el('li', 'survey-item');
+      item.append(button, goTo);
+      return item;
+    }));
   }
+
+  function renderList() {
+    const entries = waiting();
+    fillList('local', entries, 'survey.emptyLocal');
+    fillList('published', published, 'survey.emptyPublished');
+    for (const id of ['survey-export', 'survey-send']) document.getElementById(id).disabled = !entries.length;
+  }
+
+  // Replaces each group of duplicates on this device with one merged record, written before
+  // the others are removed. Returns how many records were merged away.
+  async function mergeLocalDuplicates() {
+    const groups = new Map();
+    for (const entry of local) {
+      const key = duplicateKey(entry);
+      if (key) groups.set(key, [...(groups.get(key) ?? []), entry]);
+    }
+    let merged = 0;
+    for (const group of groups.values()) {
+      if (group.length < 2) continue;
+      const [newest, ...others] = group.sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)));
+      await putLocal(others.reduce(mergeEntries, newest));
+      for (const other of others) await deleteLocal(other.id);
+      merged += others.length;
+    }
+    return merged;
+  }
+
+  const mergedText = (count) => t('survey.merged').replace('{n}', count);
 
   async function refresh() {
     local = await allLocal();
+    const merged = await mergeLocalDuplicates();
+    if (merged) {
+      local = await allLocal();
+      setStatus(mergedText(merged));
+    }
     renderList();
     onDataChange(toGeoJson());
+    return merged;
   }
 
   function closeButton() {
@@ -155,6 +221,7 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
   }
 
   // The report's rows appear when ready: the land cover image can take a moment to decode.
+  // ready resolves once they are in place.
   function locationReport(entry) {
     const section = el('div', 'survey-report');
     const body = el('p', 'note', t('survey.reportLoading'));
@@ -162,25 +229,23 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
     if (!entry.kecamatan) {
       // The layers are clipped to the kabupaten, so outside it they say nothing either way.
       body.textContent = t('survey.reportOutside');
-      return section;
+      return { section, ready: Promise.resolve() };
     }
-    pointReport({ ...reportSources(), i18n }, entry.lon, entry.lat).then((groups) => {
+    const ready = pointReport({ ...reportSources(), i18n }, entry.lon, entry.lat).then((groups) => {
       const content = groups.flatMap((group) => {
         const rows = el('dl', 'survey-facts');
         rows.append(...group.rows.map((row) => fact(row.label, row.value)));
         return [el('h4', null, group.label), rows];
       });
-      body.replaceWith(...content, el('p', 'note', t('survey.reportNote')));
+      const sources = [...new Set(groups.flatMap((group) => group.rows.map((row) => row.source)))].join('; ');
+      body.replaceWith(...content, el('p', 'note', t('survey.reportNote')), el('p', 'note', `${t('source')}: ${sources}`));
     }).catch(() => {
       body.textContent = t('survey.reportFailed');
     });
-    return section;
+    return { section, ready };
   }
 
-  function showDetail(id) {
-    const entry = local.find((e) => e.id === id) ?? published.find((e) => e.id === id);
-    if (!entry) return;
-    const isLocal = local.includes(entry);
+  function factList(entry, isLocal) {
     const facts = el('dl', 'survey-facts');
     facts.append(
       fact(t('survey.place'), entry.place || t('survey.noPlace')),
@@ -191,8 +256,50 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
     facts.append(
       fact(t('survey.date'), formatDate(entry.surveyedAt)),
       fact(t('survey.contributor'), entry.contributor || t('noData')),
-      fact(t('survey.status'), isLocal ? t('survey.local') : t('survey.published'))
+      fact(t('survey.status'), isLocal ? t('survey.localStatus') : t('survey.published'))
     );
+    return facts;
+  }
+
+  // A printed report can leave the project, so like the public site it shows only the roles of
+  // informants who agreed, never a name, even for points still on this device.
+  async function printReport(entry, isLocal) {
+    const roles = isLocal ? entry.informants.filter((p) => p.consent && p.role).map((p) => p.role) : entry.roles ?? [];
+    const people = el('ul', 'survey-people');
+    people.append(...roles.map((role) => el('li', null, role)));
+    const photos = (entry.photos ?? []).map((src) => {
+      const image = el('img');
+      image.src = src;
+      image.alt = '';
+      return image;
+    });
+    const gallery = el('div', 'survey-print-photos');
+    gallery.append(...photos);
+    const { section, ready } = locationReport(entry);
+    document.getElementById('survey-print').replaceChildren(
+      el('p', 'survey-print-kicker', t('survey.printHeading')),
+      el('h1', null, entry.place || t('survey.noPlace')),
+      factList(entry, isLocal),
+      gallery,
+      el('h3', null, t('survey.informants')),
+      roles.length ? people : el('p', 'note', t('noData')),
+      el('h3', null, t('survey.findings')),
+      el('p', 'survey-findings', entry.findings),
+      section,
+      el('p', 'note', `${t('survey.printedOn')}: ${formatDate(new Date())}`)
+    );
+    await Promise.all([ready, ...photos.map((image) => image.decode().catch(() => {}))]);
+    window.print();
+  }
+
+  function showDetail(id) {
+    const entry = waiting().find((e) => e.id === id) ?? published.find((e) => e.id === id);
+    if (entry) showEntry(entry);
+  }
+
+  function showEntry(entry) {
+    const isLocal = local.includes(entry);
+    const facts = factList(entry, isLocal);
 
     const people = el('ul', 'survey-people');
     const informants = isLocal ? entry.informants : (entry.roles ?? []).map((role) => ({ role }));
@@ -208,10 +315,16 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
       informants.length ? people : el('p', 'note', t('noData'))
     ];
     if (isLocal && informants.length) body.push(el('p', 'note', t('survey.namesPrivate')));
-    body.push(el('h3', null, t('survey.findings')), el('p', 'survey-findings', entry.findings), locationReport(entry));
+    body.push(el('h3', null, t('survey.findings')), el('p', 'survey-findings', entry.findings), locationReport(entry).section);
+
+    const actions = el('div', 'survey-actions');
+    const print = el('button', null, t('survey.print'));
+    print.type = 'button';
+    print.addEventListener('click', () => printReport(entry, isLocal));
+    actions.append(print);
+    body.push(actions);
 
     if (isLocal) {
-      const actions = el('div', 'survey-actions');
       const edit = el('button', null, t('survey.edit'));
       edit.type = 'button';
       edit.addEventListener('click', () => showForm(entry));
@@ -224,7 +337,6 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
         await refresh();
       });
       actions.append(edit, remove);
-      body.push(actions);
     }
     openDialog(entry.place || dataset.label[document.documentElement.lang], body);
   }
@@ -400,15 +512,33 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
 
   // ---------------------------------------------------------------- export and import
 
-  function exportFile() {
+  function downloadExport() {
+    const entries = waiting();
     const stamp = localDateTime().replace('T', '_').replace(':', '');
-    const blob = new Blob([JSON.stringify({ format: EXPORT_FORMAT, version: 1, exportedAt: new Date().toISOString(), entries: local })], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify({ format: EXPORT_FORMAT, version: 1, exportedAt: new Date().toISOString(), entries })], { type: 'application/json' });
     const link = el('a');
     link.href = URL.createObjectURL(blob);
     link.download = `brin_survey_export_${stamp}.json`;
     link.click();
     URL.revokeObjectURL(link.href);
+    return { file: link.download, count: entries.length };
+  }
+
+  function exportFile() {
+    downloadExport();
     setStatus(t('survey.exported'));
+  }
+
+  // A web page cannot attach a file to an email, so this saves the export and opens an
+  // addressed email for the sender to attach it to. The email text holds no informant names.
+  function sendByEmail() {
+    const { file, count } = downloadExport();
+    const subject = encodeURIComponent(t('survey.emailSubject'));
+    const body = encodeURIComponent(t('survey.emailBody').replace('{n}', count).replace('{file}', file));
+    const link = el('a');
+    link.href = `mailto:${dataset.sendTo}?subject=${subject}&body=${body}`;
+    link.click();
+    setStatus(t('survey.emailHint').replace('{file}', file).replace('{email}', dataset.sendTo));
   }
 
   const validEntry = (e) => typeof e?.id === 'string' && Number.isFinite(e.lat) && Number.isFinite(e.lon)
@@ -427,8 +557,8 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
           added += 1;
         }
       }
-      await refresh();
-      setStatus(t('survey.imported').replace('{n}', added));
+      const merged = await refresh();
+      setStatus([t('survey.imported').replace('{n}', added), merged ? mergedText(merged) : ''].join(' ').trim());
     } catch {
       setStatus(t('survey.importFailed'));
     }
@@ -449,6 +579,7 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
 
       document.getElementById('survey-add').addEventListener('click', () => showForm());
       document.getElementById('survey-export').addEventListener('click', exportFile);
+      document.getElementById('survey-send').addEventListener('click', sendByEmail);
       const picker = document.getElementById('survey-import');
       picker.addEventListener('change', async () => {
         if (picker.files[0]) await importFile(picker.files[0]);

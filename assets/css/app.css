@@ -599,6 +599,30 @@ dialog::backdrop { background: rgb(0 0 0 / 0.35); }
   gap: 6px;
 }
 
+.survey-bar {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+}
+
+/* Local also holds the toolbar, so it gets the larger share. */
+.survey-bar:first-of-type { flex-grow: 1.7; }
+
+.survey-bar-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: var(--selected-bg);
+}
+
+.survey-bar-head h3 { margin: 0; font-size: 13px; }
+.survey-count { font-size: 12px; font-weight: 700; }
+.survey-bar .note { margin: 0; }
+
 .survey-tools {
   display: flex;
   flex-wrap: wrap;
@@ -680,18 +704,6 @@ dialog::backdrop { background: rgb(0 0 0 / 0.35); }
 
 .survey-row-place { font-size: 13px; font-weight: 600; }
 .survey-row-meta { grid-row: 2; font-size: 11px; color: var(--muted); }
-
-.survey-badge {
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  align-self: center;
-  padding: 1px 6px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  font-size: 11px;
-}
-
-.survey-badge.local { background: var(--selected-bg); }
 
 .survey-dialog-body {
   display: flex;
@@ -855,6 +867,8 @@ dialog::backdrop { background: rgb(0 0 0 / 0.35); }
   .chart-canvas { flex: none; height: 320px; }
   .map-panel { flex: none; height: 65vh; }
   .list-rows { max-height: 60vh; }
+  .survey-bar { flex: none; }
+  .survey-list { flex: none; max-height: 40vh; }
 }
 
 @media (max-width: 700px) {
@@ -883,4 +897,49 @@ dialog::backdrop { background: rgb(0 0 0 / 0.35); }
     width: 100%;
   }
   .maplibregl-ctrl-bottom-left { bottom: var(--attribution-height, 40px); }
+}
+
+/* Printed point report: only #survey-print is on the page */
+#survey-print { display: none; }
+
+@media print {
+  @page { margin: 15mm; }
+
+  html, body {
+    display: block;
+    height: auto;
+    overflow: visible;
+    background: #ffffff;
+  }
+
+  body > * { display: none !important; }
+
+  #survey-print {
+    display: block !important;
+    color: #000000;
+    font-size: 11pt;
+  }
+
+  #survey-print h1 { margin: 0 0 8pt; font-size: 18pt; }
+  #survey-print h3 { margin: 12pt 0 4pt; font-size: 12pt; break-after: avoid; }
+  #survey-print h4 { margin: 8pt 0 2pt; font-size: 11pt; break-after: avoid; }
+  #survey-print .note { color: #333333; font-size: 9pt; }
+  #survey-print .survey-fact { break-inside: avoid; }
+  #survey-print .survey-fact dt { color: #333333; font-size: 10pt; }
+
+  .survey-print-kicker { margin: 0 0 2pt; font-size: 10pt; }
+
+  .survey-print-photos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6pt;
+    margin-top: 8pt;
+  }
+
+  .survey-print-photos img {
+    width: 100%;
+    max-height: 90mm;
+    object-fit: contain;
+    break-inside: avoid;
+  }
 }

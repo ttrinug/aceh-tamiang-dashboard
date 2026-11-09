@@ -10,7 +10,7 @@ is not committed. Public output keeps the role of informants who agreed to be li
 an informant's name. The contributor (the researcher or team who recorded the point) is public. Findings are published as written: read the list this script prints before pushing.
 Points outside the BIG kecamatan boundaries are reported and left out. Where several files
 hold the same point, the most recently edited version is used. Photos are re-encoded, which
-drops any metadata.
+drops any metadata. Records with the same survey time and contributor are merged.
 
 Run from the repository root:  .venv/Scripts/python.exe scripts/build_survey.py
 """
@@ -43,7 +43,53 @@ def read_entries():
             current = entries.get(entry["id"])
             if current is None or entry["updatedAt"] > current["updatedAt"]:
                 entries[entry["id"]] = entry
-    return list(entries.values())
+    return merge_duplicates(list(entries.values()))
+
+
+def append_once(text, addition):
+    if not addition or addition in text:
+        return text
+    return f"{text}\n\n{addition}" if text else addition
+
+
+def merge_entries(newer, older):
+    """Combines a duplicate into the more recently edited record, as the dashboard does.
+
+    Findings, photos and informants from both are kept. A second location is written into the
+    findings so the reviewer sees it. An informant counts as consenting only if both records say so.
+    """
+    informants = [dict(person) for person in newer["informants"]]
+    for person in older["informants"]:
+        same = next((p for p in informants if p.get("name") == person.get("name") and p.get("role") == person.get("role")), None)
+        if same:
+            same["consent"] = bool(same.get("consent") and person.get("consent"))
+        else:
+            informants.append(person)
+    findings = append_once(newer["findings"], older["findings"])
+    if (older["lat"], older["lon"]) != (newer["lat"], newer["lon"]):
+        place = f" ({older['place']})" if older.get("place") else ""
+        findings = append_once(findings, f"Lokasi lain yang digabung: {older['lat']}, {older['lon']}{place}")
+    photos = list(dict.fromkeys(newer["photos"] + older["photos"]))
+    return {**newer, "place": newer.get("place") or older.get("place"), "findings": findings, "informants": informants, "photos": photos}
+
+
+def merge_duplicates(entries):
+    """Merges records whose survey time and contributor are both filled in and identical."""
+    groups, kept = {}, []
+    for entry in entries:
+        if entry.get("surveyedAt") and entry.get("contributor"):
+            groups.setdefault((entry["surveyedAt"], entry["contributor"]), []).append(entry)
+        else:
+            kept.append(entry)
+    for (surveyed_at, contributor), group in groups.items():
+        group.sort(key=lambda e: e["updatedAt"], reverse=True)
+        merged = group[0]
+        for other in group[1:]:
+            merged = merge_entries(merged, other)
+        kept.append(merged)
+        if len(group) > 1:
+            print(f"Merged {len(group)} records with the same time and contributor: {surveyed_at}, {contributor}")
+    return kept
 
 
 def write_photo(data_url, path):
@@ -82,6 +128,7 @@ def main():
                 "id": row["id"],
                 "place": row["place"],
                 "surveyedAt": row["surveyedAt"],
+                "updatedAt": row["updatedAt"],
                 "contributor": contributor,
                 "kecamatan": row["NAMOBJ"],
                 "code": row["KDCPUM"],

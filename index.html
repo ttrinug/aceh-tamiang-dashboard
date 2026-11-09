@@ -78,16 +78,31 @@
 
     <section class="panel survey-panel" aria-labelledby="survey-title">
       <h2 id="survey-title" data-i18n="survey.title"></h2>
-      <div class="survey-tools">
-        <button type="button" id="survey-add" class="survey-primary" data-i18n="survey.add"></button>
-        <button type="button" id="survey-export" data-i18n="survey.export"></button>
-        <label class="survey-import">
-          <span data-i18n="survey.import"></span>
-          <input type="file" id="survey-import" accept=".json,application/json" class="visually-hidden">
-        </label>
+      <div class="survey-bar">
+        <div class="survey-bar-head">
+          <h3 data-i18n="survey.local"></h3>
+          <span class="survey-count" id="survey-count-local"></span>
+        </div>
+        <div class="survey-tools">
+          <button type="button" id="survey-add" class="survey-primary" data-i18n="survey.add"></button>
+          <button type="button" id="survey-export" data-i18n="survey.export"></button>
+          <button type="button" id="survey-send" data-i18n="survey.send"></button>
+          <label class="survey-import">
+            <span data-i18n="survey.import"></span>
+            <input type="file" id="survey-import" accept=".json,application/json" class="visually-hidden">
+          </label>
+        </div>
+        <ul id="survey-rows-local" class="survey-list"></ul>
+        <p class="note" id="survey-note" role="status"></p>
       </div>
-      <ul id="survey-rows" class="survey-list"></ul>
-      <p class="note" id="survey-note" role="status"></p>
+      <div class="survey-bar">
+        <div class="survey-bar-head">
+          <h3 data-i18n="survey.published"></h3>
+          <span class="survey-count" id="survey-count-published"></span>
+        </div>
+        <ul id="survey-rows-published" class="survey-list"></ul>
+        <p class="note" data-i18n="survey.publishedNote"></p>
+      </div>
     </section>
 
     <section class="panel table-panel" aria-labelledby="table-title">
@@ -116,6 +131,8 @@
     </div>
     <div id="about-content"></div>
   </dialog>
+
+  <div id="survey-print"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
   <script type="module" src="assets/js/app.js"></script>

@@ -74,13 +74,14 @@ function polygonValue(dataset, data, point, { t, pick }) {
   return item ? pick(item.label) : t('noData');
 }
 
-// Returns [{ label, rows: [{ label, value }] }], one entry per layer group that has any rows.
+// Returns [{ label, rows: [{ label, source, value }] }], one entry per layer group that has any rows.
 export async function pointReport({ layers, datasetData, imageCorners, i18n }, lon, lat) {
   const point = [lon, lat];
   const sections = await Promise.all(layers.groups.map(async (group) => {
     const datasets = layers.datasets.filter((d) => d.map && d.file && d.group === group.id && ['fill', 'classes', 'image'].includes(d.renderer));
     const rows = await Promise.all(datasets.map(async (dataset) => ({
       label: i18n.pick(dataset.label),
+      source: dataset.sourceShort ?? dataset.source,
       value: dataset.renderer === 'image'
         ? await imageValue(dataset, imageCorners[dataset.image], point, i18n)
         : polygonValue(dataset, datasetData(dataset.id), point, i18n)
