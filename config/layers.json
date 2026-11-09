@@ -100,11 +100,14 @@
       "visible": false,
       "publish": false,
       "attribution": "Penduduk: <a href=\"https://www.worldpop.org\" target=\"_blank\">WorldPop</a> R2025A, CC BY 4.0",
+      "reportUnit": { "id": "jiwa per sel 100 m", "en": "people per 100 m cell" },
+      "reportEmpty": { "id": "Tidak ada estimasi pada sel ini", "en": "No estimate for this cell" },
       "legend": {
         "items": [
           {
             "color": "#dadaeb",
-            "label": { "id": "< 5 jiwa per sel 100 m", "en": "< 5 people per 100 m cell" }
+            "label": { "id": "< 5 jiwa per sel 100 m", "en": "< 5 people per 100 m cell" },
+            "reportLabel": { "id": "< 5", "en": "< 5" }
           },
           {
             "color": "#bcbddc",
@@ -277,6 +280,7 @@
       "map": true,
       "renderer": "icons",
       "detailView": true,
+      "iconSize": [8, 0.45, 12, 0.7, 16, 1],
       "label": { "id": "BRIN Survey", "en": "BRIN Survey" },
       "file": "data/web/brin_survey.geojson",
       "source": "Survei lapangan BRIN",

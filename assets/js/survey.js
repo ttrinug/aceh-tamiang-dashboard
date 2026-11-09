@@ -5,6 +5,7 @@
 // loaded from the dataset's GeoJSON and are read-only here. Informant names exist only in
 // the local copy and the export file; published points carry roles only.
 import { el } from './dom.js';
+import { featureContains, pointReport } from './point-report.js';
 
 const DB_NAME = 'brin-survey';
 const STORE = 'entries';
@@ -47,29 +48,13 @@ async function photoToDataUrl(file) {
   return canvas.toDataURL('image/jpeg', 0.8);
 }
 
-function ringContains(ring, [x, y]) {
-  let inside = false;
-  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-    const [xi, yi] = ring[i];
-    const [xj, yj] = ring[j];
-    if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
-  }
-  return inside;
-}
-
-function featureContains(feature, point) {
-  const { type, coordinates } = feature.geometry;
-  const polygons = type === 'Polygon' ? [coordinates] : coordinates;
-  return polygons.some((rings) => rings.reduce((inside, ring) => (ringContains(ring, point) ? !inside : inside), false));
-}
-
 // A local date and time in the form a datetime-local input expects.
 function localDateTime(date = new Date()) {
   const offset = date.getTimezoneOffset() * 60000;
   return new Date(date.getTime() - offset).toISOString().slice(0, 16);
 }
 
-export function createSurvey({ dataset, boundariesFile, i18n, onDataChange, setStatus }) {
+export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onDataChange, onGoTo, setStatus }) {
   const { t } = i18n;
   let local = [];
   let published = [];
@@ -103,8 +88,11 @@ export function createSurvey({ dataset, boundariesFile, i18n, onDataChange, setS
           el('span', isLocal ? 'survey-badge local' : 'survey-badge', isLocal ? t('survey.local') : t('survey.published'))
         );
         button.addEventListener('click', () => showDetail(entry.id));
-        const item = el('li');
-        item.append(button);
+        const goTo = el('button', 'survey-goto', t('survey.goTo'));
+        goTo.type = 'button';
+        goTo.addEventListener('click', () => onGoTo(entry.lon, entry.lat));
+        const item = el('li', 'survey-item');
+        item.append(button, goTo);
         return item;
       }));
     }
@@ -166,17 +154,43 @@ export function createSurvey({ dataset, boundariesFile, i18n, onDataChange, setS
     return row;
   }
 
+  // The report's rows appear when ready: the land cover image can take a moment to decode.
+  function locationReport(entry) {
+    const section = el('div', 'survey-report');
+    const body = el('p', 'note', t('survey.reportLoading'));
+    section.append(el('h3', null, t('survey.report')), body);
+    if (!entry.kecamatan) {
+      // The layers are clipped to the kabupaten, so outside it they say nothing either way.
+      body.textContent = t('survey.reportOutside');
+      return section;
+    }
+    pointReport({ ...reportSources(), i18n }, entry.lon, entry.lat).then((groups) => {
+      const content = groups.flatMap((group) => {
+        const rows = el('dl', 'survey-facts');
+        rows.append(...group.rows.map((row) => fact(row.label, row.value)));
+        return [el('h4', null, group.label), rows];
+      });
+      body.replaceWith(...content, el('p', 'note', t('survey.reportNote')));
+    }).catch(() => {
+      body.textContent = t('survey.reportFailed');
+    });
+    return section;
+  }
+
   function showDetail(id) {
     const entry = local.find((e) => e.id === id) ?? published.find((e) => e.id === id);
     if (!entry) return;
     const isLocal = local.includes(entry);
     const facts = el('dl', 'survey-facts');
-    const accuracy = entry.accuracy_m ? ` (± ${Math.round(entry.accuracy_m)} m)` : '';
     facts.append(
       fact(t('survey.place'), entry.place || t('survey.noPlace')),
       fact(t('kecamatan'), entry.kecamatan ?? t('survey.outside')),
-      fact(t('survey.coordinates'), `${entry.lat.toFixed(5)}, ${entry.lon.toFixed(5)}${accuracy}`),
+      fact(t('survey.coordinates'), `${entry.lat.toFixed(5)}, ${entry.lon.toFixed(5)}`)
+    );
+    if (entry.accuracy_m) facts.append(fact(t('survey.accuracy'), `${Math.round(entry.accuracy_m)} m`));
+    facts.append(
       fact(t('survey.date'), formatDate(entry.surveyedAt)),
+      fact(t('survey.contributor'), entry.contributor || t('noData')),
       fact(t('survey.status'), isLocal ? t('survey.local') : t('survey.published'))
     );
 
@@ -194,7 +208,7 @@ export function createSurvey({ dataset, boundariesFile, i18n, onDataChange, setS
       informants.length ? people : el('p', 'note', t('noData'))
     ];
     if (isLocal && informants.length) body.push(el('p', 'note', t('survey.namesPrivate')));
-    body.push(el('h3', null, t('survey.findings')), el('p', 'survey-findings', entry.findings));
+    body.push(el('h3', null, t('survey.findings')), el('p', 'survey-findings', entry.findings), locationReport(entry));
 
     if (isLocal) {
       const actions = el('div', 'survey-actions');
@@ -275,7 +289,7 @@ export function createSurvey({ dataset, boundariesFile, i18n, onDataChange, setS
         lat.value = position.coords.latitude.toFixed(6);
         lon.value = position.coords.longitude.toFixed(6);
         accuracy = position.coords.accuracy;
-        gpsStatus.textContent = `${t('survey.accuracy')}: ± ${Math.round(accuracy)} m`;
+        gpsStatus.textContent = `${t('survey.accuracy')}: ${Math.round(accuracy)} m`;
         gps.disabled = false;
       }, () => {
         gpsStatus.textContent = t('survey.gpsFailed');
@@ -288,6 +302,9 @@ export function createSurvey({ dataset, boundariesFile, i18n, onDataChange, setS
 
     const place = input('text', existing?.place ?? '');
     const date = input('datetime-local', existing?.surveyedAt ?? localDateTime());
+    // A new point starts with the contributor of the latest point on this device.
+    const latestContributor = [...local].sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)))[0]?.contributor;
+    const contributor = input('text', existing?.contributor ?? latestContributor ?? '');
 
     let photos = [...(existing?.photos ?? [])];
     const previews = el('div', 'survey-previews');
@@ -338,6 +355,7 @@ export function createSurvey({ dataset, boundariesFile, i18n, onDataChange, setS
       const latitude = Number(lat.value);
       const longitude = Number(lon.value);
       if (lat.value === '' || lon.value === '' || Math.abs(latitude) > 90 || Math.abs(longitude) > 180) return fail(t('survey.invalidLocation'));
+      if (!contributor.value.trim()) return fail(t('survey.contributorRequired'));
       if (!findings.value.trim()) return fail(t('survey.findingsRequired'));
       const now = new Date().toISOString();
       const entry = {
@@ -349,6 +367,7 @@ export function createSurvey({ dataset, boundariesFile, i18n, onDataChange, setS
         lon: longitude,
         accuracy_m: accuracy,
         place: place.value.trim(),
+        contributor: contributor.value.trim(),
         kecamatan: kecamatanAt(longitude, latitude),
         findings: findings.value.trim(),
         informants: [...informants.children].map((row) => row.read()).filter((p) => p.name || p.role),
@@ -370,6 +389,7 @@ export function createSurvey({ dataset, boundariesFile, i18n, onDataChange, setS
 
     openDialog(existing ? t('survey.editTitle') : t('survey.formTitle'), [
       el('h3', null, t('survey.location')), gpsRow, coords, field(t('survey.place'), place), field(t('survey.date'), date),
+      field(t('survey.contributor'), contributor, t('survey.contributorHint')),
       el('h3', null, t('survey.photos')), field(t('survey.addPhotos'), picker), previews,
       el('h3', null, t('survey.informants')), informants, addInformant,
       el('h3', null, t('survey.findings')), field(t('survey.findingsHint'), findings),

@@ -653,6 +653,31 @@ dialog::backdrop { background: rgb(0 0 0 / 0.35); }
   cursor: pointer;
 }
 
+.survey-item {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.survey-item .survey-row { flex: 1; min-width: 0; border-bottom: 0; }
+
+.survey-goto {
+  align-self: center;
+  flex: none;
+  padding: 7px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.survey-report h4 { margin: 10px 0 2px; font-size: 13px; }
+.survey-report .note { margin: 8px 0 0; }
+.survey-report .survey-fact { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); }
+
 .survey-row-place { font-size: 13px; font-weight: 600; }
 .survey-row-meta { grid-row: 2; font-size: 11px; color: var(--muted); }
 

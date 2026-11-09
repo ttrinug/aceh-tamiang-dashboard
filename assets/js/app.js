@@ -442,7 +442,9 @@ async function init() {
     dataset: surveyDataset,
     boundariesFile: datasetById('boundaries').file,
     i18n,
+    reportSources: () => ({ layers, datasetData: mapView.datasetData, imageCorners: mapView.imageCorners }),
     onDataChange: (data) => mapView.setDatasetData(surveyDataset.id, data),
+    onGoTo: (lon, lat) => mapView.goToPoint(surveyDataset.id, lon, lat),
     setStatus: (text) => { document.getElementById('survey-note').textContent = text; }
   });
   await survey.init();

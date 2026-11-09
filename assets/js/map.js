@@ -2,6 +2,7 @@ import * as maplibregl from 'https://cdn.jsdelivr.net/npm/maplibre-gl@6.15.0/dis
 import { el } from './dom.js';
 
 const SELECTED_FILL = '#08519c';
+const POINT_ZOOM = 15;
 
 // Turns a basemap entry from config/basemaps.json into a MapLibre style.
 function styleFor(basemap) {
@@ -108,7 +109,8 @@ function pointLayers(dataset) {
 }
 
 // Reported locations shown with an icon (SITABA infrastructure). The icon image is added
-// to the map under the name in dataset.legend.icon; see loadIcons().
+// to the map under the name in dataset.legend.icon; see loadIcons(). dataset.iconSize can set
+// its own zoom and size stops.
 function iconLayers(dataset) {
   return [{
     id: `${dataset.id}-icons`,
@@ -116,7 +118,7 @@ function iconLayers(dataset) {
     source: dataset.id,
     layout: {
       'icon-image': dataset.legend.icon,
-      'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.7, 14, 1],
+      'icon-size': ['interpolate', ['linear'], ['zoom'], ...(dataset.iconSize ?? [8, 0.7, 14, 1])],
       'icon-allow-overlap': true
     }
   }];
@@ -417,10 +419,25 @@ export async function createMap({ container, app, basemapConfig, layers, kecamat
   }).observe(attributionArea);
 
   return {
+    imageCorners,
+
+    // A dataset's loaded GeoJSON.
+    datasetData: (id) => mapped.find((m) => m.dataset.id === id).data,
+
     // Replaces a dataset's features; they are kept for later basemap switches too.
     setDatasetData(id, data) {
       mapped.find((m) => m.dataset.id === id).data = data;
       map.getSource(id)?.setData(data);
+    },
+
+    // Centres the map on a point of a dataset, switching that layer on if it is off.
+    goToPoint(datasetId, lon, lat) {
+      if (!visible.has(datasetId)) {
+        layerControl.onLayerToggle(mapped.find((m) => m.dataset.id === datasetId).dataset, true);
+        layerControl.render();
+      }
+      map.flyTo({ center: [lon, lat], zoom: Math.max(map.getZoom(), POINT_ZOOM) });
+      map.getContainer().scrollIntoView({ behavior: 'smooth', block: 'center' });
     },
 
     // Called when the interface language changes.

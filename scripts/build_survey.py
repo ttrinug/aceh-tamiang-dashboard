@@ -7,7 +7,7 @@ Output: data/web/brin_survey.geojson   public points
 
 The export files contain informant names, so they are copied only to data/raw/survey/, which
 is not committed. Public output keeps the role of informants who agreed to be listed, and never
-a name. Findings are published as written: read the list this script prints before pushing.
+an informant's name. The contributor (the researcher or team who recorded the point) is public. Findings are published as written: read the list this script prints before pushing.
 Points outside the BIG kecamatan boundaries are reported and left out. Where several files
 hold the same point, the most recently edited version is used. Photos are re-encoded, which
 drops any metadata.
@@ -73,12 +73,16 @@ def main():
             write_photo(data_url, path)
             photos.append(path.relative_to(ROOT).as_posix())
         roles = [p["role"] for p in row["informants"] if p.get("consent") and p.get("role")]
+        # Exports made before the contributor field existed have no value here.
+        contributor = row.get("contributor")
+        contributor = contributor if isinstance(contributor, str) and contributor else None
         features.append({
             "type": "Feature",
             "properties": {
                 "id": row["id"],
                 "place": row["place"],
                 "surveyedAt": row["surveyedAt"],
+                "contributor": contributor,
                 "kecamatan": row["NAMOBJ"],
                 "code": row["KDCPUM"],
                 "findings": row["findings"],
@@ -87,7 +91,7 @@ def main():
             },
             "geometry": {"type": "Point", "coordinates": [round(row["lon"], DECIMALS), round(row["lat"], DECIMALS)]},
         })
-        print(f"{row['surveyedAt']} {row['NAMOBJ']}: {row['place'] or '(no place name)'}; {len(photos)} photos; roles {roles}")
+        print(f"{row['surveyedAt']} {row['NAMOBJ']}: {row['place'] or '(no place name)'}; contributor {contributor}; {len(photos)} photos; roles {roles}")
         print(f"    findings: {row['findings']}")
 
     OUT.write_text(json.dumps({"type": "FeatureCollection", "features": features}, ensure_ascii=False) + "\n", encoding="utf-8")

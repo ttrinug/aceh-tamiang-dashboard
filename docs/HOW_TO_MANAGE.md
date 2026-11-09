@@ -45,8 +45,8 @@ Leave **Cleared for publishing** unticked until the data owner allows it.
 **In the field**
 
 1. Open the dashboard on the tablet. Use the same address each time, because points are saved for that address in that browser.
-2. In **Hasil BRIN Survey**, press **Tambah titik**. Allow location access when asked; the GPS position fills in by itself. If GPS fails, type the coordinates.
-3. Fill in the place name, photos, narasumber and findings, then press **Simpan**. The point appears on the map at once, on that tablet only.
+2. In **Hasil survei BRIN**, press **Tambah titik**. Allow location access when asked; the GPS position fills in by itself. If GPS fails, type the coordinates.
+3. Fill in the place name, contributor, photos, narasumber and findings, then press **Simpan**. The point appears on the map at once, on that tablet only. The contributor is the researcher or team, and is required. The name is shown publicly once the point is published.
 4. Press **Ekspor** regularly, and always before clearing the browser or changing tablets. **Clearing browser data deletes points that have not been exported.** The form must be opened while online; points you have already saved stay on the tablet.
 
 Each narasumber has a name, a role (such as Kepala Desa or Warga) and a consent box. Do not write names in the findings, because findings are published as written.
@@ -54,6 +54,10 @@ Each narasumber has a name, a role (such as Kepala Desa or Warga) and a consent 
 **The export file contains narasumber names. Keep it private and never upload it anywhere public.**
 
 To combine tablets, press **Impor** on one tablet and choose another tablet's export file.
+
+**Reading a point**
+
+Press a point on the map or in the list to see its details and its **Laporan lokasi**. The report reads each map layer at the point's coordinates: observed flood (detected or not detected), land cover, the WorldPop estimate and each InaRISK hazard class. A polygon or image layer added to the dashboard appears in the report by itself. **Ke titik** in the list moves the map to that point.
 
 **Publishing reviewed points**
 
