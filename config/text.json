@@ -67,8 +67,7 @@
     "title": { "id": "Infrastruktur di Kecamatan", "en": "Infrastructure in Kecamatan" },
     "type": { "id": "Jenis", "en": "Type" },
     "total": { "id": "Jumlah", "en": "Total" },
-    "damaged": { "id": "Rusak", "en": "Damaged" },
-    "note": { "id": "Jumlah: belum ada data titik fasilitas. — = belum ada data.", "en": "Total: no facility point data yet. — = no data yet." }
+    "damaged": { "id": "Rusak", "en": "Damaged" }
   },
   "survey": {
     "title": { "id": "Hasil survei BRIN", "en": "BRIN Survey results" },
@@ -78,7 +77,6 @@
     "send": { "id": "Kirim ke email", "en": "Send by email" },
     "emptyLocal": { "id": "Tidak ada titik lokal.", "en": "No local points." },
     "emptyPublished": { "id": "Belum ada titik terbit.", "en": "No published points yet." },
-    "publishedNote": { "id": "Sudah ditinjau dan terlihat oleh semua pengunjung.", "en": "Reviewed and visible to all visitors." },
     "emailSubject": { "id": "Ekspor BRIN Survey", "en": "BRIN Survey export" },
     "emailBody": { "id": "{n} titik survei terlampir dalam file {file}.", "en": "{n} survey points are attached in the file {file}." },
     "emailHint": { "id": "File {file} sudah diunduh. Lampirkan ke email yang terbuka, lalu kirim ke {email}. File ini memuat nama narasumber, jadi jangan dikirim ke alamat lain.", "en": "The file {file} has been downloaded. Attach it to the email that opened, then send it to {email}. It contains informant names, so do not send it to any other address." },
@@ -86,7 +84,7 @@
     "print": { "id": "Cetak laporan", "en": "Print report" },
     "printHeading": { "id": "Laporan titik survei BRIN", "en": "BRIN Survey point report" },
     "printedOn": { "id": "Dicetak", "en": "Printed" },
-    "note": { "id": "Titik baru tersimpan hanya di perangkat ini. Ekspor secara berkala.", "en": "New points are saved only on this device. Export them regularly." },
+    "unavailable": { "id": "Panel survei tidak dapat dimulai. Muat ulang halaman.", "en": "The survey panel could not start. Reload the page." },
     "local": { "id": "Lokal", "en": "Local" },
     "localStatus": { "id": "Lokal, belum ditinjau", "en": "Local, not yet reviewed" },
     "published": { "id": "Terbit", "en": "Published" },

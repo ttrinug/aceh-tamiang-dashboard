@@ -86,7 +86,7 @@ function renderInfrastructure() {
   }));
   const damaged = datasetById(config.cards.infrastructure[0].damagedDataset);
   document.getElementById('infra-note').textContent =
-    `${t('infrastructure.note')} ${t('infrastructure.damaged')}: ${damaged.sourceShort ?? damaged.source}, ${dateText(damaged)}.`;
+    `${t('infrastructure.damaged')}: ${damaged.sourceShort ?? damaged.source}, ${dateText(damaged)}.`;
 }
 
 // Percentages are shown for the selected kecamatan, the unit of analysis.
@@ -318,6 +318,9 @@ function renderAbout() {
 function render() {
   document.documentElement.lang = state.lang;
   for (const node of document.querySelectorAll('[data-i18n]')) node.textContent = t(node.dataset.i18n);
+  const sendButton = document.getElementById('survey-send');
+  sendButton.title = t('survey.send');
+  sendButton.setAttribute('aria-label', t('survey.send'));
   for (const node of document.querySelectorAll('[data-i18n-label]')) node.setAttribute('aria-label', t(node.dataset.i18nLabel));
   for (const button of document.querySelectorAll('[data-lang]')) {
     button.setAttribute('aria-pressed', String(button.dataset.lang === state.lang));
@@ -328,7 +331,6 @@ function render() {
   renderInfrastructure();
   document.getElementById('pct-cards').replaceChildren(...cards.percentages.map(percentageCard));
 
-  document.getElementById('survey-note').textContent = t('survey.note');
   survey?.render();
 
   renderTitle();
@@ -434,7 +436,7 @@ async function init() {
       state.visibleLayers = datasets;
       renderLegend();
     },
-    onFeatureDetail: (dataset, properties) => survey.showDetail(properties.id)
+    onFeatureDetail: (dataset, properties) => survey?.showDetail(properties.id)
   });
 
   const surveyDataset = datasetById('brin-survey');
@@ -447,10 +449,18 @@ async function init() {
     onGoTo: (lon, lat) => mapView.goToPoint(surveyDataset.id, lon, lat),
     setStatus: (text) => { document.getElementById('survey-note').textContent = text; }
   });
-  await survey.init();
+  // The rest of the dashboard must still open if the survey panel cannot start, for example
+  // when the browser blocks local storage or holds cached files from an earlier version.
+  try {
+    await survey.init();
+  } catch (error) {
+    console.error(error);
+    survey = null;
+    document.getElementById('survey-note').textContent = t('survey.unavailable');
+  }
 }
 
 init().catch((error) => {
   console.error(error);
-  document.body.textContent = 'Dasbor gagal dimuat. / The dashboard could not be loaded.';
+  document.body.textContent = 'Dasbor gagal dimuat. Jika situs baru diperbarui, tunggu 10 menit lalu muat ulang. / The dashboard could not be loaded. If the site was just updated, wait 10 minutes and reload.';
 });

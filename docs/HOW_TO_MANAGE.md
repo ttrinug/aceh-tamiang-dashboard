@@ -48,7 +48,7 @@ Leave **Cleared for publishing** unticked until the data owner allows it.
 2. In **Hasil survei BRIN**, press **Tambah titik**. Allow location access when asked; the GPS position fills in by itself. If GPS fails, type the coordinates.
 3. Fill in the place name, contributor, photos, narasumber and findings, then press **Simpan**. The point appears on the map at once, on that tablet only. The contributor is the researcher or team, and is required. The name is shown publicly once the point is published.
 4. Press **Ekspor** regularly, and always before clearing the browser or changing tablets. **Clearing browser data deletes points that have not been exported.** The form must be opened while online; points you have already saved stay on the tablet.
-5. To deliver the points, press **Kirim ke email**. It downloads the export file and opens an email addressed to the project inbox. **Attach the downloaded file yourself, then send it**, because a web page cannot attach a file. The address is the `sendTo` value of the `brin-survey` dataset in `config/layers.json`.
+5. To deliver the points, press the **mail icon** next to Ekspor. It downloads the export file and opens an email addressed to the project inbox. **Attach the downloaded file yourself, then send it**, because a web page cannot attach a file. The address is the `sendTo` value of the `brin-survey` dataset in `config/layers.json`.
 
 The panel has two parts. **Lokal** (top) holds points on this device that are waiting to be exported and reviewed. **Terbit** (below) holds reviewed points that every visitor can see. Once a point is published, its local copy leaves the Lokal list by itself, unless it was edited after publishing. The copy stays on the device, because only it holds the narasumber names.
 
