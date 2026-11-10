@@ -4,6 +4,7 @@ Input:  "for claude/survey/*.json"   export files from the dashboard's BRIN Surv
         data/raw/BATASWILAYAH_KECAMATAN_20260601.gdb.zip   BIG kecamatan boundaries (via build_boundaries)
 Output: data/web/brin_survey.geojson   public points
         data/web/brin_survey/*.jpg     public photos
+        data/raw/survey/originals/<point id>/   original photo files (private, not committed)
 
 The export files contain informant names, so they are copied only to data/raw/survey/, which
 is not committed. Public output keeps the role of informants who agreed to be listed, and never
@@ -17,7 +18,9 @@ Run from the repository root:  .venv/Scripts/python.exe scripts/build_survey.py
 import base64
 import io
 import json
+import re
 import shutil
+from pathlib import Path
 
 import geopandas as gpd
 from PIL import Image
@@ -29,6 +32,7 @@ INBOX = ROOT / "for claude/survey"
 RAW = ROOT / "data/raw/survey"
 OUT = ROOT / "data/web/brin_survey.geojson"
 PHOTOS = ROOT / "data/web/brin_survey"
+ORIGINALS = RAW / "originals"
 MAX_SIDE = 1600
 
 
@@ -69,8 +73,14 @@ def merge_entries(newer, older):
     if (older["lat"], older["lon"]) != (newer["lat"], newer["lon"]):
         place = f" ({older['place']})" if older.get("place") else ""
         findings = append_once(findings, f"Lokasi lain yang digabung: {older['lat']}, {older['lon']}{place}")
-    photos = list(dict.fromkeys(newer["photos"] + older["photos"]))
-    return {**newer, "place": newer.get("place") or older.get("place"), "findings": findings, "informants": informants, "photos": photos}
+    # Each photo keeps its original file, matched by position in the two lists.
+    pairs = {}
+    for entry in (newer, older):
+        originals = entry.get("originals") or []
+        for i, photo in enumerate(entry["photos"]):
+            pairs.setdefault(photo, originals[i] if i < len(originals) else None)
+    return {**newer, "place": newer.get("place") or older.get("place"), "findings": findings, "informants": informants,
+            "photos": list(pairs), "originals": list(pairs.values())}
 
 
 def merge_duplicates(entries):
@@ -98,8 +108,29 @@ def write_photo(data_url, path):
     image.save(path, "JPEG", quality=82)
 
 
+def write_originals(entries):
+    """Saves each original photo file unchanged, metadata included, under data/raw (not committed)."""
+    if ORIGINALS.exists():
+        shutil.rmtree(ORIGINALS)
+    count = 0
+    for entry in entries:
+        for number, original in enumerate(entry.get("originals") or [], start=1):
+            if not original:
+                continue
+            # The name comes from the device; keep only safe characters and no folders.
+            name = re.sub(r"[^A-Za-z0-9._-]", "_", Path(original.get("name") or "photo").name)[-80:]
+            folder = ORIGINALS / re.sub(r"[^A-Za-z0-9-]", "_", entry["id"])
+            folder.mkdir(parents=True, exist_ok=True)
+            (folder / f"{number}-{name}").write_bytes(base64.b64decode(original["data"].split(",", 1)[1]))
+            count += 1
+    print(f"Saved {count} original photos in {ORIGINALS.relative_to(ROOT)} (private)")
+
+
 def main():
     entries = read_entries()
+    write_originals(entries)
+    for entry in entries:
+        entry.pop("originals", None)  # not needed for the public output
     kecamatan = read_kecamatan()
     points = gpd.GeoDataFrame(entries, geometry=[Point(e["lon"], e["lat"]) for e in entries], crs=4326) if entries else None
     joined = gpd.sjoin(points, kecamatan[["KDCPUM", "NAMOBJ", "geometry"]], predicate="within", how="left") if entries else []

@@ -79,7 +79,7 @@
     "emptyPublished": { "id": "Belum ada titik terbit.", "en": "No published points yet." },
     "emailSubject": { "id": "Ekspor BRIN Survey", "en": "BRIN Survey export" },
     "emailBody": { "id": "{n} titik survei terlampir dalam file {file}.", "en": "{n} survey points are attached in the file {file}." },
-    "emailHint": { "id": "File {file} sudah diunduh. Lampirkan ke email yang terbuka, lalu kirim ke {email}. File ini memuat nama narasumber, jadi jangan dikirim ke alamat lain.", "en": "The file {file} has been downloaded. Attach it to the email that opened, then send it to {email}. It contains informant names, so do not send it to any other address." },
+    "emailHint": { "id": "File {file} ({size}) sudah diunduh. Lampirkan ke email yang terbuka, lalu kirim ke {email}. File ini memuat nama narasumber dan foto asli, jadi jangan dikirim ke alamat lain.", "en": "The file {file} ({size}) has been downloaded. Attach it to the email that opened, then send it to {email}. It contains informant names and original photos, so do not send it to any other address." },
     "merged": { "id": "{n} titik ganda digabung.", "en": "{n} duplicate points merged." },
     "print": { "id": "Cetak laporan", "en": "Print report" },
     "printHeading": { "id": "Laporan titik survei BRIN", "en": "BRIN Survey point report" },
@@ -135,7 +135,8 @@
     "delete": { "id": "Hapus", "en": "Delete" },
     "remove": { "id": "Hapus", "en": "Remove" },
     "deleteConfirm": { "id": "Hapus titik ini dari perangkat? Tindakan ini tidak dapat dibatalkan.", "en": "Delete this point from this device? This cannot be undone." },
-    "exported": { "id": "File ekspor sudah diunduh. File ini memuat nama narasumber, jadi jangan dibagikan secara terbuka.", "en": "The export file has been downloaded. It contains informant names, so do not share it openly." },
+    "exported": { "id": "File ekspor ({size}) sudah diunduh. File ini memuat nama narasumber dan foto asli, jadi jangan dibagikan secara terbuka.", "en": "The export file ({size}) has been downloaded. It contains informant names and original photos, so do not share it openly." },
+    "originals": { "id": "Foto asli tersimpan", "en": "Original photos kept" },
     "imported": { "id": "{n} titik diimpor.", "en": "{n} points imported." },
     "importFailed": { "id": "File tidak dapat diimpor. Gunakan file ekspor BRIN Survey.", "en": "The file could not be imported. Use a BRIN Survey export file." }
   }

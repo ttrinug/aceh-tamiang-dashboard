@@ -35,6 +35,26 @@ const allLocal = () => withStore('readonly', (store) => store.getAll());
 const putLocal = (entry) => withStore('readwrite', (store) => store.put(entry));
 const deleteLocal = (id) => withStore('readwrite', (store) => store.delete(id));
 
+const readDataUrl = (blob) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = () => reject(reader.error);
+  reader.readAsDataURL(blob);
+});
+
+// The photo file exactly as the camera or gallery gave it, metadata included. It is kept on the
+// device and in the export file only; scripts/build_survey.py saves it to the private data/raw.
+async function originalOf(file) {
+  return { name: file.name, type: file.type, data: await readDataUrl(file) };
+}
+
+// Approximate size of a data URL's file, in bytes.
+const dataUrlBytes = (dataUrl) => Math.round(((dataUrl.length - dataUrl.indexOf(',') - 1) * 3) / 4);
+
+function formatSize(bytes) {
+  return bytes >= 1e6 ? `${(bytes / 1e6).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1e3))} KB`;
+}
+
 // Resizes a photo and re-encodes it as JPEG. Drawing to a canvas also drops the file's
 // metadata, including any location the camera wrote into it.
 async function photoToDataUrl(file) {
@@ -71,7 +91,12 @@ function mergeEntries(newer, older) {
   if (older.lat !== newer.lat || older.lon !== newer.lon) {
     findings = appendOnce(findings, `Lokasi lain yang digabung: ${older.lat}, ${older.lon}${older.place ? ` (${older.place})` : ''}`);
   }
-  return { ...newer, place: newer.place || older.place, findings, informants, photos: [...new Set([...newer.photos, ...older.photos])] };
+  // Each photo keeps its original file, matched by position in the two lists.
+  const pairs = new Map();
+  for (const entry of [newer, older]) {
+    entry.photos.forEach((photo, i) => { if (!pairs.has(photo)) pairs.set(photo, entry.originals?.[i] ?? null); });
+  }
+  return { ...newer, place: newer.place || older.place, findings, informants, photos: [...pairs.keys()], originals: [...pairs.values()] };
 }
 
 // A local date and time in the form a datetime-local input expects.
@@ -300,6 +325,11 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
   function showEntry(entry) {
     const isLocal = local.includes(entry);
     const facts = factList(entry, isLocal);
+    const originals = (entry.originals ?? []).filter(Boolean);
+    if (isLocal && originals.length) {
+      const bytes = originals.reduce((sum, o) => sum + dataUrlBytes(o.data), 0);
+      facts.append(fact(t('survey.originals'), `${originals.length} · ${formatSize(bytes)}`));
+    }
 
     const people = el('ul', 'survey-people');
     const informants = isLocal ? entry.informants : (entry.roles ?? []).map((role) => ({ role }));
@@ -418,9 +448,11 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
     const latestContributor = [...local].sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)))[0]?.contributor;
     const contributor = input('text', existing?.contributor ?? latestContributor ?? '');
 
-    let photos = [...(existing?.photos ?? [])];
+    // Each photo: the resized copy shown and published, and the original file (null for photos
+    // added before originals were kept).
+    const photos = (existing?.photos ?? []).map((photo, i) => ({ photo, original: existing.originals?.[i] ?? null }));
     const previews = el('div', 'survey-previews');
-    const drawPreviews = () => previews.replaceChildren(...photos.map((src, i) => {
+    const drawPreviews = () => previews.replaceChildren(...photos.map(({ photo: src }, i) => {
       const item = el('div', 'survey-preview');
       const image = el('img');
       image.src = src;
@@ -442,7 +474,7 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
     picker.addEventListener('change', async () => {
       for (const file of picker.files) {
         try {
-          photos.push(await photoToDataUrl(file));
+          photos.push({ photo: await photoToDataUrl(file), original: await originalOf(file) });
         } catch {
           fail(`${t('survey.photoFailed')}: ${file.name}`);
         }
@@ -483,7 +515,8 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
         kecamatan: kecamatanAt(longitude, latitude),
         findings: findings.value.trim(),
         informants: [...informants.children].map((row) => row.read()).filter((p) => p.name || p.role),
-        photos
+        photos: photos.map((p) => p.photo),
+        originals: photos.map((p) => p.original)
       };
       try {
         await putLocal(entry);
@@ -521,28 +554,29 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
     link.download = `brin_survey_export_${stamp}.json`;
     link.click();
     URL.revokeObjectURL(link.href);
-    return { file: link.download, count: entries.length };
+    return { file: link.download, count: entries.length, size: formatSize(blob.size) };
   }
 
   function exportFile() {
-    downloadExport();
-    setStatus(t('survey.exported'));
+    const { size } = downloadExport();
+    setStatus(t('survey.exported').replace('{size}', size));
   }
 
   // A web page cannot attach a file to an email, so this saves the export and opens an
   // addressed email for the sender to attach it to. The email text holds no informant names.
   function sendByEmail() {
-    const { file, count } = downloadExport();
+    const { file, count, size } = downloadExport();
     const subject = encodeURIComponent(t('survey.emailSubject'));
     const body = encodeURIComponent(t('survey.emailBody').replace('{n}', count).replace('{file}', file));
     const link = el('a');
     link.href = `mailto:${dataset.sendTo}?subject=${subject}&body=${body}`;
     link.click();
-    setStatus(t('survey.emailHint').replace('{file}', file).replace('{email}', dataset.sendTo));
+    setStatus(t('survey.emailHint').replace('{file}', file).replace('{size}', size).replace('{email}', dataset.sendTo));
   }
 
   const validEntry = (e) => typeof e?.id === 'string' && Number.isFinite(e.lat) && Number.isFinite(e.lon)
-    && Array.isArray(e.informants) && Array.isArray(e.photos) && e.photos.every((p) => /^data:image\/(jpeg|png);base64,/.test(p));
+    && Array.isArray(e.informants) && Array.isArray(e.photos) && e.photos.every((p) => /^data:image\/(jpeg|png);base64,/.test(p))
+    && (e.originals === undefined || (Array.isArray(e.originals) && e.originals.every((o) => o === null || /^data:/.test(o?.data))));
 
   // Merges an export from another device. Where both have a point, the newer edit is kept.
   async function importFile(file) {
