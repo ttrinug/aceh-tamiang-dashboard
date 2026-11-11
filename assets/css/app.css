@@ -542,6 +542,16 @@ button, select {
 
 .maplibregl-ctrl-attrib { font-size: 11px; }
 
+/* The credits run as a full-width strip along the bottom of the map, and the scale bar sits
+   just above them at every screen width. Their height changes with the basemap and the layers
+   shown; map.js keeps --attribution-height up to date. */
+.maplibregl-ctrl-bottom-right { left: 0; }
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib {
+  margin: 0;
+  width: 100%;
+}
+.maplibregl-ctrl-bottom-left { bottom: calc(var(--attribution-height, 40px) + 4px); }
+
 /* About dialog */
 dialog {
   width: min(680px, calc(100vw - 32px));
@@ -903,13 +913,6 @@ dialog::backdrop { background: rgb(0 0 0 / 0.35); }
 
   .impact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pct-grid { grid-template-columns: minmax(0, 1fr); }
-
-  .maplibregl-ctrl-bottom-right { left: 0; }
-  .maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib {
-    margin: 0;
-    width: 100%;
-  }
-  .maplibregl-ctrl-bottom-left { bottom: var(--attribution-height, 40px); }
 }
 
 /* Printed point report: only #survey-print is on the page */
