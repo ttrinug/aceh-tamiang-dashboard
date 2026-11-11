@@ -8,7 +8,7 @@ import { createServer } from 'node:http';
 import { spawn } from 'node:child_process';
 import { copyFile, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { extname, join, normalize, relative, resolve, sep } from 'node:path';
+import { dirname, extname, join, normalize, relative, resolve, sep } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const port = Number(process.argv[2]) || 8081;
@@ -59,12 +59,12 @@ async function writeConfig(name, data) {
 
 // ------------------------------------------------------------ Python jobs
 
-// Runs admin_tool.py. The job object fills in as it runs: progress lines in log, then the
-// tool's JSON result (its last line of output) and a status of done or failed.
-function runTool(args, input) {
+// Runs admin_tool.py (or another tool script). The job object fills in as it runs: progress
+// lines in log, then the tool's JSON result (its last line of output) and a status of done or failed.
+function runTool(args, input, script = 'admin_tool.py') {
   const job = { status: 'running', log: [], result: null };
   job.finished = new Promise((done) => {
-    const child = spawn(python, [join(root, 'scripts/admin_tool.py'), ...args], { cwd: root });
+    const child = spawn(python, [join(root, 'scripts', script), ...args], { cwd: root });
     let stdout = '';
     child.stdout.on('data', (chunk) => { stdout += chunk; });
     child.stderr.on('data', (chunk) => job.log.push(...String(chunk).split(/\r?\n/).filter(Boolean)));
@@ -98,6 +98,33 @@ async function listInbox(dir = inbox) {
     }
   }
   return files;
+}
+
+// ------------------------------------------------------------ survey review and Google Drive
+
+// Uploaded files are copied here; build_survey.py reads every JSON file under for claude/survey.
+const driveInbox = join(inbox, 'survey', 'drive');
+// The only paths the upload script writes; anything else in the folder is not copied.
+const drivePath = /^(brin_survey_[A-Za-z0-9_-]+\.json|originals\/[A-Za-z0-9_-]+\/[A-Za-z0-9._-]+)$/;
+const driveErrors = {
+  code: 'Google refused the admin code.',
+  'admin-not-configured': 'The Google script has no ADMIN_CODE yet (or it equals UPLOAD_CODE). See docs/DRIVE_UPLOAD_SETUP.md.',
+  'not-found': 'A file disappeared from the Drive folder during the download.'
+};
+
+async function driveCall(body) {
+  const layers = await readConfig('layers');
+  const url = layers.datasets.find((d) => d.id === 'brin-survey')?.uploadUrl;
+  if (!url) throw new Error('No uploadUrl for brin-survey in config/layers.json.');
+  const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error(`Google gave no usable answer (HTTP ${response.status}). Is the script deployed as a new version?`);
+  }
+  if (!data.ok) throw new Error(driveErrors[data.error] ?? `Google script error: ${data.error}`);
+  return data;
 }
 
 const validId = (id) => typeof id === 'string' && /^[a-z0-9]+(-[a-z0-9]+)*$/.test(id);
@@ -160,6 +187,40 @@ const api = {
     await writeConfig('layers', layers);
     await writeConfig('cards', cards);
     return { removed: body.id };
+  },
+
+  // Copies new and changed files from the Drive upload folder. Nothing in Drive is changed.
+  'POST /api/survey/sync': async (body) => {
+    const { files } = await driveCall({ adminCode: body.adminCode, action: 'list' });
+    const counts = { fetched: 0, unchanged: 0, ignored: 0, total: files.length };
+    for (const file of files) {
+      if (!drivePath.test(file.path)) {
+        counts.ignored += 1;
+        continue;
+      }
+      const target = join(driveInbox, ...file.path.split('/'));
+      if (existsSync(target) && (await stat(target)).size === file.size) {
+        counts.unchanged += 1;
+        continue;
+      }
+      const { data } = await driveCall({ adminCode: body.adminCode, action: 'get', fileId: file.id });
+      await mkdir(dirname(target), { recursive: true });
+      await writeFile(target, Buffer.from(data, 'base64'));
+      counts.fetched += 1;
+    }
+    return counts;
+  },
+
+  // Every record with its review state. Holds informant names: this server is local only.
+  'GET /api/survey': async () => (await runTool(['list'], null, 'survey_review.py').finished).result,
+
+  'PUT /api/survey/review': async (body) => (await runTool(['save'], body, 'survey_review.py').finished).result,
+
+  // Publishing writes data/web/ only; committing and pushing stay separate steps.
+  'POST /api/survey/publish': async () => {
+    const id = String(nextJob++);
+    jobs.set(id, runTool(['publish'], null, 'survey_review.py'));
+    return { job: id };
   },
 
   'PUT /api/text': async (body) => {

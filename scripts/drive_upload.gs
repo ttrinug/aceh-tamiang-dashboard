@@ -10,11 +10,17 @@
  * private is in this file:
  *   FOLDER_ID    the id of the Drive folder that receives uploads
  *   UPLOAD_CODE  the code every tablet must send; uploads without it are refused
+ *   ADMIN_CODE   the code the local admin page sends to list and download the uploads. It must
+ *                differ from UPLOAD_CODE: the uploads hold informant names. Without it, these
+ *                two actions are switched off.
  *
  * Requests are JSON sent as text/plain (which avoids a browser preflight request):
  *   { code, type: "original", recordId, index, name, data }   one original photo, data URL
  *   { code, type: "record", record }                          one point or documentation entry
- * A file that already exists under the same name is not written again.
+ *   { adminCode, action: "list" }                             every uploaded file: id, path, size
+ *   { adminCode, action: "get", fileId }                      one uploaded file, base64
+ * A file that already exists under the same name is not written again. Nothing is ever deleted
+ * or overwritten.
  */
 
 const RECORD_ID = /^[A-Za-z0-9-]{1,64}$/;
@@ -33,6 +39,15 @@ function doPost(e) {
   try {
     body = JSON.parse(e.postData.contents);
   } catch (err) {
+    return reply({ ok: false, error: 'bad-request' });
+  }
+  if (body && body.action) {
+    const adminCode = settings.getProperty('ADMIN_CODE');
+    if (!adminCode || adminCode === code) return reply({ ok: false, error: 'admin-not-configured' });
+    if (body.adminCode !== adminCode) return reply({ ok: false, error: 'code' });
+    const root = DriveApp.getFolderById(folderId);
+    if (body.action === 'list') return reply({ ok: true, files: listFiles(root) });
+    if (body.action === 'get') return getFile(root, String(body.fileId || ''));
     return reply({ ok: false, error: 'bad-request' });
   }
   if (!body || body.code !== code) return reply({ ok: false, error: 'code' });
@@ -66,6 +81,35 @@ function saveRecord(folder, record) {
   const file = { format: 'brin-survey-export', version: 1, exportedAt: new Date().toISOString(), entries: [record] };
   folder.createFile(name, JSON.stringify(file), 'application/json');
   return reply({ ok: true, name: name });
+}
+
+// The records in the folder, and the original photos under originals/<record id>/.
+function listFiles(root) {
+  const files = [];
+  const add = (iterator, prefix) => {
+    while (iterator.hasNext()) {
+      const file = iterator.next();
+      files.push({ id: file.getId(), path: prefix + file.getName(), size: file.getSize() });
+    }
+  };
+  add(root.getFiles(), '');
+  const originals = root.getFoldersByName('originals');
+  if (originals.hasNext()) {
+    const records = originals.next().getFolders();
+    while (records.hasNext()) {
+      const record = records.next();
+      add(record.getFiles(), 'originals/' + record.getName() + '/');
+    }
+  }
+  return files;
+}
+
+// Only files inside the upload folder can be read this way.
+function getFile(root, fileId) {
+  const match = listFiles(root).find(function (f) { return f.id === fileId; });
+  if (!match) return reply({ ok: false, error: 'not-found' });
+  const bytes = DriveApp.getFileById(fileId).getBlob().getBytes();
+  return reply({ ok: true, path: match.path, data: Utilities.base64Encode(bytes) });
 }
 
 function childFolder(parent, name) {

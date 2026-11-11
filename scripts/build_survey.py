@@ -1,5 +1,8 @@
 """Publish reviewed BRIN Survey points and documentation to the dashboard.
 
+Only records approved in the admin page's Survey review tab are published (see
+scripts/survey_review.py and data/raw/survey/curation.json), with the reviewer's edits applied.
+
 Input:  "for claude/survey/**/*.json"   export files from the dashboard's BRIN Survey panel, or the
                                        unzipped Drive upload folder (JSON files plus originals/<id>/)
         data/raw/BATASWILAYAH_KECAMATAN_20260601.gdb.zip   BIG kecamatan boundaries (via build_boundaries)
@@ -35,6 +38,7 @@ from PIL import Image
 from shapely.geometry import Point
 
 from build_boundaries import DECIMALS, ROOT, read_kecamatan
+from survey_review import load_curation, select_approved
 
 INBOX = ROOT / "for claude/survey"
 RAW = ROOT / "data/raw/survey"
@@ -46,11 +50,14 @@ DOC_PHOTOS = ROOT / "data/web/documentation"
 MAX_SIDE = 1600
 
 
-def read_entries():
+def read_entries(copy=True):
+    """Every record in the inbox, each resolved from all its versions. With copy, the files are
+    also kept in data/raw/survey/ (private)."""
     RAW.mkdir(parents=True, exist_ok=True)
     versions = {}
     for path in sorted(INBOX.rglob("*.json")):
-        shutil.copy2(path, RAW / path.name)
+        if copy:
+            shutil.copy2(path, RAW / path.name)
         data = json.loads(path.read_text(encoding="utf-8"))
         assert data.get("format") == "brin-survey-export", f"{path.name} is not a BRIN Survey export"
         for entry in data["entries"]:
@@ -78,6 +85,7 @@ def resolve_versions(record_id, found):
         merged = merge_docs(merged, other) if merged.get("kind") == "documentation" else merge_entries(merged, other)
     if len(heads) > 1:
         print(f"    CHECK: {len(heads)} versions were edited separately and have been merged")
+        merged = {**merged, "_separateEdits": len(heads)}
     return merged
 
 
@@ -141,9 +149,10 @@ def merge_duplicates(entries):
         merged = group[0]
         for other in group[1:]:
             merged = merge_entries(merged, other)
-        kept.append(merged)
         if len(group) > 1:
             print(f"Merged {len(group)} records with the same time and contributor: {surveyed_at}, {contributor}")
+            merged = {**merged, "_duplicates": len(group)}
+        kept.append(merged)
     return kept
 
 
@@ -239,6 +248,9 @@ def build_documentation(docs, kecamatan):
 def main():
     entries, docs = read_entries()
     write_originals(entries, docs)
+    curation = load_curation()
+    entries = select_approved(entries, curation, "Survey points")
+    docs = select_approved(docs, curation, "Documentation")
     for entry in entries:
         entry.pop("originals", None)  # not needed for the public output
     kecamatan = read_kecamatan()
@@ -259,7 +271,8 @@ def main():
             path = PHOTOS / f"{safe_id(row['id'])}-{number}.jpg"
             write_photo(data_url, path)
             photos.append(path.relative_to(ROOT).as_posix())
-        roles = [p["role"] for p in row["informants"] if p.get("consent") and p.get("role")]
+        # Roles of informants who agreed to be listed, unless the reviewer left the role out.
+        roles = [p["role"] for p in row["informants"] if p.get("consent") and p.get("role") and not p.get("hidden")]
         # Exports made before the contributor field existed have no value here.
         contributor = row.get("contributor")
         contributor = contributor if isinstance(contributor, str) and contributor else None

@@ -19,6 +19,7 @@
     <button type="button" role="tab" data-tab="datasets" aria-selected="true">Map datasets</button>
     <button type="button" role="tab" data-tab="tables" aria-selected="false">Kecamatan tables</button>
     <button type="button" role="tab" data-tab="text" aria-selected="false">Text</button>
+    <button type="button" role="tab" data-tab="survey" aria-selected="false">Survey review</button>
   </nav>
 
   <p id="message" class="message" role="status" hidden></p>
@@ -104,6 +105,42 @@
       <button type="button" id="text-save" class="primary">Save text</button>
     </p>
   </section>
+
+  <!-- Survey review -->
+  <section id="tab-survey" class="tab" hidden>
+    <h2>Review BRIN Survey uploads before publishing</h2>
+    <p class="muted">Only approved records are published. Review decisions stay on this computer in <code>data/raw/survey/curation.json</code>; the uploads in Drive are never changed. A record that changes after review needs review again.</p>
+    <ol class="steps">
+      <li>
+        <h3>1. Get the uploads from Google Drive</h3>
+        <div class="row">
+          <label for="survey-admin-code">Admin code</label>
+          <input id="survey-admin-code" type="password" autocomplete="off" size="28">
+          <label class="check"><input id="survey-remember" type="checkbox"> Remember on this computer</label>
+          <button type="button" id="survey-sync" class="primary">Get uploads from Drive</button>
+        </div>
+        <p class="hint muted">Copies new files into <code>for claude/survey/drive/</code>. Export files from tablets can be put in <code>for claude/survey/</code> too.</p>
+      </li>
+      <li>
+        <h3>2. Review</h3>
+        <div class="row" id="survey-filters" role="group" aria-label="Show"></div>
+        <table class="list">
+          <thead><tr><th>Record</th><th>Contributor</th><th>Date</th><th>Kecamatan</th><th>Status</th><th></th></tr></thead>
+          <tbody id="survey-records"></tbody>
+        </table>
+      </li>
+      <li>
+        <h3>3. Publish the approved records</h3>
+        <p class="muted">Writes <code>data/web/brin_survey.geojson</code>, <code>data/web/documentation.geojson</code> and their photos. It does not push: commit and push afterwards (or ask Claude).</p>
+        <button type="button" id="survey-publish" class="primary">Publish approved records</button>
+        <pre id="survey-log" class="info" hidden></pre>
+      </li>
+    </ol>
+  </section>
+
+  <dialog id="survey-dialog" class="review-dialog">
+    <form method="dialog" id="survey-review-form"></form>
+  </dialog>
 
   <dialog id="edit-dialog">
     <form method="dialog">

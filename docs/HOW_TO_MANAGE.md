@@ -78,10 +78,14 @@ Press a point on the map or in the list to see its details and its **Laporan lok
 
 **Publishing reviewed points**
 
-1. Download the Drive upload folder (it comes as a zip) and unzip it into `for claude/survey/`, and add any export files there too. Git ignores this folder.
-2. Run `.venv/Scripts/python.exe scripts/build_survey.py`, or ask Claude to.
-3. Read what it prints. Check the findings for names, and the photos in `data/web/brin_survey/` for faces of people who did not agree.
-4. Commit and push `data/web/brin_survey.geojson` and `data/web/brin_survey/`.
+Only records you approve are published.
+
+1. Admin page → **Survey review** → enter the admin code → **Get uploads from Drive**. Export files from tablets can also go in `for claude/survey/` (git ignores this folder).
+2. Review each record under **To review**: edit the published text if needed, leave out photos or roles, then **Approve** or **Reject**. Check the warnings, such as a narasumber's name in the text.
+3. Press **Publish approved records** and read the log.
+4. Commit and push the files in `data/web/` (`brin_survey.geojson`, `brin_survey/`, `documentation.geojson`, `documentation/`), or ask Claude to.
+
+A record that changes after you approved it needs review again. The full routine and the one-time admin-code setup are in [DRIVE_UPLOAD_SETUP.md](DRIVE_UPLOAD_SETUP.md).
 
 The public version shows a narasumber's role only, and only if the consent box was ticked. Names are never published. Points outside the 12 kecamatan are left out and listed.
 

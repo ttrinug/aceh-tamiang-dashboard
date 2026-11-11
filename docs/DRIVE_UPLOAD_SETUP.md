@@ -52,11 +52,43 @@ The code lives only in these settings, never in the public repository.
 - A point's details show **Diunggah ke Drive: Ya/Belum**.
 - With no signal, use **Ekspor** as before and upload later.
 
-## Publishing what was uploaded
+## Reviewing and publishing what was uploaded
 
-1. In Drive, right-click the folder and choose **Download**. Drive makes a zip file.
-2. Unzip it into `for claude/survey/`. Subfolders are fine.
-3. Run `.venv/Scripts/python.exe scripts/build_survey.py`, or ask Claude to.
+Uploads are not published by themselves. You review them in the local admin page, and only what you approve goes on the public dashboard.
+
+### One-time: the admin code
+
+The admin page reads the Drive folder through the same script, with its own **admin code**. Do this once:
+
+1. Open the script at https://script.google.com and paste in the newest [`scripts/drive_upload.gs`](../scripts/drive_upload.gs), replacing everything. Save.
+2. **Project Settings → Script Properties → Add script property:** `ADMIN_CODE`, a long code only you know, for example 20 random letters and digits. It must differ from `UPLOAD_CODE`: the field team has that one, and the admin code unlocks the uploads, which hold narasumber names.
+3. **Deploy → Manage deployments**, click the pencil, set **Version** to **New version**, and **Deploy**. The URL stays the same.
+
+Never give the admin code to the field team or write it in the repository.
+
+### Each time
+
+1. Start the admin page: `node scripts/admin-server.mjs`, then open http://localhost:8081/admin/ and go to **Survey review**.
+2. Enter the admin code and press **Get uploads from Drive**. New and changed files are copied to `for claude/survey/drive/`. Nothing in Drive is changed. Export files from tablets can go in `for claude/survey/` too.
+3. **To review** lists every record that is new or has changed since you reviewed it. Press **Review** on each. You can:
+   - edit the published text: place name, findings or notes, contributor, photo captions;
+   - leave out photos, for example ones that show faces of people who did not agree;
+   - leave out narasumber roles (a role can only be shown if that person agreed);
+   - write a private review note;
+   - then **Approve** or **Reject**.
+
+   Warnings at the top point out what to check:
+   - a narasumber's name in the text;
+   - a point edited on two tablets and merged;
+   - duplicates;
+   - photos outside Aceh Tamiang.
+
+   Your edits change only what is published. The uploads stay as they were, and locations cannot be edited.
+4. Press **Publish approved records**. This writes the public files in `data/web/`. Read the log, then commit and push, or ask Claude to.
+
+Review decisions are saved on this computer in `data/raw/survey/curation.json` (private; earlier copies in `curation_backup/`). Each decision is tied to the exact content you reviewed. If a record changes afterwards, for example after another upload, it goes back to **Changed since review** and is not published until you approve it again.
+
+Without the admin page, you can still download the Drive folder as a zip, unzip it into `for claude/survey/`, and ask Claude to review and publish.
 
 **How several uploads of the same record are handled**
 
@@ -71,7 +103,7 @@ The code lives only in these settings, never in the public repository.
   - the same version found in several files counts once;
   - survey points with the same time and contributor are merged;
   - a documentation photo already published in another entry is not published twice.
-- **Deleting a point on a tablet does not remove what was already uploaded.** If a point should not be published, leave its file out of `for claude/survey/` or tell Claude.
+- **Deleting a point on a tablet does not remove what was already uploaded.** If a point should not be published, **Reject** it in Survey review.
 
 The folder holds narasumber names and original photos with their locations. Keep it private: do not share it with "Anyone with the link".
 
