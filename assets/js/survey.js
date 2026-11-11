@@ -4,6 +4,10 @@
 // exported to a file. Points that have been reviewed and built by scripts/build_survey.py are
 // loaded from the dataset's GeoJSON and are read-only here. Informant names exist only in
 // the local copy and the export file; published points carry roles only.
+//
+// Documentation entries (kind "documentation") are simpler: photos with captions and notes. Each
+// photo is placed on the map at the GPS position stored in the photo itself; a photo without
+// one cannot be added. They share the device storage, lists and export file with survey points.
 import { el } from './dom.js';
 import { featureContains, pointReport } from './point-report.js';
 
@@ -68,6 +72,31 @@ async function photoToDataUrl(file) {
   return canvas.toDataURL('image/jpeg', 0.8);
 }
 
+// exifr reads the location and time a camera stores in a photo (JPEG and HEIC). It is loaded
+// only when documentation photos are added.
+const EXIFR_URL = 'https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.esm.mjs';
+let exifr;
+
+// The photo's GPS position and capture time, or null when it holds no usable position.
+// Some cameras write 0, 0 when they have no fix; that is treated as no position.
+async function photoMetadata(file) {
+  if (!exifr) {
+    const module = await import(EXIFR_URL);
+    exifr = module.default ?? module;
+  }
+  // A plain parse: exifr's "pick" option fails in this build.
+  const meta = await exifr.parse(file).catch(() => null);
+  const { latitude: lat, longitude: lon } = meta ?? {};
+  if (!Number.isFinite(lat) || !Number.isFinite(lon) || (lat === 0 && lon === 0) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return null;
+  const taken = meta.DateTimeOriginal ?? meta.CreateDate;
+  return { lat, lon, takenAt: taken instanceof Date && !Number.isNaN(taken.getTime()) ? localDateTime(taken) : null };
+}
+
+const isDoc = (entry) => entry.kind === 'documentation';
+// Where a list row or "Go to point" leads: a survey point, or a documentation entry's first photo.
+const anchorOf = (entry) => (isDoc(entry) ? entry.photos[0] : entry);
+const sortDate = (entry) => String(isDoc(entry) ? entry.photos[0]?.takenAt ?? entry.createdAt : entry.surveyedAt);
+
 // Two records are the same point when the survey time and the contributor are both filled in
 // and identical. scripts/build_survey.py applies the same rule to export files.
 const duplicateKey = (entry) => (entry.surveyedAt && entry.contributor ? `${entry.surveyedAt}|${entry.contributor}` : null);
@@ -105,10 +134,11 @@ function localDateTime(date = new Date()) {
   return new Date(date.getTime() - offset).toISOString().slice(0, 16);
 }
 
-export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onDataChange, onGoTo, setStatus }) {
+export function createSurvey({ dataset, docDataset, boundariesFile, i18n, reportSources, onDataChange, onGoTo, setStatus }) {
   const { t } = i18n;
   let local = [];
   let published = [];
+  let publishedDocs = [];
   let boundaries = [];
   const dialog = document.getElementById('survey-dialog');
   const locale = () => (document.documentElement.lang === 'id' ? 'id-ID' : 'en-GB');
@@ -117,17 +147,24 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
 
   // A local copy of a published point stays on the device, because only it holds the informant
   // names, but leaves the Local list. If it was edited after publishing it is listed again.
-  const isPublished = (entry) => published.some((p) => {
-    const same = p.id === entry.id || (duplicateKey(p) && duplicateKey(p) === duplicateKey(entry));
-    return same && String(entry.updatedAt) <= String(p.updatedAt ?? '');
-  });
+  const isPublished = (entry) => {
+    const newerOrSame = (p) => String(entry.updatedAt) <= String(p.updatedAt ?? '');
+    if (isDoc(entry)) return publishedDocs.some((p) => p.id === entry.id && newerOrSame(p));
+    return published.some((p) => (p.id === entry.id || (duplicateKey(p) && duplicateKey(p) === duplicateKey(entry))) && newerOrSame(p));
+  };
   const waiting = () => local.filter((e) => !isPublished(e));
+  const latestContributor = () => [...local].sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)))[0]?.contributor;
 
+  // Map features: one per survey point, and one per documentation photo.
   function toGeoJson() {
-    const point = (id, lon, lat) => ({ type: 'Feature', properties: { id }, geometry: { type: 'Point', coordinates: [lon, lat] } });
+    const point = (properties, lon, lat) => ({ type: 'Feature', properties, geometry: { type: 'Point', coordinates: [lon, lat] } });
+    const collection = (features) => ({ type: 'FeatureCollection', features });
+    const pending = waiting();
+    const surveyPoints = [...published, ...pending.filter((e) => !isDoc(e))];
+    const docs = [...publishedDocs, ...pending.filter(isDoc)];
     return {
-      type: 'FeatureCollection',
-      features: [...published.map((e) => point(e.id, e.lon, e.lat)), ...waiting().map((e) => point(e.id, e.lon, e.lat))]
+      points: collection(surveyPoints.map((e) => point({ id: e.id }, e.lon, e.lat))),
+      docs: collection(docs.flatMap((e) => e.photos.map((p, i) => point({ id: e.id, photo: i }, p.lon, p.lat))))
     };
   }
 
@@ -138,18 +175,22 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
       list.replaceChildren(el('li', 'empty', t(emptyKey)));
       return;
     }
-    const newestFirst = [...entries].sort((a, b) => String(b.surveyedAt).localeCompare(String(a.surveyedAt)));
+    const newestFirst = [...entries].sort((a, b) => sortDate(b).localeCompare(sortDate(a)));
     list.replaceChildren(...newestFirst.map((entry) => {
-      const button = el('button', 'survey-row');
+      const button = el('button', isDoc(entry) ? 'survey-row doc' : 'survey-row');
       button.type = 'button';
+      const anchor = anchorOf(entry);
+      const title = isDoc(entry)
+        ? `${t('survey.docTitle')} · ${t('survey.docPhotos').replace('{n}', entry.photos.length)}`
+        : entry.place || t('survey.noPlace');
       button.append(
-        el('span', 'survey-row-place', entry.place || t('survey.noPlace')),
-        el('span', 'survey-row-meta', `${entry.kecamatan ?? t('survey.outside')} · ${formatDate(entry.surveyedAt)}`)
+        el('span', 'survey-row-place', title),
+        el('span', 'survey-row-meta', `${anchor.kecamatan ?? t('survey.outside')} · ${formatDate(sortDate(entry))}`)
       );
-      button.addEventListener('click', () => showEntry(entry));
+      button.addEventListener('click', () => (isDoc(entry) ? showDocEntry(entry) : showEntry(entry)));
       const goTo = el('button', 'survey-goto', t('survey.goTo'));
       goTo.type = 'button';
-      goTo.addEventListener('click', () => onGoTo(entry.lon, entry.lat));
+      goTo.addEventListener('click', () => onGoTo(anchor.lon, anchor.lat, isDoc(entry)));
       const item = el('li', 'survey-item');
       item.append(button, goTo);
       return item;
@@ -159,7 +200,7 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
   function renderList() {
     const entries = waiting();
     fillList('local', entries, 'survey.emptyLocal');
-    fillList('published', published, 'survey.emptyPublished');
+    fillList('published', [...published, ...publishedDocs], 'survey.emptyPublished');
     for (const id of ['survey-export', 'survey-send']) document.getElementById(id).disabled = !entries.length;
   }
 
@@ -167,7 +208,7 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
   // the others are removed. Returns how many records were merged away.
   async function mergeLocalDuplicates() {
     const groups = new Map();
-    for (const entry of local) {
+    for (const entry of local.filter((e) => !isDoc(e))) {
       const key = duplicateKey(entry);
       if (key) groups.set(key, [...(groups.get(key) ?? []), entry]);
     }
@@ -192,7 +233,8 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
       setStatus(mergedText(merged));
     }
     renderList();
-    onDataChange(toGeoJson());
+    const { points, docs } = toGeoJson();
+    onDataChange(points, docs);
     return merged;
   }
 
@@ -315,6 +357,80 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
     );
     await Promise.all([ready, ...photos.map((image) => image.decode().catch(() => {}))]);
     window.print();
+  }
+
+  function showDocumentation(id, index = 0) {
+    const entry = waiting().find((e) => e.id === id && isDoc(e)) ?? publishedDocs.find((e) => e.id === id);
+    if (entry) showDocEntry(entry, Number(index) || 0);
+  }
+
+  // One documentation entry, showing one photo at a time with its own location and time.
+  function showDocEntry(entry, index = 0) {
+    const isLocal = local.includes(entry);
+    const photo = entry.photos[index] ?? entry.photos[0];
+    const wrap = el('div', 'survey-gallery');
+    const main = el('img', 'survey-gallery-main');
+    main.src = photo.photo;
+    main.alt = photo.caption || t('survey.photos');
+    wrap.append(main);
+    if (entry.photos.length > 1) {
+      const strip = el('div', 'survey-gallery-strip');
+      entry.photos.forEach((p, i) => {
+        const button = el('button');
+        button.type = 'button';
+        button.setAttribute('aria-label', `${t('survey.photos')} ${i + 1}`);
+        if (i === index) button.setAttribute('aria-current', 'true');
+        const thumb = el('img');
+        thumb.src = p.photo;
+        thumb.alt = '';
+        button.append(thumb);
+        button.addEventListener('click', () => showDocEntry(entry, i));
+        strip.append(button);
+      });
+      wrap.append(strip);
+    }
+
+    const facts = el('dl', 'survey-facts');
+    facts.append(
+      fact(t('survey.caption'), photo.caption || t('noData')),
+      fact(t('survey.photoNumber'), t('survey.photoOf').replace('{i}', index + 1).replace('{n}', entry.photos.length)),
+      fact(t('kecamatan'), photo.kecamatan ?? t('survey.outside')),
+      fact(t('survey.coordinates'), `${photo.lat.toFixed(5)}, ${photo.lon.toFixed(5)}`),
+      fact(t('survey.takenAt'), formatDate(photo.takenAt)),
+      fact(t('survey.contributor'), entry.contributor || t('noData')),
+      fact(t('survey.status'), isLocal ? t('survey.localStatus') : t('survey.published'))
+    );
+    const originals = entry.photos.map((p) => p.original).filter(Boolean);
+    if (isLocal && originals.length) {
+      const bytes = originals.reduce((sum, o) => sum + dataUrlBytes(o.data), 0);
+      facts.append(fact(t('survey.originals'), `${originals.length} · ${formatSize(bytes)}`));
+    }
+
+    const body = [
+      wrap,
+      facts,
+      el('p', 'note', t('survey.docLocationNote')),
+      el('h3', null, t('survey.notes')),
+      entry.notes ? el('p', 'survey-findings', entry.notes) : el('p', 'note', t('noData')),
+      locationReport(photo).section
+    ];
+    if (isLocal) {
+      const actions = el('div', 'survey-actions');
+      const edit = el('button', null, t('survey.edit'));
+      edit.type = 'button';
+      edit.addEventListener('click', () => showDocForm(entry));
+      const remove = el('button', null, t('survey.delete'));
+      remove.type = 'button';
+      remove.addEventListener('click', async () => {
+        if (!confirm(t('survey.deleteDocConfirm'))) return;
+        await deleteLocal(entry.id);
+        dialog.close();
+        await refresh();
+      });
+      actions.append(edit, remove);
+      body.push(actions);
+    }
+    openDialog(t('survey.docTitle'), body);
   }
 
   function showDetail(id) {
@@ -445,8 +561,7 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
     const place = input('text', existing?.place ?? '');
     const date = input('datetime-local', existing?.surveyedAt ?? localDateTime());
     // A new point starts with the contributor of the latest point on this device.
-    const latestContributor = [...local].sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)))[0]?.contributor;
-    const contributor = input('text', existing?.contributor ?? latestContributor ?? '');
+    const contributor = input('text', existing?.contributor ?? latestContributor() ?? '');
 
     // Each photo: the resized copy shown and published, and the original file (null for photos
     // added before originals were kept).
@@ -532,7 +647,8 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
     const gpsRow = el('div', 'survey-gps-row');
     gpsRow.append(gps, gpsStatus);
 
-    openDialog(existing ? t('survey.editTitle') : t('survey.formTitle'), [
+    openDialog(existing ? t('survey.editTitle') : t('survey.add'), [
+      ...(existing ? [] : [tabBar('survey')]),
       el('h3', null, t('survey.location')), gpsRow, coords, field(t('survey.place'), place), field(t('survey.date'), date),
       field(t('survey.contributor'), contributor, t('survey.contributorHint')),
       el('h3', null, t('survey.photos')), field(t('survey.addPhotos'), picker), previews,
@@ -541,6 +657,135 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
       error, save
     ]);
     if (!existing) readGps();
+  }
+
+  // The two kinds of new record, as tabs at the top of the Add point window.
+  function tabBar(active) {
+    const bar = el('div', 'survey-tabs');
+    bar.setAttribute('role', 'tablist');
+    for (const [kind, key, open] of [['survey', 'survey.tabSurvey', () => showForm()], ['doc', 'survey.tabDocs', () => showDocForm()]]) {
+      const button = el('button', null, t(key));
+      button.type = 'button';
+      button.setAttribute('role', 'tab');
+      button.setAttribute('aria-selected', String(kind === active));
+      if (kind !== active) button.addEventListener('click', open);
+      bar.append(button);
+    }
+    return bar;
+  }
+
+  // Documentation: photos placed by their own GPS metadata, a caption each, and general notes.
+  function showDocForm(existing = null) {
+    const error = el('p', 'survey-error');
+    error.hidden = true;
+    const fail = (text) => {
+      error.textContent = text;
+      error.hidden = false;
+      error.scrollIntoView({ block: 'nearest' });
+    };
+
+    const contributor = input('text', existing?.contributor ?? latestContributor() ?? '');
+    const photos = (existing?.photos ?? []).map((p) => ({ ...p }));
+    const previews = el('div', 'doc-previews');
+    const drawPreviews = () => previews.replaceChildren(...photos.map((p, i) => {
+      const item = el('div', 'doc-preview');
+      const image = el('img');
+      image.src = p.photo;
+      image.alt = '';
+      const info = el('div', 'doc-preview-info');
+      const where = el('span', 'note', `${p.kecamatan ?? t('survey.outside')} · ${p.lat.toFixed(5)}, ${p.lon.toFixed(5)} · ${formatDate(p.takenAt)}`);
+      const caption = input('text', p.caption ?? '');
+      caption.placeholder = t('survey.caption');
+      caption.setAttribute('aria-label', `${t('survey.caption')} ${i + 1}`);
+      caption.addEventListener('input', () => { p.caption = caption.value; });
+      const remove = el('button', null, t('survey.remove'));
+      remove.type = 'button';
+      remove.addEventListener('click', () => {
+        photos.splice(i, 1);
+        drawPreviews();
+      });
+      info.append(where, caption, remove);
+      item.append(image, info);
+      return item;
+    }));
+    drawPreviews();
+
+    // The same photo (same place and time) is not added twice, here or in another entry.
+    const signature = (p) => `${p.takenAt}|${p.lat.toFixed(6)}|${p.lon.toFixed(6)}`;
+    const readStatus = el('p', 'note');
+    const picker = input('file');
+    picker.accept = 'image/*';
+    picker.multiple = true;
+    picker.addEventListener('change', async () => {
+      const problems = [];
+      readStatus.textContent = t('survey.readingPhotos');
+      for (const file of picker.files) {
+        let meta;
+        try {
+          meta = await photoMetadata(file);
+        } catch {
+          problems.push(`${t('survey.photoFailed')}: ${file.name}`);
+          continue;
+        }
+        if (!meta) {
+          problems.push(t('survey.noGps').replace('{file}', file.name));
+          continue;
+        }
+        const others = local.filter((e) => isDoc(e) && e.id !== existing?.id).flatMap((e) => e.photos);
+        if ([...photos, ...others].some((p) => signature(p) === signature(meta))) {
+          problems.push(t('survey.duplicatePhoto').replace('{file}', file.name));
+          continue;
+        }
+        try {
+          photos.push({ photo: await photoToDataUrl(file), original: await originalOf(file), caption: '', ...meta, kecamatan: kecamatanAt(meta.lon, meta.lat) });
+        } catch {
+          problems.push(`${t('survey.photoFailed')}: ${file.name}`);
+        }
+        drawPreviews();
+      }
+      picker.value = '';
+      readStatus.textContent = problems.join(' ');
+    });
+
+    const notes = el('textarea');
+    notes.rows = 4;
+    notes.value = existing?.notes ?? '';
+
+    const save = el('button', 'survey-save', t('survey.save'));
+    save.type = 'button';
+    save.addEventListener('click', async () => {
+      if (!photos.length) return fail(t('survey.photoRequired'));
+      if (!contributor.value.trim()) return fail(t('survey.contributorRequired'));
+      const now = new Date().toISOString();
+      const entry = {
+        kind: 'documentation',
+        id: existing?.id ?? crypto.randomUUID(),
+        createdAt: existing?.createdAt ?? now,
+        updatedAt: now,
+        contributor: contributor.value.trim(),
+        notes: notes.value.trim(),
+        photos: photos.map(({ photo, original, caption, lat, lon, takenAt, kecamatan }) => ({ photo, original, caption: (caption ?? '').trim(), lat, lon, takenAt, kecamatan }))
+      };
+      try {
+        await putLocal(entry);
+      } catch {
+        return fail(t('survey.saveFailed'));
+      }
+      await refresh();
+      showDocEntry(local.find((e) => e.id === entry.id));
+    });
+
+    openDialog(existing ? t('survey.docEditTitle') : t('survey.add'), [
+      ...(existing ? [] : [tabBar('doc')]),
+      field(t('survey.contributor'), contributor, t('survey.contributorHint')),
+      el('h3', null, t('survey.photos')),
+      field(t('survey.docAddPhotos'), picker, t('survey.docPhotosHint')),
+      readStatus,
+      previews,
+      el('h3', null, t('survey.notes')),
+      field(t('survey.notesHint'), notes),
+      error, save
+    ]);
   }
 
   // ---------------------------------------------------------------- export and import
@@ -574,7 +819,11 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
     setStatus(t('survey.emailHint').replace('{file}', file).replace('{size}', size).replace('{email}', dataset.sendTo));
   }
 
-  const validEntry = (e) => typeof e?.id === 'string' && Number.isFinite(e.lat) && Number.isFinite(e.lon)
+  const validPhoto = (p) => /^data:image\/(jpeg|png);base64,/.test(p?.photo) && Number.isFinite(p.lat) && Number.isFinite(p.lon)
+    && (p.original == null || /^data:/.test(p.original.data));
+  const validDoc = (e) => Array.isArray(e.photos) && e.photos.length > 0 && e.photos.every(validPhoto);
+  const validEntry = (e) => typeof e?.id === 'string' && (isDoc(e) ? validDoc(e) : validSurvey(e));
+  const validSurvey = (e) => Number.isFinite(e.lat) && Number.isFinite(e.lon)
     && Array.isArray(e.informants) && Array.isArray(e.photos) && e.photos.every((p) => /^data:image\/(jpeg|png);base64,/.test(p))
     && (e.originals === undefined || (Array.isArray(e.originals) && e.originals.every((o) => o === null || /^data:/.test(o?.data))));
 
@@ -601,13 +850,24 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
   return {
     async init() {
       const load = async (path) => (await fetch(path)).json();
-      const [bounds, points] = await Promise.all([load(boundariesFile), load(dataset.file)]);
+      const [bounds, points, docs] = await Promise.all([load(boundariesFile), load(dataset.file), load(docDataset.file)]);
       boundaries = bounds.features;
       published = points.features.map((f) => ({
         ...f.properties,
         lon: f.geometry.coordinates[0],
         lat: f.geometry.coordinates[1]
       }));
+      // Published documentation has one feature per photo; photo is its position in the entry.
+      const groups = new Map();
+      for (const feature of docs.features) {
+        const p = feature.properties;
+        if (!groups.has(p.id)) groups.set(p.id, { kind: 'documentation', id: p.id, contributor: p.contributor, notes: p.notes, updatedAt: p.updatedAt, photos: [] });
+        groups.get(p.id).photos[p.photo] = {
+          photo: p.url, caption: p.caption, takenAt: p.takenAt, kecamatan: p.kecamatan,
+          lon: feature.geometry.coordinates[0], lat: feature.geometry.coordinates[1]
+        };
+      }
+      publishedDocs = [...groups.values()].map((e) => ({ ...e, photos: e.photos.filter(Boolean) }));
       // Asks the browser not to clear these entries when storage runs low.
       navigator.storage?.persist?.();
 
@@ -622,6 +882,7 @@ export function createSurvey({ dataset, boundariesFile, i18n, reportSources, onD
       await refresh();
     },
     render: renderList,
-    showDetail
+    showDetail,
+    showDocumentation
   };
 }

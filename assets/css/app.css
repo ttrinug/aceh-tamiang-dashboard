@@ -956,3 +956,56 @@ dialog::backdrop { background: rgb(0 0 0 / 0.35); }
     break-inside: avoid;
   }
 }
+
+/* Add point window: survey point and documentation tabs */
+.survey-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.survey-tabs button {
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: 4px 4px 0 0;
+  background: none;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.survey-tabs button[aria-selected="true"] {
+  border-color: var(--border);
+  background: var(--surface);
+  font-weight: 700;
+  margin-bottom: -1px;
+}
+
+/* Documentation photos in the form: thumbnail, location line, caption and remove */
+.doc-previews { display: flex; flex-direction: column; gap: 8px; }
+
+.doc-preview {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 8px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.doc-preview img { width: 96px; height: 72px; object-fit: cover; border-radius: 3px; }
+.doc-preview-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.doc-preview-info input { width: 100%; padding: 4px 6px; font: inherit; }
+
+.doc-preview-info button {
+  align-self: flex-start;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.survey-gallery-strip button[aria-current="true"] { outline: 2px solid var(--focus); }
+.survey-row.doc .survey-row-place { font-style: italic; }

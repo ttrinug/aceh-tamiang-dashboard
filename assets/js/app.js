@@ -436,17 +436,24 @@ async function init() {
       state.visibleLayers = datasets;
       renderLegend();
     },
-    onFeatureDetail: (dataset, properties) => survey?.showDetail(properties.id)
+    onFeatureDetail: (dataset, properties) => (dataset.id === 'documentation'
+      ? survey?.showDocumentation(properties.id, properties.photo)
+      : survey?.showDetail(properties.id))
   });
 
   const surveyDataset = datasetById('brin-survey');
+  const docDataset = datasetById('documentation');
   survey = createSurvey({
     dataset: surveyDataset,
+    docDataset,
     boundariesFile: datasetById('boundaries').file,
     i18n,
     reportSources: () => ({ layers, datasetData: mapView.datasetData, imageCorners: mapView.imageCorners }),
-    onDataChange: (data) => mapView.setDatasetData(surveyDataset.id, data),
-    onGoTo: (lon, lat) => mapView.goToPoint(surveyDataset.id, lon, lat),
+    onDataChange: (points, docs) => {
+      mapView.setDatasetData(surveyDataset.id, points);
+      mapView.setDatasetData(docDataset.id, docs);
+    },
+    onGoTo: (lon, lat, isDoc) => mapView.goToPoint(isDoc ? docDataset.id : surveyDataset.id, lon, lat),
     setStatus: (text) => { document.getElementById('survey-note').textContent = text; }
   });
   // The rest of the dashboard must still open if the survey panel cannot start, for example

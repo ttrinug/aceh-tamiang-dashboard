@@ -297,6 +297,27 @@
       }
     },
     {
+      "id": "documentation",
+      "group": "survey",
+      "map": true,
+      "renderer": "icons",
+      "detailView": true,
+      "iconSize": [8, 0.4, 12, 0.6, 16, 0.9],
+      "label": { "id": "Dokumentasi", "en": "Documentation" },
+      "file": "data/web/documentation.geojson",
+      "source": "Dokumentasi lapangan BRIN",
+      "sourceShort": "BRIN",
+      "date": "—",
+      "method": { "id": "Foto lapangan dengan keterangan dan catatan. Setiap foto ditempatkan pada posisi GPS yang tersimpan di dalam foto itu sendiri; posisi ini tidak diperiksa ulang dan ketelitiannya bergantung pada kamera. Foto tanpa posisi GPS tidak dipakai. Hanya dokumentasi yang sudah ditinjau yang diterbitkan.", "en": "Field photos with captions and notes. Each photo is placed at the GPS position stored in the photo itself; this position is not checked again, and its accuracy depends on the camera. Photos without a GPS position are not used. Only reviewed documentation is published." },
+      "visible": true,
+      "publish": true,
+      "attribution": "Dokumentasi lapangan: BRIN",
+      "legend": {
+        "type": "icon",
+        "icon": "documentation"
+      }
+    },
+    {
       "id": "worship-osm",
       "group": "reference",
       "map": true,

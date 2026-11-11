@@ -62,6 +62,16 @@ Each narasumber has a name, a role (such as Kepala Desa or Warga) and a consent 
 
 To combine tablets, press **Impor** on one tablet and choose another tablet's export file.
 
+**Dokumentasi (photo documentation)**
+
+A simpler record than a survey point: photos, a caption for each, and general notes and findings.
+
+1. Press **Tambah titik**, then the **Dokumentasi** tab.
+2. Fill in the contributor and choose one or more photos. Each photo is placed on the map at the GPS position stored inside the photo, with the time the photo was taken. **A photo without a GPS position is refused**, so turn on location in the camera app before taking photos. The same photo is not added twice.
+3. Write a caption under each photo if useful, and the general notes, then press **Simpan**.
+
+Documentation appears in the Lokal and Terbit lists and on the **Dokumentasi** map layer, one camera icon per photo. It goes into the same export file and is published by the same `build_survey.py` run. Photos whose position is outside the 12 kecamatan are left out when publishing. Check that tablets keep the location in photos: some phones and browsers remove it when a photo is chosen from the gallery. If every photo is refused, take a test photo with location turned on and try again.
+
 **Reading a point**
 
 Press a point on the map or in the list to see its details and its **Laporan lokasi**. The report reads each map layer at the point's coordinates: observed flood (detected or not detected), land cover, the WorldPop estimate and each InaRISK hazard class. A polygon or image layer added to the dashboard appears in the report by itself. **Ke titik** in the list moves the map to that point. **Cetak laporan** prints one point, or saves it as PDF through the browser's print window, with all its photos and its location report. A printed report shows narasumber roles only, for those who agreed, never names.
