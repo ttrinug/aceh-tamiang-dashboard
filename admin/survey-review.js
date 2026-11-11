@@ -240,7 +240,7 @@ export function setupSurveyTab({ api, el, showMessage, waitForJob }) {
     try {
       const { job } = await api('POST', '/api/survey/publish');
       const result = await waitForJob(job, document.getElementById('survey-log'));
-      showMessage(`Published ${result.points} survey points and ${result.photos} documentation photos to data/web/. Read the log, then commit and push.`);
+      showMessage(`Published ${result.points} survey points and ${result.photos} documentation photos to data/web/. Read the log, then use the Publish to GitHub tab.`);
     } catch (error) {
       showMessage(error.message, true);
     } finally {

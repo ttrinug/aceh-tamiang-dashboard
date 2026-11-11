@@ -1,6 +1,7 @@
 // Local admin page: adds map datasets and kecamatan tables, edits dataset details and the
 // dashboard text. Talks to scripts/admin-server.mjs; all processing runs in admin_tool.py.
 import { setupSurveyTab } from './survey-review.js';
+import { setupGitTab } from './publish-github.js';
 
 let state = { layers: null, cards: null, text: null, inbox: [] };
 
@@ -565,6 +566,7 @@ async function init() {
   setupTableTab();
   setupTextTab();
   setupSurveyTab({ api, el, showMessage, waitForJob });
+  setupGitTab({ api, el, showMessage });
 }
 
 init().catch((error) => showMessage(`The admin page could not start: ${error.message}. Is scripts/admin-server.mjs running?`, true));

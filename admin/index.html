@@ -10,7 +10,7 @@
   <header class="top">
     <div>
       <h1>Dashboard admin</h1>
-      <p class="muted">Runs on this computer only. Changes are saved to <code>config/</code> (old versions go to <code>config/backup/</code>). Nothing is published.</p>
+      <p class="muted">Runs on this computer only. Changes are saved to <code>config/</code> (old versions go to <code>config/backup/</code>). Nothing goes online until you use <strong>Publish to GitHub</strong>.</p>
     </div>
     <a class="button" href="/" target="_blank">Open dashboard</a>
   </header>
@@ -20,6 +20,7 @@
     <button type="button" role="tab" data-tab="tables" aria-selected="false">Kecamatan tables</button>
     <button type="button" role="tab" data-tab="text" aria-selected="false">Text</button>
     <button type="button" role="tab" data-tab="survey" aria-selected="false">Survey review</button>
+    <button type="button" role="tab" data-tab="github" aria-selected="false">Publish to GitHub</button>
   </nav>
 
   <p id="message" class="message" role="status" hidden></p>
@@ -131,9 +132,35 @@
       </li>
       <li>
         <h3>3. Publish the approved records</h3>
-        <p class="muted">Writes <code>data/web/brin_survey.geojson</code>, <code>data/web/documentation.geojson</code> and their photos. It does not push: commit and push afterwards (or ask Claude).</p>
+        <p class="muted">Writes <code>data/web/brin_survey.geojson</code>, <code>data/web/documentation.geojson</code> and their photos. It does not push: use the Publish to GitHub tab afterwards.</p>
         <button type="button" id="survey-publish" class="primary">Publish approved records</button>
         <pre id="survey-log" class="info" hidden></pre>
+      </li>
+    </ol>
+  </section>
+
+  <!-- Publish to GitHub -->
+  <section id="tab-github" class="tab" hidden>
+    <h2>Publish to the live dashboard</h2>
+    <p class="muted">Commits the changed files in <code>config/</code> and <code>data/web/</code>, and only those, then pushes them to GitHub. The live site updates a few minutes later. Raw data, the <code>for claude</code> folder and survey review decisions are never included. Files over 50 MB are refused.</p>
+    <ol class="steps">
+      <li>
+        <h3>1. Check what will be published</h3>
+        <p class="row"><button type="button" id="git-refresh">Refresh</button> <span id="git-branch" class="muted"></span></p>
+        <table class="list">
+          <thead><tr><th>Change</th><th>File</th><th>Size</th></tr></thead>
+          <tbody id="git-changes"></tbody>
+        </table>
+        <div id="git-unpushed"></div>
+      </li>
+      <li>
+        <h3>2. Describe it and publish</h3>
+        <div class="row">
+          <label for="git-message">Message</label>
+          <input id="git-message" type="text" size="60" placeholder="For example: Publish reviewed survey points">
+          <button type="button" id="git-push" class="primary">Commit and push</button>
+        </div>
+        <p class="hint muted">The first push may open a GitHub sign-in window.</p>
       </li>
     </ol>
   </section>

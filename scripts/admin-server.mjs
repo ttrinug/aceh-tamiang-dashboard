@@ -3,7 +3,8 @@
 // Usage: node scripts/admin-server.mjs [port]   (default 8081)
 //
 // It listens on 127.0.0.1 only, so nothing is reachable from other computers. Every config
-// write first copies the old file to config/backup/. Nothing is published or pushed.
+// write first copies the old file to config/backup/. Nothing is pushed until the Publish to
+// GitHub tab is used, and that commits only config/ and data/web/.
 import { createServer } from 'node:http';
 import { spawn } from 'node:child_process';
 import { copyFile, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
@@ -127,6 +128,58 @@ async function driveCall(body) {
   return data;
 }
 
+// ------------------------------------------------------------ GitHub
+
+// The only folders the admin page commits. Raw data, the owner's folder and review decisions
+// are outside them (and git-ignored), so they can never be pushed from here.
+const publicPaths = ['config', 'data/web'];
+// GitHub warns above 50 MB and refuses files above 100 MB.
+const maxFileBytes = 50 * 1024 * 1024;
+
+// Runs git without a shell, so a commit message cannot run anything. A sign-in window from Git
+// Credential Manager may still appear; a text prompt is turned off so the server never hangs.
+function git(args, timeoutMs = 120000) {
+  return new Promise((done) => {
+    const child = spawn('git', ['-c', 'core.quotepath=off', ...args], { cwd: root, env: { ...process.env, GIT_TERMINAL_PROMPT: '0' } });
+    let out = '';
+    let err = '';
+    const timer = setTimeout(() => child.kill(), timeoutMs);
+    child.stdout.on('data', (chunk) => { out += chunk; });
+    child.stderr.on('data', (chunk) => { err += chunk; });
+    child.on('error', (error) => { clearTimeout(timer); done({ code: -1, out, err: error.message }); });
+    child.on('close', (code) => { clearTimeout(timer); done({ code, out, err }); });
+  });
+}
+
+async function gitOrFail(args, timeoutMs) {
+  const result = await git(args, timeoutMs);
+  if (result.code !== 0) throw new Error(`git ${args[0]} failed: ${(result.err || result.out).trim() || `exit ${result.code}`}`);
+  return result.out;
+}
+
+// Changed, added and removed files in the public folders, with their sizes.
+async function publicChanges() {
+  const out = await gitOrFail(['status', '--porcelain=v1', '-z', '--untracked-files=all', '--', ...publicPaths]);
+  const fields = out.split('\0').filter(Boolean);
+  const changes = [];
+  for (let i = 0; i < fields.length; i += 1) {
+    const status = fields[i].slice(0, 2);
+    const path = fields[i].slice(3);
+    if (status.startsWith('R')) i += 1; // a rename is followed by its old path
+    const full = join(root, path);
+    changes.push({ status: status.trim(), path, size: existsSync(full) ? (await stat(full)).size : null });
+  }
+  return changes;
+}
+
+async function gitState() {
+  const branch = (await gitOrFail(['rev-parse', '--abbrev-ref', 'HEAD'])).trim();
+  const upstream = await git(['rev-list', '--left-right', '--count', `origin/${branch}...HEAD`]);
+  const [behind, ahead] = upstream.code === 0 ? upstream.out.trim().split(/\s+/).map(Number) : [null, null];
+  const unpushed = ahead ? (await gitOrFail(['log', '--format=%h %s', `origin/${branch}..HEAD`])).trim().split('\n') : [];
+  return { branch, behind, ahead, unpushed, changes: await publicChanges() };
+}
+
 const validId = (id) => typeof id === 'string' && /^[a-z0-9]+(-[a-z0-9]+)*$/.test(id);
 
 // Adds or replaces options by id in one of the cards.json lists.
@@ -221,6 +274,39 @@ const api = {
     const id = String(nextJob++);
     jobs.set(id, runTool(['publish'], null, 'survey_review.py'));
     return { job: id };
+  },
+
+  'GET /api/git': async () => gitState(),
+
+  // Commits the changes in config/ and data/web/ (only those), then pushes main to GitHub.
+  'POST /api/git/push': async (body) => {
+    const message = String(body.message || '').trim();
+    const before = await gitState();
+    if (before.branch !== 'main') throw new Error(`This copy is on branch ${before.branch}, not main; ask Claude.`);
+    const tooBig = before.changes.filter((c) => c.size > maxFileBytes);
+    if (tooBig.length) throw new Error(`Too large for GitHub (over 50 MB): ${tooBig.map((c) => c.path).join(', ')}.`);
+    let committed = null;
+    if (before.changes.length) {
+      if (!message) throw new Error('Write a short message describing the change.');
+      await gitOrFail(['add', '--all', '--', ...publicPaths]);
+      // A pathspec limits the commit to these folders even if other files were staged by hand.
+      await gitOrFail(['commit', '-m', message, '--', ...publicPaths]);
+      committed = (await gitOrFail(['log', '-1', '--format=%h %s'])).trim();
+    } else if (!before.ahead) {
+      return { committed: null, pushed: false, note: 'Nothing to publish: no changes and nothing waiting.' };
+    }
+    const push = await git(['push', 'origin', 'main'], 180000);
+    if (push.code !== 0) {
+      const reason = (push.err || push.out).trim();
+      const hint = /rejected|fetch first|non-fast-forward/.test(reason)
+        ? ' GitHub has newer changes than this computer; ask Claude to bring them in first.'
+        : /resolve host|unable to access|timed out/i.test(reason) ? ' Check the internet connection and try again.' : '';
+      // git's own "hint:" lines are generic; show the line that says what went wrong.
+      const lines = reason.split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('hint:'));
+      const detail = lines.find((l) => /rejected|error|fatal/i.test(l)) ?? lines.pop() ?? '';
+      throw new Error(`${committed ? `Committed ${committed}, but the push failed.` : 'The push failed.'}${hint} (${detail})`);
+    }
+    return { committed, pushed: true, head: (await gitOrFail(['rev-parse', '--short', 'HEAD'])).trim() };
   },
 
   'PUT /api/text': async (body) => {

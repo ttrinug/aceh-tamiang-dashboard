@@ -84,7 +84,7 @@ Never give the admin code to the field team or write it in the repository.
    - photos outside Aceh Tamiang.
 
    Your edits change only what is published. The uploads stay as they were, and locations cannot be edited.
-4. Press **Publish approved records**. This writes the public files in `data/web/`. Read the log, then commit and push, or ask Claude to.
+4. Press **Publish approved records**. This writes the public files in `data/web/`. Read the log, then open the **Publish to GitHub** tab and press **Commit and push**.
 
 Review decisions are saved on this computer in `data/raw/survey/curation.json` (private; earlier copies in `curation_backup/`). Each decision is tied to the exact content you reviewed. If a record changes afterwards, for example after another upload, it goes back to **Changed since review** and is not published until you approve it again.
 

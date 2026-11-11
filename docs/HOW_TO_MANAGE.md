@@ -83,7 +83,7 @@ Only records you approve are published.
 1. Admin page → **Survey review** → enter the admin code → **Get uploads from Drive**. Export files from tablets can also go in `for claude/survey/` (git ignores this folder).
 2. Review each record under **To review**: edit the published text if needed, leave out photos or roles, then **Approve** or **Reject**. Check the warnings, such as a narasumber's name in the text.
 3. Press **Publish approved records** and read the log.
-4. Commit and push the files in `data/web/` (`brin_survey.geojson`, `brin_survey/`, `documentation.geojson`, `documentation/`), or ask Claude to.
+4. Go to **Publish to GitHub** and press **Commit and push** (see section 7).
 
 A record that changes after you approved it needs review again. The full routine and the one-time admin-code setup are in [DRIVE_UPLOAD_SETUP.md](DRIVE_UPLOAD_SETUP.md).
 
@@ -106,9 +106,17 @@ The impact cards, the "Data Kecamatan" table and the infrastructure "Damaged" co
 
 ## 7. Publishing
 
-- A dataset goes public only when its **Cleared for publishing** box is ticked **and** its file is allowed in `.gitignore`, with a line such as `!data/web/<file>`.
-- So far only the BPBD figures are cleared.
-- The site goes online only after a GitHub repository name is chosen and GitHub Pages is switched on, both with your approval.
+The live dashboard is https://ttrinug.github.io/aceh-tamiang-dashboard/. It shows what is on GitHub.
+
+1. Admin page → **Publish to GitHub**. It lists the changed files in `config/` and `data/web/`, and any commits waiting to be pushed.
+2. Check the list, write a short message (for example "Publish reviewed survey points"), and press **Commit and push**. The first time, a GitHub sign-in window may open.
+3. The live site updates a few minutes later. A browser that opened it recently may need Ctrl+Shift+R.
+
+Safeguards:
+- Only `config/` and `data/web/` are committed from the admin page. Raw data (`data/raw/`), the `for claude` folder and survey review decisions are never included.
+- Files over 50 MB are refused.
+- If GitHub has newer changes than this computer, for example pushed by Claude, the push is refused and nothing is overwritten. Ask Claude to bring them in, then press again.
+- Everything in `data/web/` is public once pushed (decided on 4 November 2026; see `docs/DATA_LOG.md`). The **Cleared for publishing** box in Map datasets only sets the label shown in the dashboard; it does not keep a file offline.
 
 ## 8. Rules the dashboard follows
 
