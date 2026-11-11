@@ -24,15 +24,23 @@
  */
 
 const RECORD_ID = /^[A-Za-z0-9-]{1,64}$/;
+// Shown by doGet, so the admin page can tell whether the deployed script is up to date.
+const VERSION = 2;
 
+// Script Properties are pasted by hand; spaces or a line break around a value are ignored.
+function setting(name) {
+  return String(PropertiesService.getScriptProperties().getProperty(name) || '').trim();
+}
+
+// Says whether an admin code is set, never what it is.
 function doGet() {
-  return reply({ ok: true, service: 'brin-survey-upload' });
+  const adminCode = setting('ADMIN_CODE');
+  return reply({ ok: true, service: 'brin-survey-upload', version: VERSION, adminConfigured: Boolean(adminCode && adminCode !== setting('UPLOAD_CODE')) });
 }
 
 function doPost(e) {
-  const settings = PropertiesService.getScriptProperties();
-  const code = settings.getProperty('UPLOAD_CODE');
-  const folderId = settings.getProperty('FOLDER_ID');
+  const code = setting('UPLOAD_CODE');
+  const folderId = setting('FOLDER_ID');
   if (!code || !folderId) return reply({ ok: false, error: 'not-configured' });
 
   let body;
@@ -42,15 +50,15 @@ function doPost(e) {
     return reply({ ok: false, error: 'bad-request' });
   }
   if (body && body.action) {
-    const adminCode = settings.getProperty('ADMIN_CODE');
+    const adminCode = setting('ADMIN_CODE');
     if (!adminCode || adminCode === code) return reply({ ok: false, error: 'admin-not-configured' });
-    if (body.adminCode !== adminCode) return reply({ ok: false, error: 'code' });
+    if (String(body.adminCode || '').trim() !== adminCode) return reply({ ok: false, error: 'admin-code' });
     const root = DriveApp.getFolderById(folderId);
     if (body.action === 'list') return reply({ ok: true, files: listFiles(root) });
     if (body.action === 'get') return getFile(root, String(body.fileId || ''));
     return reply({ ok: false, error: 'bad-request' });
   }
-  if (!body || body.code !== code) return reply({ ok: false, error: 'code' });
+  if (!body || String(body.code || '').trim() !== code) return reply({ ok: false, error: 'code' });
 
   const folder = DriveApp.getFolderById(folderId);
   if (body.type === 'original') return saveOriginal(folder, body);

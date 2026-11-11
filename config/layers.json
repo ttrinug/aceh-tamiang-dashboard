@@ -280,7 +280,7 @@
       "map": true,
       "renderer": "icons",
       "detailView": true,
-      "uploadUrl": "https://script.google.com/macros/s/AKfycbxlDWa572bbb562Nms_cl0g4hFRbxHgCUYSFQDrDSUHswv_5HEWL5ubGFnheDq7HnR8ZQ/exec",
+      "uploadUrl": "https://script.google.com/macros/s/AKfycbwsglt8zRMtzKTtHQbGI71WaPniOa8XoemGEezoWD_st_C5-gN2__stI5shYk-fllss4w/exec",
       "iconSize": [8, 0.45, 12, 0.7, 16, 1],
       "label": { "id": "BRIN Survey", "en": "BRIN Survey" },
       "file": "data/web/brin_survey.geojson",

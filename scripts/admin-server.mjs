@@ -108,7 +108,9 @@ const driveInbox = join(inbox, 'survey', 'drive');
 // The only paths the upload script writes; anything else in the folder is not copied.
 const drivePath = /^(brin_survey_[A-Za-z0-9_-]+\.json|originals\/[A-Za-z0-9_-]+\/[A-Za-z0-9._-]+)$/;
 const driveErrors = {
-  code: 'Google refused the admin code.',
+  'admin-code': 'Google refused the admin code. Check that it matches ADMIN_CODE in the script\'s Script Properties exactly.',
+  // Only the old script (before admin actions existed) answers an admin request this way.
+  code: 'The Google script at this address is still the old version. In script.google.com: Deploy → Manage deployments → pencil → Version: New version → Deploy. (Do not use "New deployment": that makes a new address.)',
   'admin-not-configured': 'The Google script has no ADMIN_CODE yet (or it equals UPLOAD_CODE). See docs/DRIVE_UPLOAD_SETUP.md.',
   'not-found': 'A file disappeared from the Drive folder during the download.'
 };
