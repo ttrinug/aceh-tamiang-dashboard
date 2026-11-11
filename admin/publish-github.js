@@ -15,6 +15,8 @@ export function setupGitTab({ api, el, showMessage }) {
   const branch = document.getElementById('git-branch');
   const message = document.getElementById('git-message');
   const push = document.getElementById('git-push');
+  const status = document.getElementById('git-status');
+  const label = push.textContent;
 
   async function refresh() {
     const state = await api('GET', '/api/git');
@@ -31,7 +33,11 @@ export function setupGitTab({ api, el, showMessage }) {
       ? [el('p', { text: `Already committed, waiting to be pushed (${state.unpushed.length}):` }), el('ul', {}, state.unpushed.map((line) => el('li', {}, el('code', { text: line }))))]
       : []));
     if (!message.value) message.value = `Update dashboard data (${new Date().toISOString().slice(0, 10)})`;
-    push.disabled = !state.changes.length && !state.unpushed.length;
+    const nothing = !state.changes.length && !state.unpushed.length;
+    push.disabled = nothing;
+    status.textContent = nothing
+      ? 'Nothing to publish: GitHub already has everything in config/ and data/web/.'
+      : `Ready to publish: ${state.changes.length} changed file(s)${state.unpushed.length ? ` and ${state.unpushed.length} waiting commit(s)` : ''}.`;
     return state;
   }
 
@@ -44,6 +50,9 @@ export function setupGitTab({ api, el, showMessage }) {
     const summary = count ? `${count} changed file(s)` : `${state.unpushed.length} waiting commit(s)`;
     if (!confirm(`Publish ${summary} to the public GitHub repository and live site?`)) return;
     push.disabled = true;
+    push.setAttribute('aria-busy', 'true');
+    push.textContent = 'Publishing…';
+    status.textContent = 'Committing and pushing. This usually takes a few seconds; a GitHub sign-in window may open.';
     showMessage('Committing and pushing…');
     try {
       const result = await api('POST', '/api/git/push', { message: message.value });
@@ -53,6 +62,8 @@ export function setupGitTab({ api, el, showMessage }) {
     } catch (error) {
       showMessage(error.message, true);
     } finally {
+      push.removeAttribute('aria-busy');
+      push.textContent = label;
       await refresh().catch(() => {});
     }
   });

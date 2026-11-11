@@ -192,3 +192,7 @@ dialog {
 .review-photos figure { margin: 0; padding: 6px; border: 1px solid var(--border); border-radius: 4px; display: flex; flex-direction: column; gap: 4px; }
 .review-photos img { width: 100%; height: 150px; object-fit: cover; border-radius: 3px; }
 .review-photos input[type="text"] { width: 100%; }
+
+/* Publish to GitHub: a greyed-out button means "nothing to do", not "busy". */
+.git-status { margin: 8px 0 0; font-weight: 600; }
+#git-push:disabled:not([aria-busy="true"]) { cursor: not-allowed; }
