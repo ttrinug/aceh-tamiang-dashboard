@@ -346,6 +346,11 @@ createServer(async (req, res) => {
     }
   }
 
+  // A folder address typed without its final slash, such as /admin, goes to the folder's page.
+  if (!path.endsWith('/') && servable.includes(`${path.slice(1)}/`)) {
+    res.writeHead(301, { Location: `${path}/${url.search}` }).end();
+    return;
+  }
   const file = join(root, normalize(path.endsWith('/') ? path + 'index.html' : path));
   const inside = relative(root, file).split(sep).join('/');
   if (!file.startsWith(root) || !servable.some((prefix) => inside === prefix || inside.startsWith(prefix))) {
