@@ -3,7 +3,7 @@
   "kecamatan": { "id": "Kecamatan", "en": "Kecamatan" },
   "language": { "id": "Bahasa", "en": "Language" },
   "menu": { "id": "Menu", "en": "Menu" },
-  "about": { "id": "Tentang data", "en": "About the data" },
+  "about": { "id": "Tentang data", "en": "About" },
   "close": { "id": "Tutup", "en": "Close" },
   "noData": { "id": "Belum ada data", "en": "No data yet" },
   "source": { "id": "Sumber", "en": "Source" },
@@ -12,9 +12,7 @@
   "numerator": { "id": "Pembilang", "en": "Numerator" },
   "denominator": { "id": "Penyebut", "en": "Denominator" },
   "impactHeading": { "id": "Dampak dilaporkan", "en": "Reported impact" },
-  "charts": {
-    "select": { "id": "Pilih grafik", "en": "Choose chart" }
-  },
+  "charts": { "select": { "id": "Pilih grafik", "en": "Choose chart" } },
   "percentagesHeading": { "id": "Persentase", "en": "Percentages" },
   "map": {
     "label": { "id": "Peta", "en": "Map" },
@@ -34,23 +32,74 @@
     "limitations": { "id": "Keterbatasan", "en": "Limitations" }
   },
   "limitations": [
-    { "id": "Ini prototipe. Belum ada data penduduk BPS yang dimuat.", "en": "This is a prototype. No BPS population data has been loaded yet." },
-    { "id": "Unit analisis adalah kecamatan. Belum ada data tingkat kelurahan.", "en": "The unit of analysis is the kecamatan. There is no kelurahan-level data yet." },
-    { "id": "Dampak dilaporkan diambil dari situs BPBD Aceh Tamiang (pembaruan 19 Maret 2026). Angka dapat berubah. Data korban hilang tidak tersedia di situs tersebut.", "en": "Reported impact is taken from the BPBD Aceh Tamiang site (updated 19 March 2026). Figures may change. Missing persons are not reported on that site." },
-    { "id": "Nama dan batas kecamatan mengikuti data BIG (12 Juni 2026), termasuk ejaan \"Kota Kualasinpang\". Belum dicocokkan dengan BPS.", "en": "Kecamatan names and boundaries follow BIG data (12 June 2026), including the spelling \"Kota Kualasinpang\". Not yet checked against BPS." },
-    { "id": "Garis batas disederhanakan untuk web dan dapat bergeser hingga sekitar 19 m dari data asli. Luas dihitung dari data asli.", "en": "Boundary lines are simplified for the web and may shift up to about 19 m from the source. Areas are calculated from the source geometry." },
-    { "id": "Genangan banjir adalah genangan teramati dari citra radar Sentinel-1, bukan model, dipetakan dengan metode deteksi perubahan UN-SPIDER. Tanggal citra dan parameter yang dipakai belum dikonfirmasi.", "en": "The flood layer is observed flood extent from Sentinel-1 radar imagery, not a model, mapped with the UN-SPIDER change detection method. The image dates and parameters used are not yet confirmed." },
-    { "id": "Radar (SAR) dapat melewatkan air di bawah vegetasi dan di antara bangunan, dan tanggal citra mungkin tidak bertepatan dengan puncak banjir. Lapisan ini tidak menunjukkan kedalaman banjir.", "en": "Radar (SAR) can miss water under vegetation and between buildings, and the image dates may miss the flood peak. This layer does not show flood depth." },
-    { "id": "Tambak, area pasang surut, dan badan air permanen belum diperiksa atau disaring secara terpisah.", "en": "Fish ponds (tambak), tidal areas and permanent water bodies have not been checked or masked separately." },
-    { "id": "Estimasi penduduk WorldPop adalah hasil model, bukan sensus. \"Penduduk di area genangan\" adalah estimasi penduduk yang tinggal di area tergenang teramati, bukan jumlah penduduk terdampak.", "en": "WorldPop population figures are model estimates, not a census. \"Population in the flood extent\" estimates people living where flooding was observed; it is not a count of affected people." },
-    { "id": "Tutupan lahan ESRI 2025 mencakup seluruh tahun 2025, sehingga sebagian bisa sudah dipengaruhi banjir. Kelas \"Air\" di dalam genangan dapat berupa tambak atau sungai.", "en": "The ESRI 2025 land cover covers all of 2025, so part of it may already reflect the flood. \"Water\" inside the flood extent may be fish ponds or rivers." },
-    { "id": "Indeks bahaya InaRISK adalah bahaya termodelkan, bukan kejadian banjir yang teramati. Tahun dan versi data belum dikonfirmasi. Area tanpa kelas berarti tidak ada kelas di data sumber, bukan bahaya nol.", "en": "InaRISK hazard indices are modelled hazard, not observed events. Their year and version are not yet confirmed. Area with no class means the source has no class there, not zero hazard." },
-    { "id": "Lapisan bahaya disederhanakan untuk web dan dapat bergeser hingga sekitar 30 m. Luas dihitung dari data asli.", "en": "Hazard layers are simplified for the web and may shift up to about 30 m. Areas are calculated from the source geometry." },
-    { "id": "Lapisan tempat ibadah dari OpenStreetMap sangat belum lengkap (14 titik, sedangkan BPBD melaporkan 724 sarana ibadah rusak). Lapisan ini hanya menunjukkan lokasi yang sudah dipetakan dan tidak dipakai sebagai jumlah.", "en": "The OpenStreetMap places-of-worship layer is far from complete (14 points, while BPBD reports 724 damaged places of worship). It only shows locations already mapped and is not used as a total." },
-    { "id": "Citra satelit adalah mosaik tahun 2024, sebelum banjir. Ini bukan citra saat banjir. Resolusinya sekitar 10 m, sehingga bangunan tidak terlihat.", "en": "The satellite imagery is a 2024 mosaic from before the flood. It is not imagery of the flood. At about 10 m resolution, buildings are not visible." },
-    { "id": "Citra EOxCloudless berlisensi CC BY-NC-SA 4.0 (hanya untuk penggunaan nonkomersial).", "en": "EOxCloudless imagery is licensed CC BY-NC-SA 4.0 (non-commercial use only)." },
-    { "id": "Lapisan SITABA hanya menampilkan baris yang memiliki titik lokasi: 18 dari 344 jalan, 1 dari 16 jembatan dan 19 dari 23 infrastruktur Cipta Karya di Aceh Tamiang. Angka ini tidak digabung dengan angka BPBD.", "en": "The SITABA layers show only rows that have a location point: 18 of 344 roads, 1 of 16 bridges and 19 of 23 Cipta Karya assets in Aceh Tamiang. These figures are not combined with the BPBD figures." },
-    { "id": "Titik BRIN Survey yang baru hanya tersimpan di peramban perangkat yang dipakai sampai diekspor. Menghapus data peramban akan menghapus titik yang belum diekspor.", "en": "New BRIN Survey points are stored only in the browser of the device used until they are exported. Clearing browser data deletes points that have not been exported." }
+    {
+      "id": "Ini prototipe. Belum ada data penduduk BPS yang dimuat.",
+      "en": "This is a prototype. No BPS population data has been loaded yet."
+    },
+    {
+      "id": "Unit analisis adalah kecamatan. Belum ada data tingkat kelurahan.",
+      "en": "The unit of analysis is the kecamatan. There is no kelurahan-level data yet."
+    },
+    {
+      "id": "Dampak dilaporkan diambil dari situs BPBD Aceh Tamiang (pembaruan 19 Maret 2026). Angka dapat berubah. Data korban hilang tidak tersedia di situs tersebut.",
+      "en": "Reported impact is taken from the BPBD Aceh Tamiang site (updated 19 March 2026). Figures may change. Missing persons are not reported on that site."
+    },
+    {
+      "id": "Nama dan batas kecamatan mengikuti data BIG (12 Juni 2026), termasuk ejaan \"Kota Kualasinpang\". Belum dicocokkan dengan BPS.",
+      "en": "Kecamatan names and boundaries follow BIG data (12 June 2026), including the spelling \"Kota Kualasinpang\". Not yet checked against BPS."
+    },
+    {
+      "id": "Garis batas disederhanakan untuk web dan dapat bergeser hingga sekitar 19 m dari data asli. Luas dihitung dari data asli.",
+      "en": "Boundary lines are simplified for the web and may shift up to about 19 m from the source. Areas are calculated from the source geometry."
+    },
+    {
+      "id": "Genangan banjir adalah genangan teramati dari citra radar Sentinel-1, bukan model, dipetakan dengan metode deteksi perubahan UN-SPIDER. Tanggal citra dan parameter yang dipakai belum dikonfirmasi.",
+      "en": "The flood layer is observed flood extent from Sentinel-1 radar imagery, not a model, mapped with the UN-SPIDER change detection method. The image dates and parameters used are not yet confirmed."
+    },
+    {
+      "id": "Radar (SAR) dapat melewatkan air di bawah vegetasi dan di antara bangunan, dan tanggal citra mungkin tidak bertepatan dengan puncak banjir. Lapisan ini tidak menunjukkan kedalaman banjir.",
+      "en": "Radar (SAR) can miss water under vegetation and between buildings, and the image dates may miss the flood peak. This layer does not show flood depth."
+    },
+    {
+      "id": "Tambak, area pasang surut, dan badan air permanen belum diperiksa atau disaring secara terpisah.",
+      "en": "Fish ponds (tambak), tidal areas and permanent water bodies have not been checked or masked separately."
+    },
+    {
+      "id": "Estimasi penduduk WorldPop adalah hasil model, bukan sensus. \"Penduduk di area genangan\" adalah estimasi penduduk yang tinggal di area tergenang teramati, bukan jumlah penduduk terdampak.",
+      "en": "WorldPop population figures are model estimates, not a census. \"Population in the flood extent\" estimates people living where flooding was observed; it is not a count of affected people."
+    },
+    {
+      "id": "Tutupan lahan ESRI 2025 mencakup seluruh tahun 2025, sehingga sebagian bisa sudah dipengaruhi banjir. Kelas \"Air\" di dalam genangan dapat berupa tambak atau sungai.",
+      "en": "The ESRI 2025 land cover covers all of 2025, so part of it may already reflect the flood. \"Water\" inside the flood extent may be fish ponds or rivers."
+    },
+    {
+      "id": "Indeks bahaya InaRISK adalah bahaya termodelkan, bukan kejadian banjir yang teramati. Tahun dan versi data belum dikonfirmasi. Area tanpa kelas berarti tidak ada kelas di data sumber, bukan bahaya nol.",
+      "en": "InaRISK hazard indices are modelled hazard, not observed events. Their year and version are not yet confirmed. Area with no class means the source has no class there, not zero hazard."
+    },
+    {
+      "id": "Lapisan bahaya disederhanakan untuk web dan dapat bergeser hingga sekitar 30 m. Luas dihitung dari data asli.",
+      "en": "Hazard layers are simplified for the web and may shift up to about 30 m. Areas are calculated from the source geometry."
+    },
+    {
+      "id": "Lapisan tempat ibadah dari OpenStreetMap sangat belum lengkap (14 titik, sedangkan BPBD melaporkan 724 sarana ibadah rusak). Lapisan ini hanya menunjukkan lokasi yang sudah dipetakan dan tidak dipakai sebagai jumlah.",
+      "en": "The OpenStreetMap places-of-worship layer is far from complete (14 points, while BPBD reports 724 damaged places of worship). It only shows locations already mapped and is not used as a total."
+    },
+    {
+      "id": "Citra satelit adalah mosaik tahun 2024, sebelum banjir. Ini bukan citra saat banjir. Resolusinya sekitar 10 m, sehingga bangunan tidak terlihat.",
+      "en": "The satellite imagery is a 2024 mosaic from before the flood. It is not imagery of the flood. At about 10 m resolution, buildings are not visible."
+    },
+    {
+      "id": "Citra EOxCloudless berlisensi CC BY-NC-SA 4.0 (hanya untuk penggunaan nonkomersial).",
+      "en": "EOxCloudless imagery is licensed CC BY-NC-SA 4.0 (non-commercial use only)."
+    },
+    {
+      "id": "Lapisan SITABA hanya menampilkan baris yang memiliki titik lokasi: 18 dari 344 jalan, 1 dari 16 jembatan dan 19 dari 23 infrastruktur Cipta Karya di Aceh Tamiang. Angka ini tidak digabung dengan angka BPBD.",
+      "en": "The SITABA layers show only rows that have a location point: 18 of 344 roads, 1 of 16 bridges and 19 of 23 Cipta Karya assets in Aceh Tamiang. These figures are not combined with the BPBD figures."
+    },
+    {
+      "id": "Titik BRIN Survey yang baru hanya tersimpan di peramban perangkat yang dipakai sampai diekspor. Menghapus data peramban akan menghapus titik yang belum diekspor.",
+      "en": "New BRIN Survey points are stored only in the browser of the device used until they are exported. Clearing browser data deletes points that have not been exported."
+    }
   ],
   "table": {
     "title": { "id": "Data Kecamatan", "en": "Kecamatan data" },
@@ -59,10 +108,7 @@
     "total": { "id": "Total", "en": "Total" },
     "partialTotal": { "id": "Total dari {n} dari {all} kecamatan yang ada datanya.", "en": "Total of the {n} of {all} kecamatan with data." }
   },
-  "legend": {
-    "title": { "id": "Legenda", "en": "Legend" },
-    "empty": { "id": "Tidak ada lapisan aktif", "en": "No active layers" }
-  },
+  "legend": { "title": { "id": "Legenda", "en": "Legend" }, "empty": { "id": "Tidak ada lapisan aktif", "en": "No active layers" } },
   "infrastructure": {
     "title": { "id": "Infrastruktur di Kecamatan", "en": "Infrastructure in Kecamatan" },
     "type": { "id": "Jenis", "en": "Type" },
@@ -80,8 +126,14 @@
     "uploadCodePrompt": { "id": "Masukkan kode unggah (tanyakan kepada koordinator):", "en": "Enter the upload code (ask the coordinator):" },
     "uploading": { "id": "Mengunggah {i} dari {n}…", "en": "Uploading {i} of {n}…" },
     "uploaded": { "id": "{n} titik terunggah ke Drive.", "en": "{n} points uploaded to Drive." },
-    "uploadCodeWrong": { "id": "Kode unggah salah. Tekan unggah lagi untuk memasukkan kode.", "en": "Wrong upload code. Press upload again to enter the code." },
-    "uploadFailed": { "id": "{n} titik terunggah, lalu gagal ({reason}). Periksa sinyal dan coba lagi; titik yang sudah terunggah tidak dikirim ulang. Ekspor tetap bisa dipakai.", "en": "{n} points uploaded, then it failed ({reason}). Check the signal and try again; points already uploaded are not sent again. Export still works." },
+    "uploadCodeWrong": {
+      "id": "Kode unggah salah. Tekan unggah lagi untuk memasukkan kode.",
+      "en": "Wrong upload code. Press upload again to enter the code."
+    },
+    "uploadFailed": {
+      "id": "{n} titik terunggah, lalu gagal ({reason}). Periksa sinyal dan coba lagi; titik yang sudah terunggah tidak dikirim ulang. Ekspor tetap bisa dipakai.",
+      "en": "{n} points uploaded, then it failed ({reason}). Check the signal and try again; points already uploaded are not sent again. Export still works."
+    },
     "uploadedFact": { "id": "Diunggah ke Drive", "en": "Uploaded to Drive" },
     "yes": { "id": "Ya", "en": "Yes" },
     "notYet": { "id": "Belum", "en": "Not yet" },
@@ -91,19 +143,31 @@
     "docEditTitle": { "id": "Ubah dokumentasi", "en": "Edit documentation" },
     "docPhotos": { "id": "{n} foto", "en": "{n} photos" },
     "docAddPhotos": { "id": "Pilih foto", "en": "Choose photos" },
-    "docPhotosHint": { "id": "Lokasi dan waktu dibaca dari data GPS di dalam setiap foto. Foto tanpa lokasi tidak dapat dipakai, jadi aktifkan lokasi di aplikasi kamera.", "en": "The location and time are read from the GPS data inside each photo. Photos without a location cannot be used, so turn on location in the camera app." },
+    "docPhotosHint": {
+      "id": "Lokasi dan waktu dibaca dari data GPS di dalam setiap foto. Foto tanpa lokasi tidak dapat dipakai, jadi aktifkan lokasi di aplikasi kamera.",
+      "en": "The location and time are read from the GPS data inside each photo. Photos without a location cannot be used, so turn on location in the camera app."
+    },
     "readingPhotos": { "id": "Membaca foto…", "en": "Reading photos…" },
     "noGps": { "id": "{file}: tidak ada lokasi GPS di dalam foto.", "en": "{file}: the photo holds no GPS location." },
     "duplicatePhoto": { "id": "{file}: foto ini sudah ada.", "en": "{file}: this photo is already added." },
     "photoRequired": { "id": "Tambahkan minimal satu foto yang berlokasi.", "en": "Add at least one photo with a location." },
     "caption": { "id": "Keterangan foto", "en": "Caption" },
     "notes": { "id": "Catatan dan temuan", "en": "Notes and findings" },
-    "notesHint": { "id": "Catatan umum untuk foto-foto ini. Jangan menulis nama orang di sini.", "en": "General notes for these photos. Do not write people's names here." },
+    "notesHint": {
+      "id": "Catatan umum untuk foto-foto ini. Jangan menulis nama orang di sini.",
+      "en": "General notes for these photos. Do not write people's names here."
+    },
     "takenAt": { "id": "Waktu foto", "en": "Photo taken" },
     "photoNumber": { "id": "Foto", "en": "Photo" },
     "photoOf": { "id": "{i} dari {n}", "en": "{i} of {n}" },
-    "docLocationNote": { "id": "Lokasi dari data GPS di dalam foto, tidak diperiksa ulang.", "en": "Location from the GPS data inside the photo, not checked again." },
-    "deleteDocConfirm": { "id": "Hapus dokumentasi ini dari perangkat? Tindakan ini tidak dapat dibatalkan.", "en": "Delete this documentation from this device? This cannot be undone." },
+    "docLocationNote": {
+      "id": "Lokasi dari data GPS di dalam foto, tidak diperiksa ulang.",
+      "en": "Location from the GPS data inside the photo, not checked again."
+    },
+    "deleteDocConfirm": {
+      "id": "Hapus dokumentasi ini dari perangkat? Tindakan ini tidak dapat dibatalkan.",
+      "en": "Delete this documentation from this device? This cannot be undone."
+    },
     "emptyLocal": { "id": "Tidak ada titik lokal.", "en": "No local points." },
     "emptyPublished": { "id": "Belum ada titik terbit.", "en": "No published points yet." },
     "merged": { "id": "{n} titik ganda digabung.", "en": "{n} duplicate points merged." },
@@ -129,14 +193,23 @@
     "place": { "id": "Nama lokasi", "en": "Place name" },
     "date": { "id": "Tanggal survei", "en": "Survey date" },
     "contributor": { "id": "Kontributor", "en": "Contributor" },
-    "contributorHint": { "id": "Nama peneliti atau tim yang mengambil titik ini. Nama ini ditampilkan publik setelah titik diterbitkan.", "en": "The researcher or team who recorded this point. This name is shown publicly once the point is published." },
+    "contributorHint": {
+      "id": "Nama peneliti atau tim yang mengambil titik ini. Nama ini ditampilkan publik setelah titik diterbitkan.",
+      "en": "The researcher or team who recorded this point. This name is shown publicly once the point is published."
+    },
     "contributorRequired": { "id": "Isi nama kontributor terlebih dahulu.", "en": "Please enter the contributor." },
     "goTo": { "id": "Ke titik", "en": "Go to point" },
     "report": { "id": "Laporan lokasi", "en": "Location report" },
     "reportLoading": { "id": "Menyusun laporan…", "en": "Preparing the report…" },
     "reportFailed": { "id": "Laporan tidak dapat disusun.", "en": "The report could not be prepared." },
-    "reportOutside": { "id": "Titik ini di luar Aceh Tamiang, sedangkan lapisan data hanya mencakup kabupaten ini.", "en": "This point is outside Aceh Tamiang, and the data layers only cover this kabupaten." },
-    "reportNote": { "id": "Dibaca dari lapisan peta pada koordinat titik. Tidak terdeteksi berarti lokasi ini tidak ada dalam hasil deteksi Sentinel-1, bukan berarti lokasi ini tidak tergenang. Bahaya InaRISK adalah hasil model, bukan kejadian. Tutupan lahan dan estimasi penduduk dibaca dari gambar peta, sehingga di tepi sel nilainya bisa bergeser satu sel. Di dekat batas kelas, kesalahan GPS dapat mengubah hasil.", "en": "Read from the map layers at the point's coordinates. Not detected means this location is not in the Sentinel-1 detection result, not that it did not flood. InaRISK hazard is a model result, not an event. Land cover and the population estimate are read from the map images, so at a cell edge the value can be one cell off. Near a class boundary, GPS error can change the result." },
+    "reportOutside": {
+      "id": "Titik ini di luar Aceh Tamiang, sedangkan lapisan data hanya mencakup kabupaten ini.",
+      "en": "This point is outside Aceh Tamiang, and the data layers only cover this kabupaten."
+    },
+    "reportNote": {
+      "id": "Dibaca dari lapisan peta pada koordinat titik. Tidak terdeteksi berarti lokasi ini tidak ada dalam hasil deteksi Sentinel-1, bukan berarti lokasi ini tidak tergenang. Bahaya InaRISK adalah hasil model, bukan kejadian. Tutupan lahan dan estimasi penduduk dibaca dari gambar peta, sehingga di tepi sel nilainya bisa bergeser satu sel. Di dekat batas kelas, kesalahan GPS dapat mengubah hasil.",
+      "en": "Read from the map layers at the point's coordinates. Not detected means this location is not in the Sentinel-1 detection result, not that it did not flood. InaRISK hazard is a model result, not an event. Land cover and the population estimate are read from the map images, so at a cell edge the value can be one cell off. Near a class boundary, GPS error can change the result."
+    },
     "detected": { "id": "Terdeteksi", "en": "Detected" },
     "notDetected": { "id": "Tidak terdeteksi", "en": "Not detected" },
     "notRated": { "id": "Tidak ada kelas", "en": "No class" },
@@ -149,7 +222,10 @@
     "role": { "id": "Peran (mis. Kepala Desa, Warga)", "en": "Role (e.g. village head, resident)" },
     "consent": { "id": "Bersedia perannya dicantumkan", "en": "Agreed to their role being shown" },
     "addInformant": { "id": "Tambah narasumber", "en": "Add informant" },
-    "namesPrivate": { "id": "Nama hanya tersimpan di perangkat ini dan di file ekspor. Yang diterbitkan hanya peran.", "en": "Names stay on this device and in the export file. Only roles are published." },
+    "namesPrivate": {
+      "id": "Nama hanya tersimpan di perangkat ini dan di file ekspor. Yang diterbitkan hanya peran.",
+      "en": "Names stay on this device and in the export file. Only roles are published."
+    },
     "findings": { "id": "Temuan", "en": "Findings" },
     "findingsHint": { "id": "Catatan penelitian. Jangan menulis nama narasumber di sini.", "en": "Research notes. Do not write informant names here." },
     "findingsRequired": { "id": "Isi temuan terlebih dahulu.", "en": "Please enter the findings." },
@@ -159,10 +235,19 @@
     "edit": { "id": "Ubah", "en": "Edit" },
     "delete": { "id": "Hapus", "en": "Delete" },
     "remove": { "id": "Hapus", "en": "Remove" },
-    "deleteConfirm": { "id": "Hapus titik ini dari perangkat? Tindakan ini tidak dapat dibatalkan.", "en": "Delete this point from this device? This cannot be undone." },
-    "exported": { "id": "File ekspor ({size}) sudah diunduh. File ini memuat nama narasumber dan foto asli, jadi jangan dibagikan secara terbuka.", "en": "The export file ({size}) has been downloaded. It contains informant names and original photos, so do not share it openly." },
+    "deleteConfirm": {
+      "id": "Hapus titik ini dari perangkat? Tindakan ini tidak dapat dibatalkan.",
+      "en": "Delete this point from this device? This cannot be undone."
+    },
+    "exported": {
+      "id": "File ekspor ({size}) sudah diunduh. File ini memuat nama narasumber dan foto asli, jadi jangan dibagikan secara terbuka.",
+      "en": "The export file ({size}) has been downloaded. It contains informant names and original photos, so do not share it openly."
+    },
     "originals": { "id": "Foto asli tersimpan", "en": "Original photos kept" },
     "imported": { "id": "{n} titik diimpor.", "en": "{n} points imported." },
-    "importFailed": { "id": "File tidak dapat diimpor. Gunakan file ekspor BRIN Survey.", "en": "The file could not be imported. Use a BRIN Survey export file." }
+    "importFailed": {
+      "id": "File tidak dapat diimpor. Gunakan file ekspor BRIN Survey.",
+      "en": "The file could not be imported. Use a BRIN Survey export file."
+    }
   }
 }
