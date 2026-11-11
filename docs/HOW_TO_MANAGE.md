@@ -48,13 +48,13 @@ Leave **Cleared for publishing** unticked until the data owner allows it.
 2. In **Hasil survei BRIN**, press **Tambah titik**. Allow location access when asked; the GPS position fills in by itself. If GPS fails, type the coordinates.
 3. Fill in the place name, contributor, photos, narasumber and findings, then press **Simpan**. The point appears on the map at once, on that tablet only. The contributor is the researcher or team, and is required. The name is shown publicly once the point is published.
 4. Press **Ekspor** regularly, and always before clearing the browser or changing tablets. **Clearing browser data deletes points that have not been exported.** The form must be opened while online; points you have already saved stay on the tablet.
-5. To deliver the points, press the **mail icon** next to Ekspor. It downloads the export file and opens an email addressed to the project inbox. **Attach the downloaded file yourself, then send it**, because a web page cannot attach a file. The address is the `sendTo` value of the `brin-survey` dataset in `config/layers.json`.
+5. To deliver the points, press the **cloud button** next to Ekspor. It uploads every local point and documentation entry not yet uploaded to the project's Google Drive folder. The first time on each tablet it asks for the upload code. Setup and the code are described in [DRIVE_UPLOAD_SETUP.md](DRIVE_UPLOAD_SETUP.md).
 
-**Original photos.** Each photo is kept twice: a resized copy (longest side 1600 px, location data removed), which is shown and published, and the original file exactly as taken, including the camera's GPS position and other metadata. The originals stay on the tablet and go into the export file, so exports are large: roughly the size of the photos plus a third. The point's details show how much space its originals use. Gmail cannot attach files over 25 MB and offers a Google Drive link instead. When publishing, `build_survey.py` saves the originals unchanged in `data/raw/survey/originals/<point id>/`, which is private and never published. Photos added before this feature existed have no original.
+**Original photos.** Each photo is kept twice: a resized copy (longest side 1600 px, location data removed), which is shown and published, and the original file exactly as taken, including the camera's GPS position and other metadata. The originals stay on the tablet and go into the export file, so exports are large: roughly the size of the photos plus a third. The point's details show how much space its originals use. Uploading to Drive sends each original photo on its own, so size is no problem there. When publishing, `build_survey.py` saves the originals unchanged in `data/raw/survey/originals/<point id>/`, which is private and never published. Photos added before this feature existed have no original.
 
 The panel has two parts. **Lokal** (top) holds points on this device that are waiting to be exported and reviewed. **Terbit** (below) holds reviewed points that every visitor can see. Once a point is published, its local copy leaves the Lokal list by itself, unless it was edited after publishing. The copy stays on the device, because only it holds the narasumber names.
 
-**Duplicates.** Records with exactly the same survey time (to the minute) and the same contributor are merged, both on the device and when publishing. Findings, photos and narasumber from both are kept. If the two locations differ, the newer one is used and the other is written into the findings as "Lokasi lain yang digabung". Because of this rule, each person should enter their own name as contributor, not a shared team name.
+**Duplicates.** Records with exactly the same survey time (to the minute) and the same contributor are merged, both on the device and when publishing. Findings, photos and narasumber from both are kept. If the two locations differ, the newer one is used and the other is written into the findings as "Lokasi lain yang digabung". Because of this rule, each person should enter their own name as contributor, not a shared team name. When the same point is edited on two tablets, both edits are kept and merged; see [DRIVE_UPLOAD_SETUP.md](DRIVE_UPLOAD_SETUP.md).
 
 Each narasumber has a name, a role (such as Kepala Desa or Warga) and a consent box. Do not write names in the findings, because findings are published as written.
 
@@ -78,7 +78,7 @@ Press a point on the map or in the list to see its details and its **Laporan lok
 
 **Publishing reviewed points**
 
-1. Put the export files in `for claude/survey/` (git ignores this folder).
+1. Download the Drive upload folder (it comes as a zip) and unzip it into `for claude/survey/`, and add any export files there too. Git ignores this folder.
 2. Run `.venv/Scripts/python.exe scripts/build_survey.py`, or ask Claude to.
 3. Read what it prints. Check the findings for names, and the photos in `data/web/brin_survey/` for faces of people who did not agree.
 4. Commit and push `data/web/brin_survey.geojson` and `data/web/brin_survey/`.

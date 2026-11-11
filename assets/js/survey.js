@@ -125,7 +125,37 @@ function mergeEntries(newer, older) {
   for (const entry of [newer, older]) {
     entry.photos.forEach((photo, i) => { if (!pairs.has(photo)) pairs.set(photo, entry.originals?.[i] ?? null); });
   }
-  return { ...newer, place: newer.place || older.place, findings, informants, photos: [...pairs.keys()], originals: [...pairs.values()] };
+  const { uploadedVersion, ...rest } = newer;
+  return {
+    ...rest, ...mergedVersion(newer, older),
+    place: newer.place || older.place, findings, informants, photos: [...pairs.keys()], originals: [...pairs.values()]
+  };
+}
+
+// Edit history. Each record lists the versions (updatedAt values) it was made from, so a newer
+// version replaces an older one only when it was edited from it. Two versions edited separately,
+// such as on two tablets, are merged instead, so neither edit is lost.
+const historyOf = (entry) => [...(entry.versions ?? []), entry.updatedAt];
+const supersedes = (a, b) => a.updatedAt === b.updatedAt || (a.versions ?? []).includes(b.updatedAt);
+
+// A merge is new content: it gets a new version that descends from both, so it is uploaded again.
+// Its time is never earlier than either version, even on a tablet whose clock is behind.
+function mergedVersion(a, b) {
+  const latest = Math.max(Date.parse(a.updatedAt) || 0, Date.parse(b.updatedAt) || 0);
+  const updatedAt = new Date(Math.max(Date.now(), latest + 1)).toISOString();
+  return { updatedAt, versions: [...new Set([...historyOf(a), ...historyOf(b)])].sort() };
+}
+
+// Documentation edited separately: photos from both (the same photo once), notes from both.
+function mergeDocs(newer, older) {
+  const signature = (p) => `${p.takenAt}|${p.lat.toFixed(6)}|${p.lon.toFixed(6)}`;
+  const seen = new Set(newer.photos.map(signature));
+  const { uploadedVersion, ...rest } = newer;
+  return {
+    ...rest, ...mergedVersion(newer, older),
+    notes: appendOnce(newer.notes ?? '', older.notes ?? ''),
+    photos: [...newer.photos, ...older.photos.filter((p) => !seen.has(signature(p)))]
+  };
 }
 
 // A local date and time in the form a datetime-local input expects.
@@ -201,7 +231,7 @@ export function createSurvey({ dataset, docDataset, boundariesFile, i18n, report
     const entries = waiting();
     fillList('local', entries, 'survey.emptyLocal');
     fillList('published', [...published, ...publishedDocs], 'survey.emptyPublished');
-    for (const id of ['survey-export', 'survey-send']) document.getElementById(id).disabled = !entries.length;
+    for (const id of ['survey-export', 'survey-upload']) document.getElementById(id).disabled = !entries.length;
   }
 
   // Replaces each group of duplicates on this device with one merged record, written before
@@ -400,11 +430,12 @@ export function createSurvey({ dataset, docDataset, boundariesFile, i18n, report
       fact(t('survey.contributor'), entry.contributor || t('noData')),
       fact(t('survey.status'), isLocal ? t('survey.localStatus') : t('survey.published'))
     );
-    const originals = entry.photos.map((p) => p.original).filter(Boolean);
+    const originals = entry.photos.map((p) => p.original).filter((o) => o?.data);
     if (isLocal && originals.length) {
       const bytes = originals.reduce((sum, o) => sum + dataUrlBytes(o.data), 0);
       facts.append(fact(t('survey.originals'), `${originals.length} · ${formatSize(bytes)}`));
     }
+    if (isLocal) facts.append(uploadFact(entry));
 
     const body = [
       wrap,
@@ -433,6 +464,9 @@ export function createSurvey({ dataset, docDataset, boundariesFile, i18n, report
     openDialog(t('survey.docTitle'), body);
   }
 
+  const isUploaded = (entry) => entry.uploadedVersion === entry.updatedAt;
+  const uploadFact = (entry) => fact(t('survey.uploadedFact'), t(isUploaded(entry) ? 'survey.yes' : 'survey.notYet'));
+
   function showDetail(id) {
     const entry = waiting().find((e) => e.id === id) ?? published.find((e) => e.id === id);
     if (entry) showEntry(entry);
@@ -441,11 +475,12 @@ export function createSurvey({ dataset, docDataset, boundariesFile, i18n, report
   function showEntry(entry) {
     const isLocal = local.includes(entry);
     const facts = factList(entry, isLocal);
-    const originals = (entry.originals ?? []).filter(Boolean);
+    const originals = (entry.originals ?? []).filter((o) => o?.data);
     if (isLocal && originals.length) {
       const bytes = originals.reduce((sum, o) => sum + dataUrlBytes(o.data), 0);
       facts.append(fact(t('survey.originals'), `${originals.length} · ${formatSize(bytes)}`));
     }
+    if (isLocal) facts.append(uploadFact(entry));
 
     const people = el('ul', 'survey-people');
     const informants = isLocal ? entry.informants : (entry.roles ?? []).map((role) => ({ role }));
@@ -621,6 +656,7 @@ export function createSurvey({ dataset, docDataset, boundariesFile, i18n, report
         id: existing?.id ?? crypto.randomUUID(),
         createdAt: existing?.createdAt ?? now,
         updatedAt: now,
+        versions: existing ? historyOf(existing) : [],
         surveyedAt: date.value,
         lat: latitude,
         lon: longitude,
@@ -762,6 +798,7 @@ export function createSurvey({ dataset, docDataset, boundariesFile, i18n, report
         id: existing?.id ?? crypto.randomUUID(),
         createdAt: existing?.createdAt ?? now,
         updatedAt: now,
+        versions: existing ? historyOf(existing) : [],
         contributor: contributor.value.trim(),
         notes: notes.value.trim(),
         photos: photos.map(({ photo, original, caption, lat, lon, takenAt, kecamatan }) => ({ photo, original, caption: (caption ?? '').trim(), lat, lon, takenAt, kecamatan }))
@@ -807,40 +844,116 @@ export function createSurvey({ dataset, docDataset, boundariesFile, i18n, report
     setStatus(t('survey.exported').replace('{size}', size));
   }
 
-  // A web page cannot attach a file to an email, so this saves the export and opens an
-  // addressed email for the sender to attach it to. The email text holds no informant names.
-  function sendByEmail() {
-    const { file, count, size } = downloadExport();
-    const subject = encodeURIComponent(t('survey.emailSubject'));
-    const body = encodeURIComponent(t('survey.emailBody').replace('{n}', count).replace('{file}', file));
-    const link = el('a');
-    link.href = `mailto:${dataset.sendTo}?subject=${subject}&body=${body}`;
-    link.click();
-    setStatus(t('survey.emailHint').replace('{file}', file).replace('{size}', size).replace('{email}', dataset.sendTo));
+  // ---------------------------------------------------------------- upload to Google Drive
+  //
+  // Records go to the project's Google Apps Script (scripts/drive_upload.gs), which saves them in
+  // the coordinator's Drive folder. Each original photo is sent on its own and the record without
+  // their data, so no single request is large. The upload code is asked once per device and kept
+  // in this browser; the script refuses uploads without it.
+
+  const CODE_KEY = 'brin-survey-upload-code';
+  const readCode = () => {
+    try {
+      return localStorage.getItem(CODE_KEY) || '';
+    } catch {
+      return '';
+    }
+  };
+  const keepCode = (code) => {
+    try {
+      if (code) localStorage.setItem(CODE_KEY, code);
+      else localStorage.removeItem(CODE_KEY);
+    } catch {
+      // Without storage the code is simply asked again next time.
+    }
+  };
+
+  // The same file name rule as the Apps Script, so the record can say where its originals are.
+  const safeName = (name) => String(name || 'photo').split(/[\\/]/).pop().replace(/[^A-Za-z0-9._-]/g, '_').slice(-80) || 'photo';
+
+  function uploadParts(entry) {
+    const originals = isDoc(entry) ? entry.photos.map((p) => p.original ?? null) : entry.originals ?? [];
+    const files = originals.map((o, i) => (o?.data ? { index: i + 1, name: o.name, data: o.data } : null)).filter(Boolean);
+    const pointer = (o, i) => (o ? { name: o.name, type: o.type, file: o.file ?? `originals/${entry.id}/${i + 1}-${safeName(o.name)}` } : null);
+    const { uploadedVersion, ...rest } = entry;
+    const record = isDoc(entry)
+      ? { ...rest, photos: entry.photos.map((p, i) => ({ ...p, original: pointer(p.original, i) })) }
+      : { ...rest, originals: originals.map(pointer) };
+    return { files, record };
+  }
+
+  async function post(body) {
+    // text/plain keeps this a simple request, which Apps Script accepts from another site.
+    const response = await fetch(dataset.uploadUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const result = await response.json();
+    if (!result.ok) throw Object.assign(new Error(result.error), { reason: result.error });
+    return result;
+  }
+
+  async function uploadToDrive() {
+    if (!dataset.uploadUrl) return setStatus(t('survey.uploadNotReady'));
+    const pending = waiting().filter((e) => !isUploaded(e));
+    if (!pending.length) return setStatus(t('survey.uploadNothing'));
+    const code = readCode() || (prompt(t('survey.uploadCodePrompt')) ?? '').trim();
+    if (!code) return undefined;
+    const button = document.getElementById('survey-upload');
+    button.disabled = true;
+    let done = 0;
+    try {
+      for (const [i, entry] of pending.entries()) {
+        setStatus(t('survey.uploading').replace('{i}', i + 1).replace('{n}', pending.length));
+        const { files, record } = uploadParts(entry);
+        for (const file of files) await post({ code, type: 'original', recordId: entry.id, ...file });
+        await post({ code, type: 'record', record });
+        await putLocal({ ...entry, uploadedVersion: entry.updatedAt });
+        keepCode(code);
+        done += 1;
+      }
+      setStatus(t('survey.uploaded').replace('{n}', done));
+    } catch (error) {
+      if (error.reason === 'code') {
+        keepCode('');
+        setStatus(t('survey.uploadCodeWrong'));
+      } else {
+        setStatus(t('survey.uploadFailed').replace('{n}', done).replace('{reason}', error.message));
+      }
+    } finally {
+      local = await allLocal();
+      renderList();
+    }
+    return undefined;
   }
 
   const validPhoto = (p) => /^data:image\/(jpeg|png);base64,/.test(p?.photo) && Number.isFinite(p.lat) && Number.isFinite(p.lon)
-    && (p.original == null || /^data:/.test(p.original.data));
+    && (p.original == null || /^data:/.test(p.original.data) || typeof p.original.file === 'string');
   const validDoc = (e) => Array.isArray(e.photos) && e.photos.length > 0 && e.photos.every(validPhoto);
   const validEntry = (e) => typeof e?.id === 'string' && (isDoc(e) ? validDoc(e) : validSurvey(e));
   const validSurvey = (e) => Number.isFinite(e.lat) && Number.isFinite(e.lon)
     && Array.isArray(e.informants) && Array.isArray(e.photos) && e.photos.every((p) => /^data:image\/(jpeg|png);base64,/.test(p))
-    && (e.originals === undefined || (Array.isArray(e.originals) && e.originals.every((o) => o === null || /^data:/.test(o?.data))));
+    && (e.originals === undefined || (Array.isArray(e.originals) && e.originals.every((o) => o === null || /^data:/.test(o?.data) || typeof o?.file === 'string')));
 
-  // Merges an export from another device. Where both have a point, the newer edit is kept.
+  // Merges an export from another device. Where both have a record, a version edited from the
+  // other replaces it; versions edited separately are merged.
   async function importFile(file) {
     try {
       const data = JSON.parse(await file.text());
       if (data.format !== EXPORT_FORMAT || !data.entries.every(validEntry)) throw new Error('format');
       let added = 0;
+      let combined = 0;
       for (const entry of data.entries) {
         const current = local.find((e) => e.id === entry.id);
-        if (!current || String(entry.updatedAt) > String(current.updatedAt)) {
+        if (!current || supersedes(entry, current)) {
+          if (current?.updatedAt === entry.updatedAt) continue;
           await putLocal(entry);
           added += 1;
+        } else if (!supersedes(current, entry)) {
+          const [newer, older] = String(entry.updatedAt) > String(current.updatedAt) ? [entry, current] : [current, entry];
+          await putLocal(isDoc(entry) ? mergeDocs(newer, older) : mergeEntries(newer, older));
+          combined += 1;
         }
       }
-      const merged = await refresh();
+      const merged = await refresh() + combined;
       setStatus([t('survey.imported').replace('{n}', added), merged ? mergedText(merged) : ''].join(' ').trim());
     } catch {
       setStatus(t('survey.importFailed'));
@@ -873,7 +986,7 @@ export function createSurvey({ dataset, docDataset, boundariesFile, i18n, report
 
       document.getElementById('survey-add').addEventListener('click', () => showForm());
       document.getElementById('survey-export').addEventListener('click', exportFile);
-      document.getElementById('survey-send').addEventListener('click', sendByEmail);
+      document.getElementById('survey-upload').addEventListener('click', uploadToDrive);
       const picker = document.getElementById('survey-import');
       picker.addEventListener('change', async () => {
         if (picker.files[0]) await importFile(picker.files[0]);

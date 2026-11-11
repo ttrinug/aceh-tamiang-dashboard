@@ -318,9 +318,9 @@ function renderAbout() {
 function render() {
   document.documentElement.lang = state.lang;
   for (const node of document.querySelectorAll('[data-i18n]')) node.textContent = t(node.dataset.i18n);
-  const sendButton = document.getElementById('survey-send');
-  sendButton.title = t('survey.send');
-  sendButton.setAttribute('aria-label', t('survey.send'));
+  const uploadButton = document.getElementById('survey-upload');
+  uploadButton.title = t('survey.upload');
+  uploadButton.setAttribute('aria-label', t('survey.upload'));
   for (const node of document.querySelectorAll('[data-i18n-label]')) node.setAttribute('aria-label', t(node.dataset.i18nLabel));
   for (const button of document.querySelectorAll('[data-lang]')) {
     button.setAttribute('aria-pressed', String(button.dataset.lang === state.lang));

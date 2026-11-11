@@ -1,6 +1,7 @@
 """Publish reviewed BRIN Survey points and documentation to the dashboard.
 
-Input:  "for claude/survey/*.json"   export files from the dashboard's BRIN Survey panel
+Input:  "for claude/survey/**/*.json"   export files from the dashboard's BRIN Survey panel, or the
+                                       unzipped Drive upload folder (JSON files plus originals/<id>/)
         data/raw/BATASWILAYAH_KECAMATAN_20260601.gdb.zip   BIG kecamatan boundaries (via build_boundaries)
 Output: data/web/brin_survey.geojson   public points
         data/web/brin_survey/*.jpg     public photos
@@ -12,7 +13,8 @@ The export files contain informant names, so they are copied only to data/raw/su
 is not committed. Public output keeps the role of informants who agreed to be listed, and never
 an informant's name. The contributor (the researcher or team who recorded the point) is public. Findings are published as written: read the list this script prints before pushing.
 Points outside the BIG kecamatan boundaries are reported and left out. Where several files
-hold the same point, the most recently edited version is used. Photos are re-encoded, which
+hold the same record, a version is dropped only when a later one was edited from it; versions
+edited separately are merged and reported (see resolve_versions). Photos are re-encoded, which
 drops any metadata. Records with the same survey time and contributor are merged.
 
 Documentation entries (kind "documentation") hold photos placed by the GPS position read from
@@ -46,19 +48,46 @@ MAX_SIDE = 1600
 
 def read_entries():
     RAW.mkdir(parents=True, exist_ok=True)
-    entries = {}
-    for path in sorted(INBOX.glob("*.json")):
+    versions = {}
+    for path in sorted(INBOX.rglob("*.json")):
         shutil.copy2(path, RAW / path.name)
         data = json.loads(path.read_text(encoding="utf-8"))
         assert data.get("format") == "brin-survey-export", f"{path.name} is not a BRIN Survey export"
         for entry in data["entries"]:
-            current = entries.get(entry["id"])
-            if current is None or entry["updatedAt"] > current["updatedAt"]:
-                entries[entry["id"]] = entry
-    values = list(entries.values())
+            versions.setdefault(entry["id"], {})[entry["updatedAt"]] = entry
+    values = [resolve_versions(record_id, list(found.values())) for record_id, found in versions.items()]
     docs = [e for e in values if e.get("kind") == "documentation"]
     surveys = [e for e in values if e.get("kind") != "documentation"]
     return merge_duplicates(surveys), docs
+
+
+def resolve_versions(record_id, found):
+    """One record from all its uploaded and exported versions, as the dashboard's import does.
+
+    Nothing in the Drive folder is ever overwritten, so every version arrives here. A version is
+    dropped only when a later one was edited from it (its updatedAt is in the later one's
+    "versions" list). Versions edited separately, for example on two tablets, are merged, so no
+    edit is lost, and reported for review.
+    """
+    edited_from = {v for entry in found for v in entry.get("versions") or []}
+    heads = sorted((e for e in found if e["updatedAt"] not in edited_from), key=lambda e: e["updatedAt"], reverse=True)
+    if len(found) > 1:
+        print(f"Record {record_id}: {len(found)} versions, {len(found) - len(heads)} replaced by later edits")
+    merged = heads[0]
+    for other in heads[1:]:
+        merged = merge_docs(merged, other) if merged.get("kind") == "documentation" else merge_entries(merged, other)
+    if len(heads) > 1:
+        print(f"    CHECK: {len(heads)} versions were edited separately and have been merged")
+    return merged
+
+
+def merge_docs(newer, older):
+    """Documentation edited separately: photos from both (the same photo once), notes from both."""
+    def signature(photo):
+        return (photo.get("takenAt"), round(photo["lat"], 6), round(photo["lon"], 6))
+    seen = {signature(p) for p in newer["photos"]}
+    photos = newer["photos"] + [p for p in older["photos"] if signature(p) not in seen]
+    return {**newer, "notes": append_once(newer.get("notes") or "", older.get("notes") or ""), "photos": photos}
 
 
 def safe_id(value):
@@ -134,13 +163,28 @@ def write_originals(entries, docs):
     for record_id, number, original in found:
         if not original:
             continue
+        data = original_bytes(record_id, number, original)
+        if data is None:
+            print(f"Missing original photo {number} of {record_id}: not in the export and not found under originals/")
+            continue
         # The name comes from the device; keep only safe characters and no folders.
         name = re.sub(r"[^A-Za-z0-9._-]", "_", Path(original.get("name") or "photo").name)[-80:]
         folder = ORIGINALS / safe_id(record_id)
         folder.mkdir(parents=True, exist_ok=True)
-        (folder / f"{number}-{name}").write_bytes(base64.b64decode(original["data"].split(",", 1)[1]))
+        (folder / f"{number}-{name}").write_bytes(data)
         count += 1
     print(f"Saved {count} original photos in {ORIGINALS.relative_to(ROOT)} (private)")
+
+
+def original_bytes(record_id, number, original):
+    """An original photo: inside the export file, or uploaded to Drive as originals/<id>/<n>-<name>."""
+    if original.get("data"):
+        return base64.b64decode(original["data"].split(",", 1)[1])
+    wanted = Path(original.get("file") or "").name
+    for path in INBOX.rglob(wanted or f"{number}-*"):
+        if path.parent.name == safe_id(record_id) and path.parent.parent.name == "originals":
+            return path.read_bytes()
+    return None
 
 
 def build_documentation(docs, kecamatan):
@@ -148,7 +192,7 @@ def build_documentation(docs, kecamatan):
     if DOC_PHOTOS.exists():
         shutil.rmtree(DOC_PHOTOS)
     DOC_PHOTOS.mkdir(parents=True)
-    features = []
+    features, published = [], set()
     for doc in docs:
         photos = doc["photos"]
         points = gpd.GeoDataFrame(geometry=[Point(p["lon"], p["lat"]) for p in photos], crs=4326)
@@ -163,6 +207,11 @@ def build_documentation(docs, kecamatan):
             if not isinstance(name, str):
                 print(f"    Left out, outside the kabupaten: photo {i + 1} ({photo['lat']}, {photo['lon']})")
                 continue
+            signature = (photo.get("takenAt"), round(photo["lat"], 6), round(photo["lon"], 6))
+            if signature in published:
+                print(f"    Left out, already published in another entry: photo {i + 1}")
+                continue
+            published.add(signature)
             path = DOC_PHOTOS / f"{safe_id(doc['id'])}-{kept + 1}.jpg"
             write_photo(photo["photo"], path)
             features.append({
