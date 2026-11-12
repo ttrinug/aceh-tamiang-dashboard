@@ -4,18 +4,14 @@ A short guide for day-to-day work. Everything here runs on your own computer; no
 
 ## 1. Open the dashboard and the admin page
 
-Open a terminal in the `5. Dashboard` folder and run:
+**Double-click `Start admin.cmd`** in the `5. Dashboard` folder. A small black window opens, and the admin page opens in your browser a moment later. If the admin page is already running, the file only opens it.
 
-```bash
-node scripts/admin-server.mjs
-```
+Keep the black window open while you work; closing it stops the admin page. The admin page runs only on this computer, and it stops when the window, the app that started it, or the computer is closed. If http://localhost:8081/admin/ does not open, double-click `Start admin.cmd` again.
 
-Then open in your browser:
-
-- Dashboard: http://localhost:8081/
+- Dashboard (local copy): http://localhost:8081/
 - Admin page: http://localhost:8081/admin/
 
-Leave the terminal open while you work. Press `Ctrl+C` in it to stop. After any change, reload the dashboard page to see it.
+Without the file, you can open a terminal in the `5. Dashboard` folder and run `node scripts/admin-server.mjs`, then press `Ctrl+C` to stop. After any change, reload the dashboard page to see it.
 
 ## 2. Add a map layer (shapefile, GeoPackage, GeoJSON or GeoTIFF)
 
